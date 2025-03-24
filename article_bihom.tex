@@ -8,6 +8,9 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \newtheorem{proposition}{Proposition}[section]
+\newtheorem{definition}{Définition}[section]
+\newtheorem{theoreme}{Théorème}[section]
+
 \newcommand{\propositionTitre}[2]{
 	\begin{proposition}[#1]
 		#2
@@ -20,11 +23,23 @@
 \maketitle
 
 \section{Définitions et notations}
-\begin{itemize}
+\begin{definition}
 \item $I_{i-1}:f_i$ is spanned by $I_{i-1}$ and by the maximal minors of $\text{jac}_{\textbf{x}}(F_{i-1})$ (if $i > n_y + 1$) and $\text{jac}_{\textbf{y}}(F_{i-1})$ (if $i > n_x + 1$).
+\end{definition}
+
+\begin{definition}
+Étant donné une matrice de taille $(k+1, k)$, on note minor$(\textbf{M}, j)$ le mineur obtenu en retirant la j-ième ligne de M. Considérons
+$$v = (minor(jac_\textbf{x}(F), 1), -minor(jac_\textbf{x}(F), 2),
+minor(jac_\textbf{x}(F), 3), -minor(jac_\textbf{x}(F), 4),)$$
+\end{definition}
+
+\begin{itemize}
+	\item Soit \textbf{M} une matrice de taille $l \times c$. On appelle maximal 
+	minors de \textbf{M} les déterminants des sous-matrices de taille $c \times c$
+	de M.
 \end{itemize}
 
-\section{Théorèmes}
+\section{Théorèmes et propositions}
 \propositionTitre{Critère F5 général}{
 $$\forall j < m, \textit{si la ligne d'étiquette }(t,f_j) \textit{ dans la matrice } 
 \tilde{\mathbb{M}}_{d-d_m, m-1} \textit{ a pour terme de tête, } t'$$
@@ -38,5 +53,13 @@ $$\forall j < m, \textit{si la ligne d'étiquette }(t,f_j) \textit{ dans la matr
 $$	\textit{alors la ligne } 
 (t', f_m) \textit{ dans la matrice } \mathbb{M}_{d, m} \textit{ est une combinaison linéaire des précédentes.}$$
 }
+
+\begin{theoreme}
+Soit $i > n_x + 1 \textit{ (resp. } i > n_y + 1\textit{) }$ et soit $s$ une 
+combinaison linéaire des maximal minors de $jac_\textbf{x}(F_{i-1}) 
+\textit{ (resp.} jac_\textbf{y}(F_{i-1}) \textit{) }$. Alors $s \in I_{i-1}:f_i$.
+\end{theoreme}
+
+
 
 \end{document}
