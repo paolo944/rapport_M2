@@ -39,6 +39,18 @@ minor(jac_\textbf{x}(F), 3), -minor(jac_\textbf{x}(F), 4),)$$
 	de M.
 \end{itemize}
 
+\begin{definition}
+	Soit $\prec$ un ordre monomial tel que sa restriction à 
+	$\mathbb{K}[x_0,...,x_{n_x}]$ (resp. $\mathbb{K}[y_0,...,y_{n_y}]$)
+	est l'ordre \textit{grevlex}. Soit $m \leq n_x + n_y$ et $f_1,...,fm$
+	des polynômes bilinéaires sur $\mathit{R}$. On dit qu'une séquence polynomiale
+	($f_1,...,f_m$) est une bi-régulière si $m = 1$ ou si ($f_1,...,f_{m-1}$)
+	est une séquence bi-régulière et
+	$$\textbf{LM}(I_{m-1}:f_m) == \langle\text{Monomials}^{x}_{m - n_y - 2}
+	(n_y + 1)\rangle + \langle\text{Monomials}^{y}_{m - n_x - 2}
+	(n_x + 1)\rangle + \langle\textbf{LM}(I_{m-1})\rangle$$
+\end{definition}
+
 \section{Théorèmes et propositions}
 \propositionTitre{Critère F5 général}{
 $$\forall j < m, \textit{si la ligne d'étiquette }(t,f_j) \textit{ dans la matrice } 
