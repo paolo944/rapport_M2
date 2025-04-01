@@ -7,6 +7,7 @@
 \usepackage{babel}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{amsthm}
 \usepackage{mathtools}
 \usepackage[backend=bibtex]{biblatex}
 \usepackage{csquotes}
@@ -124,7 +125,7 @@
 		The following algorithms will give us the signatures of reductions to 0 during F5-matrix algorithm.
 					
 		\begin{algorithm}
-			\caption{Reduce}\label{alg:cap}
+			\caption{Reduce}\label{alg:reduc}
 			\begin{algorithmic}[1]
 				\Require A monomial ordering $\prec$ and $S$ a set of homogeneous polynomials and $q$ a degree.
 				\Ensure $T$ a reduced set of homogeneous polynomials of degree $q$.
@@ -135,20 +136,20 @@
 		\end{algorithm}
 		
 		 \begin{algorithm}
-		 	\caption{BL\_Criterion}
+		 	\caption{BL\_Criterion}\label{alg:crit_calc}
 		 	\begin{algorithmic}[1]
 		 		\Require $m$ bilinear polynomials $f1,...f_m$ such that $m \leq n_x + n_y$.\newline $\prec$ a monomial ordering overs $R$.
 		 		\Ensure $V$ a set of pairs $(h, f_i)$ such that $h \in I_{i-1} : f_i$ and $h \notin I_{i-1}$.
 		 		\State $V \gets \emptyset$
 		 		\For{$i$ from 2 to $m$}
 					\If{$i > n_y$}
-						\State $T \gets \mathbf{Reduce}(MaxMinors(jac_y(F_{i-1})), n_y)$
+						\State $T \gets \mathbf{Reduce}(MaxMinors(jac_y(F_{i-1})), n_y + 1)$
 						\For{$h$ in $T$}
 							\State $V \gets V \cup \{(h, f_i)\}$
 						\EndFor
 					\EndIf
 					\If{$i > n_x$}
-						\State $T' \gets \mathbf{Reduce}(MaxMinors(jac_x(F_{i-1})), n_x)$
+						\State $T' \gets \mathbf{Reduce}(MaxMinors(jac_x(F_{i-1})), n_x + 1)$
 						\For{$h$ in $T'$}
 							\State $V \gets V \cup \{(h, f_i)\}$
 						\EndFor
@@ -159,7 +160,7 @@
 		 \end{algorithm}
 		 
 		 \begin{algorithm}
-		 	\caption{BilinF5Critetion}
+		 	\caption{BilinF5Critetion}\label{algo:crit}
 		 	\begin{algorithmic}[1]
 		 		\Require $(t, f_i)$ the signature of a row. \newline A matrix $M$ in row echelon form.
 		 		\Ensure $True$ if the row will reduce to 0 otherwise $False$.
@@ -187,14 +188,26 @@
 		 where $2 \leq \omega \leq 3$ is the linear algebra constant.
 		 \end{corollary}
 		 
-		 First, we can clearly see that the complexity of algorithm \ref{alg:cap} is exponential and is exactly 
-		 $$
-		 \mathcal{O}\left(2n_x^{\omega}\left(\sum_{i = n_x}^{m} \binom{i}{n_x}\right) + 2n_y^{\omega}\left(\sum_{i = n_y}^{m} \binom{i}{n_y}\right)\right)
-		 $$
+		 First, we can clearly see that the complexity of algorithm \ref{alg:crit_calc} is exponential and is what we will try to show.
+		 
+		 \begin{proposition}
+		 	The complexity of algorithm \ref{alg:crit_calc} is
+		 	$$
+		 	\mathcal{O}\left(\left(\sum_{i = n_x}^{m} \binom{i}{n_x}n_x^{\omega} + \binom{2n_x + 1}{n_x}^\omega\right) + \left(\sum_{i = n_y}^{m} \binom{i}{n_y}n_y^{\omega} + \binom{2n_y + 1}{n_y}^\omega\right)\right)
+		 	$$
+		 \end{proposition}
+		 
+		 \begin{proof}
+		 	Fist, if $i > n_y$ (resp. $i > n_x$), we construct that jacobian matrix $jac_y(F_{i-1})$ (resp. $jac_x(F_{i-1})$) which is of size $n_y \times n_y$ (resp. $n_x \times n_x$)for the first one and $(m-1) \times n_y$ (resp. $(m-1) \times n_x$) for the last one. We suppose here that the construction of such matrices is free. Computing the $MaxMinors(jac_y(F_{i-1}))$ (resp. $MaxMinors(jac_x(F_{i-1}))$)means that we have to compute the determinants of all the sub-matrices of size $n_y \times n_y$ (resp. $n_x \times n_x$) and for a matrix $M$ of size $l \times c$ with $l > c$ there are $\binom{l}{c}$ sub-matrices of size $c \times c$, hence the term $\binom{i}{n_y}n_y^{\omega}$ in the sum if we suppose the complexity of computing the determinant of a square multivariate polynomial matrix of size $c \times c$ to be $\mathcal{O}(c^\omega)$, which is not the case but let's suppose the best case ever. faudrait trouver la vraie complexité de ça pour être plus juste.
+		 	For now, we have a sequence of polynomials and we apply the algorithm \textbf{Reduce} on them with degree $n_y + 1$ (resp. $n_x + 1$).
+		 	In \textbf{Reduce}, we construct the Macaulay matrix of the sequence of degree $n_y + 1$ (resp. $n_x + 1$) and compute it's row echelon form.
+		 	The size of Macauly matrix is bounded by $\binom{n + D}{D}$ where D is the degree and n the number variables. So the complexity of \textbf{Reduce} is $\mathcal{O}\left(\binom{n_y + n_y + 1}{n_y + 1}^\omega \right)$ (resp. $\mathcal{O}\left(\binom{n_x + n_x + 1}{n_x + 1}^\omega \right)$). Hence the second term in the sum, because we call \textbf{Reduce} at each iteration of the for loop. We finally that the iteration on the elements of $T$ and of $T'$ is negligible in the big O notation.
+		 \end{proof}
+		 
 		 It's an asymptotic complexity which doesn't take into account the constant factor in implementations that could slow down a lot the algorithm.
 		 We also recall that in our case with NSBC, $n_x = n_y$. So we get
 		 $$
-		 \mathcal{O}\left(4n_x^{\omega}\left(\sum_{i = n_x}^{m} \binom{i}{n_x}\right)\right)
+		 \mathcal{O}\left(2n_x^{\omega}\left(\sum_{i = n_x}^{m} \binom{i}{n_x} + \binom{2n_x + 1}{n_x}^\omega\right)\right)
 		 $$
 		 
 		 Since we have quadratic systems, reductions to 0 won't appear before degree 4 of the Macaulay matrix. Also, in practice we are using $q=2$ and there's much better algorithms in the literature for boolean systems than basic Gröbner basis algorithms like F5. The best algorithm used at the moment is CrossBred \cite{JV17}. Most of the time in practical implementations, we stop at degree 4 of the Macaulay in pre-processing step. So, to know what advantage we used the extended F5 criterion, we will suppose the worst, that all of our entries will reduce to 0 at degree 4 of the Macaulay matrix, which is unlikely.
@@ -207,14 +220,11 @@
 		 $$
 		 If we only take into consideration the big O notation and not the constants, which is not realistic at all for efficient implementations to really break a cryptographic scheme, we get
 		 \begin{equation}
-		 Adv(n, m) = 2\left(\frac{n}{2}\right)^\omega \left(\sum_{i = n/2}^{m}\binom{i}{n/2}\right) - \binom{n + 4}{4}^\omega
+		 Adv(n, m) = 2\left(\sum_{i = n/2}^{m}\binom{i}{n/2}\left(\frac{n}{2}\right)^\omega + \binom{n + 1}{n/2}^\omega\right) - \binom{n + 4}{4}^\omega
 		 \label{equation_complex}
 		 \end{equation}
 		 
-		 Using the computer algebra system SageMath \cite{sagemath} to test numerically when using the F5 extended criterion of \cite{FSS11} becomes negligible compared to the computations of reductions to 0, we see experimentally that $Adv(20, 21) = 28174524$, i.e. the theoretical advantage becomes negligible and it would be advantageous to simply compute reductions to 0 instead of applying the F5 extended criterion. This number grows exponentially with $n$ and $m$. For those who wonder, what it would be the estimated theoretical advantage computing reductions to 0 for the parameters given by \cite{HJ23}
-		 $$
-		 Adv(256, 257) = 753178991751680363947858801037843009326048264526089645542944265160485518735431295
-		 $$
+		 Using the computer algebra system SageMath \cite{sagemath} to test numerically when using the F5 extended criterion of \cite{FSS11} becomes negligible compared to the computations of reductions to 0, we see experimentally that $Adv(10, 12) = 2498903$, i.e. the theoretical advantage becomes negligible and it would be advantageous to simply compute reductions to 0 instead of applying the F5 extended criterion. This number grows exponentially with $n$ and $m$. For those who wonder, what it would be the estimated theoretical advantage computing reductions to 0 for the parameters given by \cite{HJ23} $Adv(256, 257)$ is a 514 bit number.
 		 
 		 No need to say that it's useless to use the criterion as shown in \cite{FSS11} without adapting it to get an advantage.
 		 This can be explained by the fact that the extended criterion computes reduced polynomials of degree $n_x$ and $n_y$ and in our case, $n_x$ and $n_y$ can be too big to compute. Maybe there could be a way to compute reduced polynomials of only degree 2 for our use case if we stop Macaulay matrix computations at degree 4 with our quadratic systems.
