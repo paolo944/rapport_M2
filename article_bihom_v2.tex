@@ -2,7 +2,6 @@
 \documentclass[english]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{lmodern}
 \usepackage[a4paper]{geometry}
 \usepackage{babel}
 \usepackage{amsmath}
@@ -10,10 +9,11 @@
 \usepackage{amsthm}
 \usepackage{mathtools}
 \usepackage[backend=bibtex]{biblatex}
-\usepackage{csquotes}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{hyperref}
+\usepackage{lmodern}
+\usepackage{csquotes}
 
 \addbibresource{biblio.bib}
 
@@ -84,12 +84,14 @@
 		The authors cite \cite{FSS11} to argue their parameters choice, we will dive deeper into this article's results in a later section.
 
 		\subsection{Gröbner basis algorithms}
+		In the following of the paper we will denote $R = \mathbb{K}[x_1,\dots,x_n]$ a polynomial ring on a field $\mathbb{K}$.
+		
 		Gröbner basis algorithms are used to find solutions for polynomial systems using algebraic geometry tools. For a gentle introduction to this subject \cite{CLS}.
 		
 		In \cite{Lazard83}, Lazard introduced the connection between linear algebra and Gröbner basis theory via the usage of Macaulay matrices which is defined as follows.
 		
 		\begin{definition}
-			Let $\prec$ be an admissible monomial ordering on a given ring $R = \mathbb{K}[x_1,\dots,x_n]$ where $\mathbb{K}$ is a field. Given a sequence of homogeneous (resp. affine) polynomials $\mathcal{F} = (f_1,\dots,f_m) \in R$, we associate to it the Macaulay matrix of degree $D$ (resp. $\leq D$), denoted by $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$), and defined as follows: the columns of the matrix are indexed by the monomials of degree $D$ (resp. $\leq D$) sorted in decreasing order from the left to right using the defined monomial ordering. Each row of the matrix is labeled by a tag, also called signature, ($u, f_i$) where u is a monomial in $R$ and $f_i \in \mathcal{F}$ such that $deg(uf_i) = D$ (resp. $deg(uf_i) \leq D$), and the polynomial $uf_i$ is written as vector of coefficients of monomials on the row. We denote by $\Mact{D}{m}{F}$ (resp. $\Mact{\leq D}{m}{F}$) the Macaulay matrix on which we apply the row echelon form without swapping columns to preserve the monomial ordering.
+			Let $\prec$ be an admissible monomial ordering on a given ring $R$. Given a sequence of homogeneous (resp. affine) polynomials $\mathcal{F} = (f_1,\dots,f_m) \in R$, we associate to it the Macaulay matrix of degree $D$ (resp. $\leq D$), denoted by $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$), and defined as follows: the columns of the matrix are indexed by the monomials of degree $D$ (resp. $\leq D$) sorted in decreasing order from the left to the right using the defined monomial ordering. Each row of the matrix is labeled by a tag, also called signature, ($u, f_i$) where u is a monomial in $R$ and $f_i \in \mathcal{F}$ such that $deg(uf_i) = D$ (resp. $deg(uf_i) \leq D$), and the polynomial $uf_i$ is written as vector of coefficients of monomials on the row. We denote by $\Mact{D}{m}{F}$ (resp. $\Mact{\leq D}{m}{F}$) the row echelon form of $\Mac{D}{m}{F}$ (resp. $\Mac{\leq D}{m}{F}$) without swapping the columns to mantain the monomial order.
 		\end{definition}
 		
 		The major "issue" of Gröbner basis algorithms is the reductions to 0 in the Macaulay matrix associated to a polynomial sequence $\Mac{D}{m}{F}$, because the size of the matrices are huge, multiple millions for practical examples,
@@ -107,6 +109,25 @@
 			\label{Frob}
 			If a row of signature ($t, f_m$) in $\Mact{D - d_m}{m}{F}$ has as leading term $t'$, then the row ($t', f_m$) in $\Mac{D}{m}{F}$ (resp. $\Mac{\leq D}{m}{F}$) will reduce to 0 i.e. is a linear combination of the predecessors.
 		\end{proposition}
+		
+		\begin{definition}
+			The Hilbert function of a homogeneous ideal $I = \langle f_1,\dots f_m \rangle$ at degree $s$ is defined as
+			$$
+				HF_{s, m, d}(n) = dim(R/I)_s = dim((R)_s/I_s) = dim(R)_s - dim(I)_s
+			$$
+			where $d = (d_1,\dots,d_m)$ and $d_i$ is the degree of the homogeneous polynomial $f_i$.
+		\end{definition}
+		
+		The index of regularity is when this function of $s$ is equal to Hilbert's polynomial of $s$. The degree of this polynomial is exactly the dimension of the ideal. We denote by $H(I)$ the index of regularity of $I$.
+
+		\begin{definition}[Semi-regularity \cite{Bardet04}]
+			Let $R = \mathbb{K}[x_1,\dots,x_n]$ a polynomial ring with $\mathbb{K}$ a field.
+			A homogeneous sequence $f_1,\dots,f_m \in R$ is semi-regular if the following conditions are verified
+			\begin{itemize}
+				\item $I = \langle f_1,\dots,f_m \rangle \neq R$
+				\item For $i \in [1;m]$, if $g_if_i = 0$ in $R/\langle f_1,\dots,f_m \rangle$ and $deg(g_if_i) < H(I)$ then $g_i = 0$ in $R/\langle f_1,\dots,f_m \rangle$.
+			\end{itemize} 
+		\end{definition}
 		
 		Bardet showed in \cite{Bardet04} that F5 criterion removed reductions to 0 for semi-regular sequences until the degree $D$ which is the degree of regularity of $I$ which is the ideal generated by the polynomials of the system.
 		

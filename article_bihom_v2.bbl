@@ -1,0 +1,533 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\datalist[entry]{nty/global//global/global/global}
+  \entry{BFS15}{article}{}{}
+    \name{author}{3}{}{%
+      {{hash=BM}{%
+         family={Bardet},
+         familyi={B\bibinitperiod},
+         given={Magali},
+         giveni={M\bibinitperiod},
+      }}%
+      {{hash=FJC}{%
+         family={Faugère},
+         familyi={F\bibinitperiod},
+         given={Jean-Charles},
+         giveni={J\bibinithyphendelim C\bibinitperiod},
+      }}%
+      {{hash=SB}{%
+         family={Salvy},
+         familyi={S\bibinitperiod},
+         given={Bruno},
+         giveni={B\bibinitperiod},
+      }}%
+    }
+    \keyw{Gröbner bases, algorithm, Complexity, Regular sequences, Noether
+  position}
+    \strng{namehash}{BMFJCSB1}
+    \strng{fullhash}{BMFJCSB1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{B}
+    \field{sortinithash}{B}
+    \field{abstract}{%
+    We study the complexity of Gröbner bases computation, in particular in the
+  generic situation where the variables are in simultaneous Noether position
+  with respect to the system. We give a bound on the number of polynomials of
+  degree d in a Gröbner basis computed by Faugère's F5 algorithm (2002) in
+  this generic case for the grevlex ordering (which is also a bound on the
+  number of polynomials for a reduced Gröbner basis, independently of the
+  algorithm used). Next, we analyse more precisely the structure of the
+  polynomials in the Gröbner bases with signatures that F5 computes and use it
+  to bound the complexity of the algorithm. Our estimates show that the version
+  of F5 we analyse, which uses only standard Gaussian elimination techniques,
+  outperforms row reduction of the Macaulay matrix with the best known
+  algorithms for moderate degrees, and even for degrees up to the thousands if
+  Strassen's multiplication is used. The degree being fixed, the factor of
+  improvement grows exponentially with the number of variables.%
+    }
+    \verb{doi}
+    \verb https://doi.org/10.1016/j.jsc.2014.09.025
+    \endverb
+    \field{issn}{0747-7171}
+    \field{pages}{49\bibrangedash 70}
+    \field{title}{On the complexity of the F5 Gröbner basis algorithm}
+    \verb{url}
+    \verb https://www.sciencedirect.com/science/article/pii/S0747717114000935
+    \endverb
+    \field{volume}{70}
+    \field{journaltitle}{Journal of Symbolic Computation}
+    \field{year}{2015}
+  \endentry
+
+  \entry{Bardet04}{thesis}{}{}
+    \name{author}{1}{}{%
+      {{hash=BTBM}{%
+         family={Bardet (Turrel\bibnamedelima Bardet)},
+         familyi={B\bibinitperiod\bibinitdelim T\bibinitperiod\bibinitdelim
+  B\bibinitperiod},
+         given={Magali},
+         giveni={M\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{BTBM1}
+    \strng{fullhash}{BTBM1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{B}
+    \field{sortinithash}{B}
+    \field{note}{Thèse de doctorat dirigée par Faugère, Jean-Charles
+  Informatique Paris 6 2004}
+    \field{pages}{1 vol., [XIII] \bibrangedash 157 p.}
+    \field{title}{Etude des systèmes algébriques surdéterminés :
+  applications aux codes correcteurs et à la cryptographie}
+    \verb{url}
+    \verb http://www.theses.fr/2004PA066404
+    \endverb
+    \field{type}{phdthesis}
+    \field{year}{2004}
+  \endentry
+
+  \entry{CLS}{book}{}{}
+    \name{author}{3}{}{%
+      {{hash=CDA}{%
+         family={Cox},
+         familyi={C\bibinitperiod},
+         given={David\bibnamedelima A.},
+         giveni={D\bibinitperiod\bibinitdelim A\bibinitperiod},
+      }}%
+      {{hash=LJ}{%
+         family={Little},
+         familyi={L\bibinitperiod},
+         given={John},
+         giveni={J\bibinitperiod},
+      }}%
+      {{hash=OD}{%
+         family={O'Shea},
+         familyi={O\bibinitperiod},
+         given={Donal},
+         giveni={D\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Springer Publishing Company, Incorporated}%
+    }
+    \strng{namehash}{CDALJOD1}
+    \strng{fullhash}{CDALJOD1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{C}
+    \field{sortinithash}{C}
+    \field{abstract}{%
+    This book details the heart and soul of modern commutative and algebraic
+  geometry. It covers such topics as the Hilbert Basis Theorem, the
+  Nullstellensatz, invariant theory, projective geometry, and dimension theory.
+  In addition to enhancing the text of the second edition, with over 200 pages
+  reflecting changes to enhance clarity and correctness, this third edition of
+  Ideals, Varieties and Algorithms includes: a significantly updated section on
+  Maple; updated information on AXIOM, CoCoA, Macaulay 2, Magma, Mathematica
+  and SINGULAR; and presents a shorter proof of the Extension Theorem.%
+    }
+    \field{edition}{3rd}
+    \field{isbn}{1441922571}
+    \field{title}{Ideals, Varieties, and Algorithms: An Introduction to
+  Computational Algebraic Geometry and Commutative Algebra}
+    \field{year}{2010}
+  \endentry
+
+  \entry{F02}{inproceedings}{}{}
+    \name{author}{1}{}{%
+      {{hash=FJC}{%
+         family={Faug\`{e}re},
+         familyi={F\bibinitperiod},
+         given={Jean\bibnamedelima Charles},
+         giveni={J\bibinitperiod\bibinitdelim C\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Association for Computing Machinery}%
+    }
+    \strng{namehash}{FJC1}
+    \strng{fullhash}{FJC1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{F}
+    \field{sortinithash}{F}
+    \field{abstract}{%
+    This paper introduces a new efficient algorithm for computing Gr\"{o}bner
+  bases. We replace the Buchberger criteria by an optimal criteria. We give a
+  proof that the resulting algorithm (called F5) generates no useless critical
+  pairs if the input is a regular sequence. This a new result by itself but a
+  first implementation of the algorithm F5 shows that it is also very efficient
+  in practice: for instance previously untractable problems can be solved
+  (cyclic 10). In practice for most examples there is no reduction to zero. We
+  illustrate this algorithm by one detailed example.%
+    }
+    \field{booktitle}{Proceedings of the 2002 International Symposium on
+  Symbolic and Algebraic Computation}
+    \verb{doi}
+    \verb 10.1145/780506.780516
+    \endverb
+    \field{isbn}{1581134843}
+    \field{pages}{75–83}
+    \field{series}{ISSAC '02}
+    \field{title}{A new efficient algorithm for computing Gr\"{o}bner bases
+  without reduction to zero (F5)}
+    \verb{url}
+    \verb https://doi.org/10.1145/780506.780516
+    \endverb
+    \list{location}{1}{%
+      {Lille, France}%
+    }
+    \field{year}{2002}
+    \warn{\item Can't use 'location' + 'address'}
+  \endentry
+
+  \entry{FSS11}{article}{}{}
+    \name{author}{3}{}{%
+      {{hash=FJC}{%
+         family={Faugère},
+         familyi={F\bibinitperiod},
+         given={Jean-Charles},
+         giveni={J\bibinithyphendelim C\bibinitperiod},
+      }}%
+      {{hash=SM}{%
+         family={{Safey El Din}},
+         familyi={S\bibinitperiod},
+         given={Mohab},
+         giveni={M\bibinitperiod},
+      }}%
+      {{hash=SPJ}{%
+         family={Spaenlehauer},
+         familyi={S\bibinitperiod},
+         given={Pierre-Jean},
+         giveni={P\bibinithyphendelim J\bibinitperiod},
+      }}%
+    }
+    \keyw{Gröbner bases, Bihomogeneous ideals, Algorithms, Complexity}
+    \strng{namehash}{FJCSMSPJ1}
+    \strng{fullhash}{FJCSMSPJ1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{F}
+    \field{sortinithash}{F}
+    \field{abstract}{%
+    Solving multihomogeneous systems, as a wide range of structured algebraic
+  systems occurring frequently in practical problems, is of first importance.
+  Experimentally, solving these systems with Gröbner bases algorithms seems to
+  be easier than solving homogeneous systems of the same degree. Nevertheless,
+  the reasons for this behaviour are not clear. In this paper, we focus on
+  bilinear systems (i.e. bihomogeneous systems where all equations have
+  bidegree (1,1)). Our goal is to provide a theoretical explanation of the
+  aforementioned experimental behaviour and to propose new techniques to speed
+  up the Gröbner basis computations by using the multihomogeneous structure of
+  those systems. The contributions are theoretical and practical. First, we
+  adapt the classical F5 criterion to avoid reductions to zero which occur when
+  the input is a set of bilinear polynomials. We also prove an explicit form of
+  the Hilbert series of bihomogeneous ideals generated by generic bilinear
+  polynomials and give a new upper bound on the degree of regularity of generic
+  affine bilinear systems. We propose also a variant of the F5 Algorithm
+  dedicated to multihomogeneous systems which exploits a structural property of
+  the Macaulay matrix which occurs on such inputs. Experimental results show
+  that this variant requires less time and memory than the classical
+  homogeneous F5 Algorithm. Lastly, we investigate the complexity of computing
+  a Gröbner basis for the grevlex ordering of a generic 0-dimensional affine
+  bilinear system over k[x1,…,xnx,y1,…,yny]. In particular, we show that
+  this complexity is upper bounded by O(nx+ny+min(nx+1,ny+1)min(nx+1,ny+1)ω),
+  which is polynomial in nx+ny (i.e. the number of unknowns) when min(nx,ny) is
+  constant.%
+    }
+    \verb{doi}
+    \verb https://doi.org/10.1016/j.jsc.2010.10.014
+    \endverb
+    \field{issn}{0747-7171}
+    \field{number}{4}
+    \field{pages}{406\bibrangedash 437}
+    \field{title}{Gröbner bases of bihomogeneous ideals generated by
+  polynomials of bidegree (1,1): Algorithms and complexity}
+    \verb{url}
+    \verb https://www.sciencedirect.com/science/article/pii/S0747717110001902
+    \endverb
+    \field{volume}{46}
+    \field{journaltitle}{Journal of Symbolic Computation}
+    \field{year}{2011}
+  \endentry
+
+  \entry{HJ23}{misc}{}{}
+    \name{author}{2}{}{%
+      {{hash=HJ}{%
+         family={Huth},
+         familyi={H\bibinitperiod},
+         given={Janik},
+         giveni={J\bibinitperiod},
+      }}%
+      {{hash=JA}{%
+         family={Joux},
+         familyi={J\bibinitperiod},
+         given={Antoine},
+         giveni={A\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{HJJA1}
+    \strng{fullhash}{HJJA1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{H}
+    \field{sortinithash}{H}
+    \field{howpublished}{Cryptology {ePrint} Archive, Paper 2023/1685}
+    \field{title}{{MPC} in the head using the subfield bilinear collision
+  problem}
+    \verb{url}
+    \verb https://eprint.iacr.org/2023/1685
+    \endverb
+    \field{year}{2023}
+  \endentry
+
+  \entry{IKOS07}{inproceedings}{}{}
+    \name{author}{4}{}{%
+      {{hash=IY}{%
+         family={Ishai},
+         familyi={I\bibinitperiod},
+         given={Yuval},
+         giveni={Y\bibinitperiod},
+      }}%
+      {{hash=KE}{%
+         family={Kushilevitz},
+         familyi={K\bibinitperiod},
+         given={Eyal},
+         giveni={E\bibinitperiod},
+      }}%
+      {{hash=OR}{%
+         family={Ostrovsky},
+         familyi={O\bibinitperiod},
+         given={Rafail},
+         giveni={R\bibinitperiod},
+      }}%
+      {{hash=SA}{%
+         family={Sahai},
+         familyi={S\bibinitperiod},
+         given={Amit},
+         giveni={A\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Association for Computing Machinery}%
+    }
+    \keyw{black-box reductions, cryptography, secure computation,
+  zero-knowledge}
+    \strng{namehash}{IY+1}
+    \strng{fullhash}{IYKEORSA1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{I}
+    \field{sortinithash}{I}
+    \field{abstract}{%
+    We present a general construction of a zero-knowledge proof for an NP
+  relation R(x,w) which only makes a black-box use of a secure protocol for a
+  related multi-partyfunctionality f. The latter protocol is only required to
+  be secure against a small number of "honest but curious" players. As an
+  application, we can translate previous results on the efficiency of secure
+  multiparty computation to the domain of zero-knowledge, improving over
+  previous constructions of efficient zero-knowledge proofs. In particular, if
+  verifying R on a witness of length m can be done by a circuit C of size s,
+  and assuming one-way functions exist, we get the following types of
+  zero-knowledge proof protocols.Approaching the witness length. If C has
+  constant depth over ∧,∨,⊕, - gates of unbounded fan-in, we get a
+  zero-knowledge protocol with communication complexity m·poly(k)·polylog(s),
+  where k is a security parameter. Such a protocol can be implemented in either
+  the standard interactive model or, following a trusted setup, in a
+  non-interactive model."Constant-rate" zero-knowledge. For an arbitrary
+  circuit C of size s and a bounded fan-in, we geta zero-knowledge protocol
+  with communication complexity O(s)+poly(k). Thus, for large circuits, the
+  ratio between the communication complexity and the circuit size approaches a
+  constant. This improves over the O(ks) complexity of the best previous
+  protocols.%
+    }
+    \field{booktitle}{Proceedings of the Thirty-Ninth Annual ACM Symposium on
+  Theory of Computing}
+    \verb{doi}
+    \verb 10.1145/1250790.1250794
+    \endverb
+    \field{isbn}{9781595936318}
+    \field{pages}{21–30}
+    \field{series}{STOC '07}
+    \field{title}{Zero-knowledge from secure multiparty computation}
+    \verb{url}
+    \verb https://doi.org/10.1145/1250790.1250794
+    \endverb
+    \list{location}{1}{%
+      {San Diego, California, USA}%
+    }
+    \field{year}{2007}
+    \warn{\item Can't use 'location' + 'address'}
+  \endentry
+
+  \entry{JV17}{misc}{}{}
+    \name{author}{2}{}{%
+      {{hash=JA}{%
+         family={Joux},
+         familyi={J\bibinitperiod},
+         given={Antoine},
+         giveni={A\bibinitperiod},
+      }}%
+      {{hash=VV}{%
+         family={Vitse},
+         familyi={V\bibinitperiod},
+         given={Vanessa},
+         giveni={V\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{JAVV1}
+    \strng{fullhash}{JAVV1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{J}
+    \field{sortinithash}{J}
+    \field{howpublished}{Cryptology {ePrint} Archive, Paper 2017/372}
+    \field{title}{A crossbred algorithm for solving Boolean polynomial systems}
+    \verb{url}
+    \verb https://eprint.iacr.org/2017/372
+    \endverb
+    \field{year}{2017}
+  \endentry
+
+  \entry{Lazard83}{inproceedings}{}{}
+    \name{author}{1}{}{%
+      {{hash=LD}{%
+         family={Lazard},
+         familyi={L\bibinitperiod},
+         given={D.},
+         giveni={D\bibinitperiod},
+      }}%
+    }
+    \name{editor}{1}{}{%
+      {{hash=vHJA}{%
+         prefix={van},
+         prefixi={v\bibinitperiod},
+         family={Hulzen},
+         familyi={H\bibinitperiod},
+         given={J.\bibnamedelima A.},
+         giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Springer Berlin Heidelberg}%
+    }
+    \strng{namehash}{LD1}
+    \strng{fullhash}{LD1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{L}
+    \field{sortinithash}{L}
+    \field{booktitle}{Computer Algebra}
+    \field{isbn}{978-3-540-38756-5}
+    \field{pages}{146\bibrangedash 156}
+    \field{title}{Gr{\"o}bner bases, Gaussian elimination and resolution of
+  systems of algebraic equations}
+    \list{location}{1}{%
+      {Berlin, Heidelberg}%
+    }
+    \field{year}{1983}
+  \endentry
+
+  \entry{Spaen2012}{thesis}{}{}
+    \name{author}{1}{}{%
+      {{hash=SPJ}{%
+         family={Spaenlehauer},
+         familyi={S\bibinitperiod},
+         given={Pierre-Jean},
+         giveni={P\bibinithyphendelim J\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{SPJ1}
+    \strng{fullhash}{SPJ1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{S}
+    \field{sortinithash}{S}
+    \field{note}{Thèse de doctorat dirigée par Faugère, Jean-Charles
+  Informatique Paris 6 2012}
+    \field{pages}{1 vol. (207 p.)}
+    \field{title}{Résolution de systèmes multi-homogènes et déterminantiels
+  algorithmes - complexité - applications}
+    \verb{url}
+    \verb http://www.theses.fr/2012PA066467
+    \endverb
+    \field{type}{phdthesis}
+    \field{year}{2012}
+  \endentry
+
+  \entry{sagemath}{manual}{}{}
+    \name{author}{1}{}{%
+      {{hash=T}{%
+         family={{The Sage Developers}},
+         familyi={T\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{T1}
+    \strng{fullhash}{T1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{T}
+    \field{sortinithash}{T}
+    \field{note}{{\tt https://www.sagemath.org}}
+    \field{title}{{S}ageMath, the {S}age {M}athematics {S}oftware {S}ystem
+  ({V}ersion x.y.z)}
+    \field{year}{YYYY}
+  \endentry
+
+  \entry{VID24}{misc}{}{}
+    \name{author}{3}{}{%
+      {{hash=VD}{%
+         family={Vidal},
+         familyi={V\bibinitperiod},
+         given={Damien},
+         giveni={D\bibinitperiod},
+      }}%
+      {{hash=IS}{%
+         family={Ionica},
+         familyi={I\bibinitperiod},
+         given={Sorina},
+         giveni={S\bibinitperiod},
+      }}%
+      {{hash=DC}{%
+         family={Delaplace},
+         familyi={D\bibinitperiod},
+         given={Claire},
+         giveni={C\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{VDISDC1}
+    \strng{fullhash}{VDISDC1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{V}
+    \field{sortinithash}{V}
+    \verb{doi}
+    \verb https://doi.org/10.62056/ak86cy7qiu
+    \endverb
+    \field{howpublished}{Cryptology {ePrint} Archive, Paper 2024/992}
+    \field{title}{An analysis of the Crossbred Algorithm for the {MQ} Problem}
+    \verb{url}
+    \verb https://eprint.iacr.org/2024/992
+    \endverb
+    \field{year}{2024}
+  \endentry
+\enddatalist
+\endinput
