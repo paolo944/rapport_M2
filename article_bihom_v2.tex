@@ -160,7 +160,7 @@
 		\end{itemize}
 		We will give important results of this article before discussing them further.
 		
-		\begin{theorem}[Theorem 2 in \cite{FSS11}]
+		\begin{theorem}[Theorem 2 in \cite{FSS11}]\label{theoremMaxMin}
 			Let $i > n_x + 1$ (resp. $i > n_y + 1$) and let $s$ be a linear combination of maximal minors of $jac_{x}(F_{i-1})$ (resp. $jac_{y}(F_{i-1})$). Then $s \in I_{i-1} : f_i$
 		\end{theorem}
 		
@@ -179,6 +179,10 @@
 				\item The sequence $f_1,\dots,f_m$ is semi-regular $\nRightarrow \forall i \in [1;m]$, the sequence $f_1,\dots,f_i$ is semi-regular. 
 			\end{itemize}
 		\end{proposition}
+		
+		As theorem \ref{theoremMaxMin} indicates, reductions to 0 can also arise from the maximal minors of the jacobian matrix, so the signatures ($s, f_i$) where $s$ is a linear combination of maximal minors of $jac_{x}(F_{i-1})$ or $jac_{y}(F_{i-1})$ is a reduction to 0.
+		This explains Algorithm \ref{alg:crit_calc} where we compute the maximal minors the jacobian matrices before applying Algorithm \ref{alg:reduc} where we compute linear combinations of these maximal minors.
+		This means that Algorithm \ref{alg:crit_calc} computes all the signatures that will arise in reductions to 0 that involve the maximal minors of jacobian matrices instead of being incremental like F5 criterions \cite{F02}.
 					
 		The Algorithm \ref{alg:crit_calc} will give us the signatures of reductions to 0 during F5-matrix algorithm.
 					
