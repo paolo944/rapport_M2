@@ -87,7 +87,7 @@
 		\subsection{Gröbner basis algorithms}
 		Gröbner basis algorithms are used to find solutions for polynomial systems using algebraic geometry tools. For a gentle introduction to this subject \cite{CLS}.
 		
-		In \cite{Lazard83}, Lazard introduced the connection between linear algebra and Gröbner basis theory via the usage of Macaulay matrices which is defined as follows.
+		In \cite{Lazard83}, Lazard introduced the connection between linear algebra and Gröbner basis theory via the usage of Macaulay matrices \cite{Mac} which is defined as follows.
 		
 		\begin{definition}
 			Let $\prec$ be an admissible monomial ordering on a given ring $R = \mathbb{K}[x_1,\dots,x_n]$ where $\mathbb{K}$ is a field. Given a sequence of homogeneous (resp. affine) polynomials $\mathcal{F} = (f_1,\dots,f_m) \in R$, we associate to it the Macaulay matrix of degree $D$ (resp. $\leq D$), denoted by $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$), and defined as follows: the columns of the matrix are indexed by the monomials of degree $D$ (resp. $\leq D$) sorted in decreasing order from the left to right using the defined monomial ordering. Each row of the matrix is labeled by a tag, also called signature, ($u, f_i$) where u is a monomial in $R$ and $f_i \in \mathcal{F}$ such that $deg(uf_i) = D$ (resp. $deg(uf_i) \leq D$), and the polynomial $uf_i$ is written as vector of coefficients of monomials on the row. We denote by $\Mact{D}{m}{F}$ (resp. $\Mact{\leq D}{m}{F}$) the row echelon form of $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$) without swapping columns to preserve the monomial ordering.
@@ -166,11 +166,11 @@
 		
 		We will also need some properties of semi-regular sequences from \cite{Bardet04}
 		
-		\begin{proposition}[Proposition 3.2.5 in \cite{Bardet04}]
+		\begin{proposition}[Proposition 3.2.5 in \cite{Bardet04}]\label{PropSemi}
 			let $f_1,\dots,f_m$ a semi-regular homogeneous sequence, $f_i$ is of degree $d_i$. Then the following proprieties are verified:
 			\begin{itemize}
-				\item The sequence $f_1,\dots,f_m$ is semi-regular if and only if it's Hilbert's series is the series $S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = \prod_{i=1}^{m}(1-z^d_i)/(1-z)^n$ is called the generating series of $f_1,\dots,f_m$.
-				\item The sequence $f_1,\dots,f_m$ is semi-regular on $\mathbb{F}_2$, if and only if it's Hilbert series is the series $S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = (1+z)^n/\prod_{i=1}^{m}(1+z^d_i)$ is called the generating series of $f_1,\dots,f_m$.
+				\item The sequence $f_1,\dots,f_m$ is semi-regular if and only if it's Hilbert's series is the series $S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = \prod_{i=1}^{m}(1-z^{d_i})/(1-z)^n$ is called the generating series of $f_1,\dots,f_m$.
+				\item The sequence $f_1,\dots,f_m$ is semi-regular on $\mathbb{F}_2$, if and only if it's Hilbert series is the series $S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = (1+z)^n/\prod_{i=1}^{m}(1+z^{d_i})$ is called the generating series of $f_1,\dots,f_m$.
 				\item Every permutation $f_{\sigma(1)},\dots,f_{\sigma(m)}$ is a semi-regular sequence.
 				\item When the associated variety is zero-dimensional, $H(I)$ is characterized by
 				$$
@@ -180,11 +180,11 @@
 			\end{itemize}
 		\end{proposition}
 		
+		Notes pour moi: On a quelque chose de bizarre où si on prends la 2 de la proposition \ref{PropSemi}, on a pas semi-régularité voir rien de particulier. Mais si on prends la 1, donc oublier qu'on est sur $\mathbb{F_2}$, on a toujours pas de semi-regularité d'après la proposition, mais la 5 est vérifié avec la série generatrice, donc je soupçonne que la façon de laquelle sagemath calcule la série de hilbert est pas forcément correct, à vérifier avec des exemples de suites semi-regulière.
+		
 		As theorem \ref{theoremMaxMin} indicates, reductions to 0 can also arise from the maximal minors of the jacobian matrix, so the signatures ($s, f_i$) where $s$ is a linear combination of maximal minors of $jac_{x}(F_{i-1})$ or $jac_{y}(F_{i-1})$ is a reduction to 0.
-		This explains Algorithm \ref{alg:crit_calc} where we compute the maximal minors the jacobian matrices before applying Algorithm \ref{alg:reduc} where we compute linear combinations of these maximal minors.
+		This explains Algorithm \ref{alg:crit_calc} where we compute the maximal minors of jacobian matrices before applying Algorithm \ref{alg:reduc} where we compute linear combinations of these maximal minors.
 		This means that Algorithm \ref{alg:crit_calc} computes all the signatures that will arise in reductions to 0 that involve the maximal minors of jacobian matrices instead of being incremental like F5 criterions \cite{F02}.
-					
-		The Algorithm \ref{alg:crit_calc} will give us the signatures of reductions to 0 during F5-matrix algorithm.
 					
 		\begin{algorithm}
 			\caption{Reduce}\label{alg:reduc}
@@ -255,9 +255,9 @@
 		 where $2 \leq \omega \leq 3$ is the linear algebra constant.
 		 \end{corollary}
 		 
-		 First, we can clearly see that the complexity of algorithm \ref{alg:crit_calc} is exponential and is what we will try to show.
+		 First, we can clearly see that the complexity of algorithm \ref{alg:crit_calc} is exponential and we will show that in the following proposition \ref{complexCrit}.
 		 
-		 \begin{proposition}
+		 \begin{proposition}\label{complexCrit}
 		 	The complexity of Algorithm \ref{alg:crit_calc} is
 		 	$$
 		 	\mathcal{O}\left(\left(\sum_{i = n_x}^{m} \binom{i}{n_x}n_x^{\omega} + \binom{2n_x + 1}{n_x}^\omega\right) + \left(\sum_{i = n_y}^{m} \binom{i}{n_y}n_y^{\omega} + \binom{2n_y + 1}{n_y}^\omega\right)\right)
