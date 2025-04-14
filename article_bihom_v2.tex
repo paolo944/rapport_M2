@@ -45,13 +45,23 @@
 		In \cite{HJ23}, the authors introduce a problem called subfield bilinear collision problem (SBC) which originates from the discrete logarithm problem and constructed a post-quantum signature scheme based on this problem using the MPCitH framework.
 		The goal of this internship is to perform a cryptanalysis of this signature scheme and try to improve it.
 		
-		\section{Signature Scheme}
+	\section{Preliminaries and notations}
+		In this section, we introduce some standard notations of the field and notions that we will use.
+		
+		Let $\mathbb{F}$ be a finite field and $\mathbb{K}$ a fiend not necessarily finite. 
+		We denote the multivariate polynomial ring defined over a field in $n$ variables $\mathbb{K}[x_1,\dots,x_n] = R$ where $n$ is a positive integer.
+		In the following we will use the standard notation for matrix multiplication complexity for a square matrix of size $n$, $\mathcal{O}(n^\omega)$,
+		where $2 \leq \omega \leq 3$.
+		
+	\section{Signature Scheme}
 		\subsection{SBC Problem}
 		The problem is the following: let $q$ be a prime power and two positive integers $k$, $n$.
 		\newline
-		Given two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$, which are linearly independent overs $\mathbb{F}_q$, find two vectors $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ such that $$(\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) = (\vec{u} \cdot \vec{y})((\vec{v} \cdot \vec{x})$$
+		Given two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$, which are linearly independent overs $\mathbb{F}_q$, find two vectors $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ such that $$(\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) = (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x})$$
+		where $(\cdot)$ is the dot product between 2 vectors.
 		
 		\subsection{NSBC}
+		
 		The authors also introduce a particular version of this problem called normalized SBC (NSBC) where $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ and
 		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$.
  		
@@ -62,13 +72,13 @@
 		
 		\section{Cryptanalysis of the scheme}
 		One of the known attacks given by the authors is through algebraic cryptanalysis.
-		One can model the system by taking $g$ as the following polynomial
+		One can model the attack by taking $g$ as the following polynomial
 		$$
-		g(x_1,...,x_n,y_1,...,y_n) := (\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) - (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x})
+		g(x_1,...,x_n,y_1,...,y_n) := (\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) - (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x}).
 		$$
-		or if we consider the NSBC problem
+		We consider
 		$$
-		g(x_1,..,x_{n-2},y_1,..,y_{n-2}) := (\sum_{i = 1}^{n-2}u_{i}x_{i} + u_{n-1})(\sum_{i = 1}^{n-2}v_{i}y_{i} + v_{n}) - (\sum_{i = 1}^{n-2}u_{i}y_{i} + u_{n})(\sum_{i = 1}^{n-2}v_{i}x_{i} + v_{n-1})
+		g(x_1,..,x_{n-2},y_1,..,y_{n-2}) := (\sum_{i = 1}^{n-2}u_{i}x_{i} + u_{n-1})(\sum_{i = 1}^{n-2}v_{i}y_{i} + v_{n}) - (\sum_{i = 1}^{n-2}u_{i}y_{i} + u_{n})(\sum_{i = 1}^{n-2}v_{i}x_{i} + v_{n-1}).
 		$$
 		
 		Then, one can perform a Weil descent on the polynomial $g$ because $\mathbb{F}_{q^k}$ is a $\mathbb{F}_q$-vector space and obtain the polynomial system
@@ -80,9 +90,11 @@
 			g_k(x_1, \dots, x_{n-2},& y_1, \dots, y_{n-2}) = 0 \notag
 		\end{align}
 		
-		The most straightforward cryptanalysis of this type of systems is to perform a Gröbner basis algorithm like Buchberger's algorithm \cite{Buc} or Faugère's F4 \cite{F99} or F5 \cite{F02} or their multiple variants \cite{EF19}.
+		where $g_i$ are polynomials with coefficients in $\mathbb{F}_q$.
 		
-		The authors cite \cite{FSS11} to argue their parameters choice, we will dive deeper into this article's results in a later section.
+		The most straightforward cryptanalysis of this type of systems is to perform a Gröbner basis algorithm like Buchberger's algorithm \cite{Buc}, Faugère's F4 \cite{F99}, F5 \cite{F02} or their multiple variants \cite{EF19}.
+		
+		Huth and Joux cite a complexity result in \cite{FSS11} to argue their parameters choice, we will dive deeper into this article's results in a later section.
 
 		\subsection{Gröbner basis algorithms}
 		Gröbner basis algorithms are used to find solutions for polynomial systems using algebraic geometry tools. For a gentle introduction to this subject \cite{CLS}.
@@ -97,6 +109,10 @@
 		reductions to 0 can cost a lot during the linear algebra process. F5 \cite{F02} was a major improvement because it provided a criterion that avoided reduction to 0 during the linear algebra part for all regular sequences.
 		
 		We will introduce the F5 criterions and the notions of semi-regularity in the following.
+		
+		\subsubsection{Faugère's F5}
+		
+		\subsubsection{Hilbert's series}
 		
 		\begin{proposition}[General criterion \cite{F02}]
 			\label{F5Crit}
@@ -129,8 +145,8 @@
 		\begin{proposition}[Proposition 3.2.5 in \cite{Bardet04}]\label{PropSemi}
 			let $f_1,\dots,f_m$ a semi-regular homogeneous sequence, $f_i$ is of degree $d_i$. Then the following proprieties are verified:
 			\begin{itemize}
-				\item The sequence $f_1,\dots,f_m$ is semi-regular if and only if it's Hilbert's series is the series $S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = \prod_{i=1}^{m}(1-z^{d_i})/(1-z)^n$ is called the generating series of $f_1,\dots,f_m$.
-				\item The sequence $f_1,\dots,f_m$ is semi-regular on $\mathbb{F}_2$, if and only if it's Hilbert series is the series $S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = (1+z)^n/\prod_{i=1}^{m}(1+z^{d_i})$ is called the generating series of $f_1,\dots,f_m$.
+				\item The sequence $f_1,\dots,f_m$ is semi-regular if and only if its Hilbert's series is the series $$S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = \prod_{i=1}^{m}(1-z^{d_i})/(1-z)^n$$ is called the generating series of $f_1,\dots,f_m$.
+				\item The sequence $f_1,\dots,f_m$ is semi-regular on $\mathbb{F}_2$, if and only if its Hilbert series is the series $$S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = (1+z)^n/\prod_{i=1}^{m}(1+z^{d_i})$$ is called the generating series of $f_1,\dots,f_m$.
 				\item Every permutation $f_{\sigma(1)},\dots,f_{\sigma(m)}$ is a semi-regular sequence.
 				\item When the associated variety is zero-dimensional, $H(I)$ is characterized by
 				$$
@@ -178,9 +194,11 @@
 			$$
 		\end{definition}
 		
-		We will note $n_x$ (resp. $n_y$) the number of variables in $x$ (resp. number of variables in y). In our case, $n_x = n_y = (m-1)/2$ and $m = k$. As we mentioned earlier, our polynomial systems can be semi-regular, so we get no reductions to 0 during the F5 algorithm using the Frobenius criterion for boolean polynomial systems until the Macaulay matrix of degree $D_{reg}$.
+		A bilinear system is a polynomial system where each equation is a bilinear form.
 		
-		The article \cite{FSS11} and the thesis \cite{Spaen2012} provide a new criterion for bilinear determined systems and a complexity analysis of their algorithm (the proofs in the end of \cite{FSS11} are not exact, the authors recommended to refer to \cite{Spaen2012} for better proofs) that can help remove reductions to 0 for bilinear systems that are not semi-regular.
+		We will denote $n_x$ (resp. $n_y$) the number of variables in $x$ (resp. number of variables in $y$). In our case, $n_x = n_y = (m-1)/2$ and $m = k$. As we mentioned earlier, our polynomial systems can be semi-regular, so we get no reductions to 0 during the F5 algorithm using the Frobenius criterion for boolean polynomial systems until the Macaulay matrix of degree $D_{reg}$.
+		
+		The article \cite{FSS11} and the thesis \cite{Spaen2012} provide a new criterion for bilinear determined systems and a complexity analysis of their algorithm (the proofs in the end of \cite{FSS11} are not exact, the authors recommended to refer to \cite{Spaen2012} for better proofs) that can help more remove reductions to 0 in F5 Algorithm for bilinear systems which are not semi-regular.
 		
 		\subsubsection{Jacobian matrices and syzygies}
 		First we will need to introduce some important notations.
@@ -190,7 +208,7 @@
 			\item[-] Let $f_1,...,f_m \in R$ be a bilinear polynomial. We denote by $F_i$ the polynomial sequence $(f_1,...,f_i)$ and $I_i$ the ideal spanned by this sequence $\langle F_i \rangle$.
 			\item[-] $jac_{x}(F_{i-1})$ (resp. $jac_{y}(F_{i-1})$) is the jacobian matrix with respect to the two subsets of variables $x_1,...,x_{n_x}$ (resp. $y_1,...,y_{n_y}$).
 			\item[-] Let $M$ be a $l \times c$ matrix with $l > c$. We call maximal minors of $M$ the determinants of the $c \times c$ sub-matrices of $M$. 
-			\item[-] $I_{i-1} : f_i$ is the ideal spanned by $\{g \in R \mid gf_i \in I_{i-1}\}$.
+			\item[-] $I_{i-1} : f_i$ is the ideal spanned by $\{g \in R \mid gf_i \in I_{i-1}\}$. We denote the maximal minors of $M$ by $MaxMinors(M)$.
 		\end{itemize}
 		We will give important results of this article before discussing them further.
 		
@@ -198,7 +216,7 @@
 			Let $i > n_x + 1$ (resp. $i > n_y + 1$) and let $s$ be a linear combination of maximal minors of $jac_{x}(F_{i-1})$ (resp. $jac_{y}(F_{i-1})$). Then $s \in I_{i-1} : f_i$
 		\end{theorem}
 		
-		As theorem \ref{theoremMaxMin} indicates, reductions to 0 can also arise from the maximal minors of the jacobian matrix, so the signatures ($s, f_i$) where $s$ is a linear combination of maximal minors of $jac_{x}(F_{i-1})$ or $jac_{y}(F_{i-1})$ is a reduction to 0.
+		As Theorem \ref{theoremMaxMin} indicates, reductions to 0 may also arise from the maximal minors of the jacobian matrix, so the signatures ($s, f_i$) where $s$ is a linear combination of maximal minors of $jac_{x}(F_{i-1})$ or $jac_{y}(F_{i-1})$ is a reduction to 0.
 		This explains Algorithm \ref{alg:crit_calc} where we compute the maximal minors of jacobian matrices before applying Algorithm \ref{alg:reduc} where we compute linear combinations of these maximal minors.
 		This means that Algorithm \ref{alg:crit_calc} computes all the signatures that will arise in reductions to 0 that involve the maximal minors of jacobian matrices instead of being incremental like F5 criterions \cite{F02}.
 					
@@ -207,7 +225,7 @@
 			\begin{algorithmic}[1]
 				\Require A monomial ordering $\prec$ and $S$ a set of homogeneous polynomials and $q$ a degree.
 				\Ensure $T$ a reduced set of homogeneous polynomials of degree $q$.
-				\State $M \gets Macaulay_{\prec}(S, q)$.
+				\State $M \gets Mac_{\prec}(S, q)$.
 				\State $M \gets RowEchelonForm(M)$.
 				\State \textbf{Return} $T$ the set of polynomials corresponding to the rows of M.
 			\end{algorithmic}
@@ -238,7 +256,7 @@
 		 \end{algorithm}
 		 
 		 \begin{algorithm}
-		 	\caption{BilinF5Critetion}\label{algo:crit}
+		 	\caption{BilinF5Criterion}\label{algo:crit}
 		 	\begin{algorithmic}[1]
 		 		\Require $(t, f_i)$ the signature of a row. \newline A matrix $M$ in row echelon form.
 		 		\Ensure $True$ if the row will reduce to 0 otherwise $False$.
@@ -267,24 +285,23 @@
 		 
 		 \begin{corollary}[Corollary 3 in \cite{FSS11}]
 		 The arithmetic complexity of computing a Gröbner basis of a generic bilinear system $f_1,...,f_{n_x + n_y}$ with the F5 algorithm is bounded by
-		 $$\mathcal{O}\left(\binom{n_x + n_y + min(n_x + 1, n_y + 1)}{min(n_x + 1, n_y + 1)}^\omega\right)$$
-		 where $2 \leq \omega \leq 3$ is the linear algebra constant.
+		 $$\mathcal{O}\left(\binom{n_x + n_y + min(n_x + 1, n_y + 1)}{min(n_x + 1, n_y + 1)}^\omega\right)$$.
 		 \end{corollary}
 		 
-		 First, we can clearly see that the complexity of algorithm \ref{alg:crit_calc} is exponential and we will show that in the following proposition \ref{complexCrit}.
+		 First, we can clearly see that the complexity of Algorithm \ref{alg:crit_calc} is exponential and we will show that in the following proposition/.
 		 
 		 \begin{proposition}\label{complexCrit}
 		 	The complexity of Algorithm \ref{alg:crit_calc} is
 		 	$$
-		 	\mathcal{O}\left(\left(\sum_{i = n_x}^{m} \binom{i}{n_x}n_x^{\omega} + \binom{2n_x + 1}{n_x}^\omega\right) + \left(\sum_{i = n_y}^{m} \binom{i}{n_y}n_y^{\omega} + \binom{2n_y + 1}{n_y}^\omega\right)\right)
+		 	\mathcal{O}\left(\left(\sum_{i = n_x}^{m} \binom{i}{n_x}n_x^{\omega} + \binom{2n_x + 1}{n_x}^\omega\right) + \left(\sum_{i = n_y}^{m} \binom{i}{n_y}n_y^{\omega} + \binom{2n_y + 1}{n_y}^\omega\right)\right).
 		 	$$
 		 \end{proposition}
 		 
 		 \begin{proof}
-		 	First, if $i > n_y$ (resp. $i > n_x$), we construct that jacobian matrix $jac_y(F_{i-1})$ (resp. $jac_x(F_{i-1})$) which is of size $n_y \times n_y$ (resp. $n_x \times n_x$) for the first one and $(m-1) \times n_y$ (resp. $(m-1) \times n_x$) for the last one. We suppose here that the construction of such matrices is free. Computing the $MaxMinors(jac_y(F_{i-1}))$ (resp. $MaxMinors(jac_x(F_{i-1}))$)means that we have to compute the determinants of all the sub-matrices of size $n_y \times n_y$ (resp. $n_x \times n_x$) and for a matrix $M$ of size $l \times c$ with $l > c$ there are $\binom{l}{c}$ sub-matrices of size $c \times c$, hence the term $\binom{i}{n_y}n_y^{\omega}$ in the sum if we suppose the complexity of computing the determinant of a square multivariate polynomial matrix of size $c \times c$ to be $\mathcal{O}(c^\omega)$, which is not the case but let's suppose the best case ever. faudrait trouver la vraie complexité de ça pour être plus juste.
+		 	First, if $i > n_y$ (resp. $i > n_x$), we construct that jacobian matrix $jac_y(F_{i-1})$ (resp. $jac_x(F_{i-1})$) which is of size $n_y \times n_y$ (resp. $n_x \times n_x$) for the first one and $m-1 \times n_y$ (resp. $m-1 \times n_x$) for the last one i.e. $i = m$. We suppose here that the construction of such matrices is free. Computing the $MaxMinors(jac_y(F_{i-1}))$ (resp. $MaxMinors(jac_x(F_{i-1}))$)means that we have to compute the determinants of all the sub-matrices of size $n_y \times n_y$ (resp. $n_x \times n_x$) and for a matrix $M$ of size $l \times c$ with $l > c$ there are $\binom{l}{c}$ sub-matrices of size $c \times c$, hence the term $\binom{i}{n_y}n_y^{\omega}$ in the sum if we suppose the complexity of computing the determinant of a square multivariate polynomial matrix of size $c \times c$ to be $\mathcal{O}(c^\omega)$, which is not the case but let's suppose the best case ever. faudrait trouver la vraie complexité de ça pour être plus juste.
 		 	For now, we have a sequence of polynomials and we apply the algorithm \textbf{Reduce} on them with degree $n_y + 1$ (resp. $n_x + 1$).
 		 	In \textbf{Reduce}, we construct the Macaulay matrix of the sequence of degree $n_y + 1$ (resp. $n_x + 1$) and compute it's row echelon form.
-		 	The size of Macauly matrix is bounded by $\binom{n + D}{D}$ where D is the degree and n the number variables. So the complexity of \textbf{Reduce} is $\mathcal{O}\left(\binom{n_y + n_y + 1}{n_y + 1}^\omega \right)$ (resp. $\mathcal{O}\left(\binom{n_x + n_x + 1}{n_x + 1}^\omega \right)$). Hence the second term in the sum, because we call \textbf{Reduce} at each iteration of the for loop. We finally suppose that the iteration on the elements of $T$ and of $T'$ is negligible in the big O notation.
+		 	The size of Macauly matrix is bounded by $\binom{n + D}{D}$ where D is the degree and n the number variables. So the complexity of \textbf{Reduce} is $$\mathcal{O}\left(\binom{n_y + n_y + 1}{n_y + 1}^\omega \right)$$ (resp. $$\mathcal{O}\left(\binom{n_x + n_x + 1}{n_x + 1}^\omega \right)$$). Hence the second term in the sum, because we call \textbf{Reduce} at each iteration of the for loop. We finally suppose that the iteration on the elements of the output of \textbf{Reduce} is negligible in the big $\mathcal{O}$ notation.
 		 \end{proof}
 		 
 		 It's an asymptotic complexity which doesn't take into account the constant factor in implementations that could slow down a lot the algorithm.
