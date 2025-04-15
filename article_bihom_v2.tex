@@ -22,6 +22,7 @@
 \newtheorem{definition}{Definition}[section]
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[section]
+\newtheorem{example}{Example}[section]
 
 \newcommand{\Mac}[3]{{Mac_{#1, #2}(\mathcal{#3})}}
 \newcommand{\Mact}[3]{{\widetilde{Mac}_{#1, #2}(\mathcal{#3})}}
@@ -53,12 +54,90 @@
 		In the following we will use the standard notation for matrix multiplication complexity for a square matrix of size $n$, $\mathcal{O}(n^\omega)$,
 		where $2 \leq \omega \leq 3$.
 		
+		\subsection{Gröbner basis theory}
+		Gröbner basis theory was first introduced by Buchberger in his thesis \cite{Buc} and he gave an algorithm to compute the Gröbner basis of an ideal.
+		Gröbner basis algorithms like Buchberger's Algorithm \cite{Buc}, are used to find solutions for polynomial systems using algebraic geometry tools. For a gentle introduction to this subject \cite{CLS}.
+		
+		In \cite{Lazard83}, Lazard introduced the connection between linear algebra and Gröbner basis theory via the usage of Macaulay matrices \cite{Mac} which is defined as follows.
+		
+		\begin{definition}
+			Let $\prec$ be an admissible monomial ordering on a given ring $R = \mathbb{K}[x_1,\dots,x_n]$ where $\mathbb{K}$ is a field. Given a sequence of homogeneous (resp. affine) polynomials $\mathcal{F} = (f_1,\dots,f_m) \in R$, we associate to it the Macaulay matrix of degree $D$ (resp. $\leq D$), denoted by $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$), and defined as follows: the columns of the matrix are indexed by the monomials of degree $D$ (resp. $\leq D$) sorted in decreasing order from the left to right using the defined monomial ordering. Each row of the matrix is labeled by a tag, also called signature, ($u, f_i$) where u is a monomial in $R$ and $f_i \in \mathcal{F}$ such that $deg(uf_i) = D$ (resp. $deg(uf_i) \leq D$), and the polynomial $uf_i$ is written as vector of coefficients of monomials on the row. We denote by $\Mact{D}{m}{F}$ (resp. $\Mact{\leq D}{m}{F}$) the row echelon form of $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$) without swapping columns to preserve the monomial ordering.
+		\end{definition}
+		
+		\subsection{Faugère's F5}
+		
+		The major "issue" of Gröbner basis algorithms is the reductions to 0 in the Macaulay matrix associated to a polynomial sequence $\Mac{D}{m}{F}$, because the size of the matrices are huge, multiple millions for practical examples,
+		reductions to 0 can cost a lot during the linear algebra process. F5 \cite{F02} was a major improvement because it provided a criterion that avoided reduction to 0 during the linear algebra part for all regular sequences.
+		
+		\begin{proposition}[General criterion \cite{F02}]
+			\label{F5Crit}
+			Let $d_i$ be the total degree of $f_i$.
+			$\forall j < m$, if a row of signature ($u, f_j$) in the matrix $\Mact{D-d_j}{m-1}{F}$ has as leading term $t'$, then the row ($t', f_m$) in $\Mac{D}{m}{F}$ (resp. $\Mac{\leq D}{m}{F}$) will reduce to 0 i.e. is a linear combination of the predecessors.
+		\end{proposition}
+		
+		\begin{proposition}[Frobenius criterion \cite{F02}]
+			\label{Frob}
+			If a row of signature ($t, f_m$) in $\Mact{D - d_m}{m}{F}$ has as leading term $t'$, then the row ($t', f_m$) in $\Mac{D}{m}{F}$ (resp. $\Mac{\leq D}{m}{F}$) will reduce to 0 i.e. is a linear combination of the predecessors.
+		\end{proposition}
+		
+		The Frobenius criterion \ref{Frob} is the analogue of the General criterion \ref{F5Crit} but for polynomial systems defined over $\mathbb{F}_2$.
+		F5 crtierions remove the rows corresponding to the trivial syzygies, i.e. the syzygies $(s_1, \dots, s_m)$ such that for a row with signature $(s_i, f_i)$, we get $s_i \in \langle f_1,\dots,f_{i-1},f_{i+1},\dots,f_m \rangle$.
+		
+		Bardet introduced a variant of F5 Algorithm that is simple to understand and analyze called Matrix F5 in \cite{Bardet04}.
+		We give the description of Matrix F5 Algorithm.
+		
+		\begin{algorithm}
+			\caption{Matrix F5}\label{alg:matrix_f5}
+			\begin{algorithmic}[1]
+				\Require 
+				\begin{tabular}[t]{@{}l@{}}
+					$\left\{ 
+					\begin{array}{l}
+						m \text{ homogeneous polynomials } f_1, \dots, f_m \text{ of degree } d_1 \leq d_2 \leq \dots \leq d_m, \\
+						D \text{ an integer}, \\
+						\text{a monomial ordering } \prec
+					\end{array}
+					\right.$
+				\end{tabular}
+				\Ensure 
+				\begin{tabular}[t]{@{}l@{}}
+					$\left\{ 
+					\begin{array}{l}
+						G \text{ is a Gröbner basis of } \langle f_1,\dots,f_m \rangle.
+					\end{array}
+					\right.$
+				\end{tabular}
+				\State $G \gets {f_1,\dots,f_m}$
+				\For{$d$ from $d_1$ to $D$}
+					\State $\widetilde{Mac}_{d, 0} \gets$ matrix with 0 rows
+					\For{$i$ from $1$ to $m$}
+						\State Construct ${Mac}_{d, i}$ by adding to $\widetilde{Mac}_{d, i-1}$ the following rows:
+						\If{$d_i = d$}
+							\State add the row $f_i$ with signature $(1, f_i)$
+						\EndIf
+						\If{$d > d_i$}
+							for all $f$ from $\widetilde{Mac}_{d, i-1}$ with signature $(e, f_i)$, such that $x_\lambda$ is the greatest variable of $e$, add the $n - \lambda + 1$ rows $x_\lambda f,x_{\lambda + 1}f,\dots,x_n f$ with the signatures $(x_\lambda e, f),(x_{\lambda + 1}e, f),\dots,(x_n e, f)$ except those who satisfy the F5 criterion with $((x_{\lambda + k}e, fi), \widetilde{Mac}_{d-d_i, i-1}$
+						\EndIf
+						\State Compute $\widetilde{Mac}_{d, i}$ the row echelon form of ${Mac}_{d, i}$
+						\State Add to $G$ the polynomials corresponding to rows of $\widetilde{Mac}_{d, i}$ such that their leading
+						\State monomials is different from the leading monomial of the row with 
+						\State same signature in ${Mac}_{d, i}$
+				 	\EndFor
+				\EndFor
+				\State \textbf{Return} $G$
+			\end{algorithmic}
+		\end{algorithm}
+		
+		\subsection{Hilbert's series}
+			
+		
 	\section{Signature Scheme}
 		\subsection{SBC Problem}
 		The problem is the following: let $q$ be a prime power and two positive integers $k$, $n$.
 		\newline
 		Given two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$, which are linearly independent overs $\mathbb{F}_q$, find two vectors $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ such that $$(\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) = (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x})$$
-		where $(\cdot)$ is the dot product between 2 vectors.
+		where $(\cdot)$ is the dot product between 2 vectors. 
+		We denote an instance of the SBC problem given by two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$ by $\text{SBC}[\vec{u}, \vec{v}]$. If the vectors $\vec{x},\vec{y} \in (\mathbb{F}_q)^n$ are solution of $\text{SBC}[\vec{u},\vec{v}]$, we use the notation $(\vec{x}, \vec{y}) \in \text{SBC}[\vec{u}, \vec{v}]$.
 		
 		\subsection{NSBC}
 		
@@ -96,36 +175,7 @@
 		
 		Huth and Joux cite a complexity result in \cite{FSS11} to argue their parameters choice, we will dive deeper into this article's results in a later section.
 
-		\subsection{Gröbner basis algorithms}
-		Gröbner basis algorithms are used to find solutions for polynomial systems using algebraic geometry tools. For a gentle introduction to this subject \cite{CLS}.
-		
-		In \cite{Lazard83}, Lazard introduced the connection between linear algebra and Gröbner basis theory via the usage of Macaulay matrices \cite{Mac} which is defined as follows.
-		
-		\begin{definition}
-			Let $\prec$ be an admissible monomial ordering on a given ring $R = \mathbb{K}[x_1,\dots,x_n]$ where $\mathbb{K}$ is a field. Given a sequence of homogeneous (resp. affine) polynomials $\mathcal{F} = (f_1,\dots,f_m) \in R$, we associate to it the Macaulay matrix of degree $D$ (resp. $\leq D$), denoted by $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$), and defined as follows: the columns of the matrix are indexed by the monomials of degree $D$ (resp. $\leq D$) sorted in decreasing order from the left to right using the defined monomial ordering. Each row of the matrix is labeled by a tag, also called signature, ($u, f_i$) where u is a monomial in $R$ and $f_i \in \mathcal{F}$ such that $deg(uf_i) = D$ (resp. $deg(uf_i) \leq D$), and the polynomial $uf_i$ is written as vector of coefficients of monomials on the row. We denote by $\Mact{D}{m}{F}$ (resp. $\Mact{\leq D}{m}{F}$) the row echelon form of $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$) without swapping columns to preserve the monomial ordering.
-		\end{definition}
-		
-		The major "issue" of Gröbner basis algorithms is the reductions to 0 in the Macaulay matrix associated to a polynomial sequence $\Mac{D}{m}{F}$, because the size of the matrices are huge, multiple millions for practical examples,
-		reductions to 0 can cost a lot during the linear algebra process. F5 \cite{F02} was a major improvement because it provided a criterion that avoided reduction to 0 during the linear algebra part for all regular sequences.
-		
-		We will introduce the F5 criterions and the notions of semi-regularity in the following.
-		
-		\subsubsection{Faugère's F5}
-		
-		\subsubsection{Hilbert's series}
-		
-		\begin{proposition}[General criterion \cite{F02}]
-			\label{F5Crit}
-			Let $d_i$ be the total degree of $f_i$.
-			$\forall j < m$, if a row of signature ($u, f_j$) in the matrix $\Mact{D-d_j}{m-1}{F}$ has as leading term $t'$, then the row ($t', f_m$) in $\Mac{D}{m}{F}$ (resp. $\Mac{\leq D}{m}{F}$) will reduce to 0 i.e. is a linear combination of the predecessors.
-		\end{proposition}
-		
-		\begin{proposition}[Frobenius criterion \cite{F02}]
-			\label{Frob}
-			If a row of signature ($t, f_m$) in $\Mact{D - d_m}{m}{F}$ has as leading term $t'$, then the row ($t', f_m$) in $\Mac{D}{m}{F}$ (resp. $\Mac{\leq D}{m}{F}$) will reduce to 0 i.e. is a linear combination of the predecessors.
-		\end{proposition}
-		
-		The Frobenius criterion \ref{Frob} is the analogue of the General criterion \ref{F5Crit} but for polynomial systems defined over $\mathbb{F}_2$.
+		\subsection{Algebraic cryptanalysis}
 		
 		Bardet showed in \cite{Bardet04} that F5 criterion removed reductions to 0 for semi-regular sequences until the degree $D$ which is the degree of regularity of $I$ which is the ideal generated by the polynomials of the system.
 		
@@ -181,16 +231,16 @@
 			Let $E, F, G$ be vector spaces on the same base field $\mathbb{K}$. 
 			Let $f: E \times F \rightarrow G$ an application. We say that $f$ is bilinear if
 			$$
-				\forall (x, x') \in E^2 , \forall (y, y') \in F^2 , \forall \lambda \in \mathbb{K}
+				\forall (x, x') \in E^2 , \forall (y, y') \in F^2 , \forall \lambda, \mu \in \mathbb{K}
 			$$
 			$$
-				f(x + x',y) = f(x, y) + f(x', y)
+				f(x + x',y) = f(x, y) + f(x', y),
 			$$
 			$$
-				f(x, y + y') = f(x, y) + f(x, y')
+				f(x, y + y') = f(x, y) + f(x, y'),
 			$$
 			$$
-				f(\lambda x, y) = \lambda f(x, y)
+				f(\lambda x, \mu y) = \lambda \mu f(x, y).
 			$$
 		\end{definition}
 		
