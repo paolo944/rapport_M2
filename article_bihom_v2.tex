@@ -129,6 +129,8 @@
 		\end{algorithm}
 		
 		\subsection{Hilbert's series}
+		
+		\subsection{Boolean systems}
 			
 		
 	\section{Signature Scheme}
@@ -195,8 +197,8 @@
 		\begin{proposition}[Proposition 3.2.5 in \cite{Bardet04}]\label{PropSemi}
 			let $f_1,\dots,f_m$ a semi-regular homogeneous sequence, $f_i$ is of degree $d_i$. Then the following proprieties are verified:
 			\begin{itemize}
-				\item The sequence $f_1,\dots,f_m$ is semi-regular if and only if its Hilbert's series is the series $$S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = \prod_{i=1}^{m}(1-z^{d_i})/(1-z)^n$$ is called the generating series of $f_1,\dots,f_m$.
-				\item The sequence $f_1,\dots,f_m$ is semi-regular on $\mathbb{F}_2$, if and only if its Hilbert series is the series $$S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = (1+z)^n/\prod_{i=1}^{m}(1+z^{d_i})$$ is called the generating series of $f_1,\dots,f_m$.
+				\item The sequence $f_1,\dots,f_m$ is semi-regular if and only if its Hilbert's series is the series $$S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = \prod_{i=1}^{m}(1-z^{d_i})/(1-z)^n.$$ $S_{m, n}(z)$ is called the generating series of $f_1,\dots,f_m$.
+				\item The sequence $f_1,\dots,f_m$ is semi-regular on $\mathbb{F}_2$, if and only if its Hilbert series is the series $$S_{m, n}(z) = \sum_{d \geq 0}h_{d, m}(n)z^d = (1+z)^n/\prod_{i=1}^{m}(1+z^{d_i}).$$ $S_{m, n}(z)$ is called the generating series of $f_1,\dots,f_m$.
 				\item Every permutation $f_{\sigma(1)},\dots,f_{\sigma(m)}$ is a semi-regular sequence.
 				\item When the associated variety is zero-dimensional, $H(I)$ is characterized by
 				$$
@@ -216,7 +218,7 @@
 			$$
 			\{f_1(x_1,...,x_k,a_{k+1},...,a_n),...,f_m(x_1,...,x_k,a_{k+1},...,a_n)\} \text{ is not semi-regular}\}
 			$$
-			has cardinality $\mathcal{O}(2^{-\gamma n})$
+			has cardinality $\mathcal{O}(2^{-\gamma n})$.
 		\end{definition}
 		
 		When applying Macaulay matrix generation code from hpXbred \cite{BS23} on NSBC polynomial systems, we notice that they are not semi-regular when we only multiply by the $x$ variables or only by the $y$ variables. If we multiply by the $x$ variables and at least one $y$ variable, we get no reductions to 0 which means that the system could be semi-regular or $\gamma$-semi-regular.
@@ -228,19 +230,9 @@
 		Our NSBC instances are quadratic systems that are bilinear in the variables of degree 2, overdetermined and can be semi-regular.
 		
 		\begin{definition}
-			Let $E, F, G$ be vector spaces on the same base field $\mathbb{K}$. 
-			Let $f: E \times F \rightarrow G$ an application. We say that $f$ is bilinear if
+			A homogeneous polynomial $f \in \mathbb{K}[x_1,\dots,x_{n_x},y_1,\dots,y_{n_y}]$ is called bilinear if we have:
 			$$
-				\forall (x, x') \in E^2 , \forall (y, y') \in F^2 , \forall \lambda, \mu \in \mathbb{K}
-			$$
-			$$
-				f(x + x',y) = f(x, y) + f(x', y),
-			$$
-			$$
-				f(x, y + y') = f(x, y) + f(x, y'),
-			$$
-			$$
-				f(\lambda x, \mu y) = \lambda \mu f(x, y).
+				\forall \lambda, \mu \in \mathbb{K}, f(\lambda x_1,\dots,\lambda x_{n_x}, \mu y_1,\dots, \mu y_{n_y}) = \lambda \mu f(x_1,\dots,x_{n_x},y_1,\dots,y_{n_y}).
 			$$
 		\end{definition}
 		
@@ -253,17 +245,15 @@
 		\subsubsection{Jacobian matrices and syzygies}
 		First we will need to introduce some important notations.
 		\begin{itemize}
-			\item[-] Let $\mathbb{K}$ be a field. In our case in cryptography $\mathbb{K}$ is always finite.
-			\item[-] $R = \mathbb{K}[x_1,...,x_{n_x},y_1,...,y_{n_y}]$
 			\item[-] Let $f_1,...,f_m \in R$ be a bilinear polynomial. We denote by $F_i$ the polynomial sequence $(f_1,...,f_i)$ and $I_i$ the ideal spanned by this sequence $\langle F_i \rangle$.
 			\item[-] $jac_{x}(F_{i-1})$ (resp. $jac_{y}(F_{i-1})$) is the jacobian matrix with respect to the two subsets of variables $x_1,...,x_{n_x}$ (resp. $y_1,...,y_{n_y}$).
-			\item[-] Let $M$ be a $l \times c$ matrix with $l > c$. We call maximal minors of $M$ the determinants of the $c \times c$ sub-matrices of $M$. 
-			\item[-] $I_{i-1} : f_i$ is the ideal spanned by $\{g \in R \mid gf_i \in I_{i-1}\}$. We denote the maximal minors of $M$ by $MaxMinors(M)$.
+			\item[-] Let $M$ be a $l \times c$ matrix with $l > c$. We call maximal minors of $M$ the determinants of the $c \times c$ sub-matrices of $M$. We denote the maximal minors of $M$ by $MaxMinors(M)$.
+			\item[-] $I_{i-1} : f_i$ is the ideal spanned by $\{g \in R \mid gf_i \in I_{i-1}\}$.
 		\end{itemize}
 		We will give important results of this article before discussing them further.
 		
 		\begin{theorem}[Theorem 2 in \cite{FSS11}]\label{theoremMaxMin}
-			Let $i > n_x + 1$ (resp. $i > n_y + 1$) and let $s$ be a linear combination of maximal minors of $jac_{x}(F_{i-1})$ (resp. $jac_{y}(F_{i-1})$). Then $s \in I_{i-1} : f_i$
+			Let $i > n_x + 1$ (resp. $i > n_y + 1$) and let $s$ be a linear combination of maximal minors of $jac_{x}(F_{i-1})$ (resp. $jac_{y}(F_{i-1})$). Then $s \in I_{i-1} : f_i$.
 		\end{theorem}
 		
 		As Theorem \ref{theoremMaxMin} indicates, reductions to 0 may also arise from the maximal minors of the jacobian matrix, so the signatures ($s, f_i$) where $s$ is a linear combination of maximal minors of $jac_{x}(F_{i-1})$ or $jac_{y}(F_{i-1})$ is a reduction to 0.
@@ -335,10 +325,10 @@
 		 
 		 \begin{corollary}[Corollary 3 in \cite{FSS11}]
 		 The arithmetic complexity of computing a Gröbner basis of a generic bilinear system $f_1,...,f_{n_x + n_y}$ with the F5 algorithm is bounded by
-		 $$\mathcal{O}\left(\binom{n_x + n_y + min(n_x + 1, n_y + 1)}{min(n_x + 1, n_y + 1)}^\omega\right)$$.
+		 $$\mathcal{O}\left(\binom{n_x + n_y + min(n_x + 1, n_y + 1)}{min(n_x + 1, n_y + 1)}^\omega\right).$$
 		 \end{corollary}
 		 
-		 First, we can clearly see that the complexity of Algorithm \ref{alg:crit_calc} is exponential and we will show that in the following proposition/.
+		 First, we can clearly see that the complexity of Algorithm \ref{alg:crit_calc} is exponential and we will show that in the following proposition.
 		 
 		 \begin{proposition}\label{complexCrit}
 		 	The complexity of Algorithm \ref{alg:crit_calc} is
@@ -357,7 +347,7 @@
 		 It's an asymptotic complexity which doesn't take into account the constant factor in implementations that could slow down a lot the algorithm.
 		 We also recall that in our case with NSBC, $n_x = n_y$. So we get
 		 $$
-		 \mathcal{O}\left(2n_x^{\omega}\left(\sum_{i = n_x}^{m} \binom{i}{n_x} + \binom{2n_x + 1}{n_x}^\omega\right)\right)
+		 \mathcal{O}\left(2n_x^{\omega}\left(\sum_{i = n_x}^{m} \binom{i}{n_x} + \binom{2n_x + 1}{n_x}^\omega\right)\right).
 		 $$
 		 
 		 Since we have quadratic systems, reductions to 0 won't appear before degree 4 of the Macaulay matrix. Also, in practice we are using $q=2$ and there's much better algorithms in the literature for boolean systems than basic Gröbner basis algorithms like F5. The best algorithm used at the moment is CrossBred \cite{JV17}. Most of the time in practical implementations, we stop at degree 4 of the Macaulay in pre-processing step. So, to know what advantage we could have if we use the extended F5 criterion, we will suppose the worst, that all of our entries will reduce to 0 at degree 4 of the Macaulay matrix, which is unlikely.
@@ -366,11 +356,11 @@
 		 
 		 If this case arises, the only computations that would be done are for extended F5 criterion. The complexity for F5-Matrix algorithm with only the Frobenius criterion \ref{Frob} is 
 		 $$
-		 \mathcal{O}\left(\binom{n + 4}{4}^\omega\right)
+		 \mathcal{O}\left(\binom{n + 4}{4}^\omega\right).
 		 $$
 		 If we only take into consideration the big O notation and not the constants, which is not realistic at all for efficient implementations to really break a cryptographic scheme, we get
 		 \begin{equation}
-		 Adv(n, m) = 2\left(\sum_{i = n/2}^{m}\binom{i}{n/2}\left(\frac{n}{2}\right)^\omega + \binom{n + 1}{n/2}^\omega\right) - \binom{n + 4}{4}^\omega
+		 Adv(n, m) = 2\left(\sum_{i = n/2}^{m}\binom{i}{n/2}\left(\frac{n}{2}\right)^\omega + \binom{n + 1}{n/2}^\omega\right) - \binom{n + 4}{4}^\omega.
 		 \label{equation_complex}
 		 \end{equation}
 		 
@@ -383,8 +373,6 @@
 		 
 		 Note pour moi-même, il faut maintenant essayer de réaliser une implémentation de ce critère en sage ou avec hpXbred \cite{BS23} et BeanPolE \cite{Bou24} pour voir comment ça se comporterait avec des petits systèmes et voir quel serait l'avantage ou le désavantage sachant que la supposition que toutes les lignes se réduisent à 0 est extrêment peu probable. Donc les lignes se réduisent pas à 0 quand on a les x et les y donc le paramètre v de hpXbred est strictement supérieur à $n_x$.
 		 On peut ensuite utiliser XL \cite{CKPS00} avec l'implantation \cite{NNY17}
-		 
-		 \subsection{Boolean systems and Crossbred}
 		 
 		 
 \printbibliography
