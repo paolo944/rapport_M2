@@ -49,10 +49,15 @@
 	\section{Preliminaries and notations}
 		In this section, we introduce some standard notations of the field and notions that we will use.
 		
-		Let $\mathbb{F}$ be a finite field and $\mathbb{K}$ a fiend not necessarily finite. 
-		We denote the multivariate polynomial ring defined over a field in $n$ variables $\mathbb{K}[x_1,\dots,x_n] = R$ where $n$ is a positive integer.
-		In the following we will use the standard notation for matrix multiplication complexity for a square matrix of size $n$, $\mathcal{O}(n^\omega)$,
-		where $2 \leq \omega \leq 3$.
+		\subsubsection{Notations}
+		
+		\begin{itemize}
+			\item Let $\mathbb{F}$ be a finite field and $\mathbb{K}$ a field not necessarily finite. 
+			\item We denote the multivariate polynomial ring defined over a field in $n$ variables $\mathbb{K}[x_1,\dots,x_n] = R$ where $n$ is a positive integer.
+			\item We will use the standard notation for matrix multiplication complexity for a square matrix of size $n$, $\mathcal{O}(n^\omega)$,
+			where $2 \leq \omega \leq 3$.
+			\item Let $R_{\leq s}$ be the polynomials of total degree $\leq s$. $I_{\leq s} = I \cap R_{\leq s}$.
+		\end{itemize}
 		
 		\subsection{Gröbner basis theory}
 		Gröbner basis theory was first introduced by Buchberger in his thesis \cite{Buc} and he gave an algorithm to compute the Gröbner basis of an ideal.
@@ -128,23 +133,49 @@
 			\end{algorithmic}
 		\end{algorithm}
 		
-		\subsection{Hilbert's series}
+		\subsection{Hilbert series}
+		Hilbert-Poincaré series (or just Hilbert series) is a very important tool in algebraic geometry to describe ideals and varieties and their dimensions.
+		\begin{definition}[\cite{CLS}]
+			Let $I$ be an ideal in $R$. The affine Hilbert function of $I$ is the function on the nonnegative integers s defined by
+			$$
+				{}^a HF_{R/I}(s) = dim R_{\leq s} / dim I_{\leq s} = dim R_{\leq s} - dim I_{\leq s}.
+			$$
+		\end{definition}
+		
+		\begin{proposition}
+			${}^a HF_{R/I}(s)$ is the number of monomials not in $I$ of total degree $s$.
+		\end{proposition}
+		\begin{proof}
+			First note that the monomials ${x^\alpha | \alpha \leq s}$ is a basis of $R_{\leq s}$ as a vector space. We also have that ${x^\alpha | \alpha \leq s | x^\alpha \in I}$ is a basis of $I_{\leq s}$. Therefore, the monomials ${x^\alpha | \alpha \leq s | x^\alpha \notin I}$ are the ones missing to form a basis for $R$, so they form a basis for $R_{\leq s} / I_{\leq s}$ which concludes the proof.
+		\end{proof}
+		
+		\begin{definition}
+			Let I be a homogeneous ideal. The Hilbert series is defined as follows
+			$$
+					HS_{R/I}(t) = \sum_{m=0}^{\infty} HF_{R/I}(m) t^m.
+			$$	
+		\end{definition}
+		
+		The smallest integer $s_0$ such that $HF_{R/I}(s_0) \leq 0$ is called the degree of regularity of the ideal $I$.
+		
+		Faugère showed that no reductions to 0 occur in the Macaulay matrix during the F5 algorithm \ref{alg:matrix_f5} until the degree of regularity \cite{F02}.
+		
+		\subsection{Semi-regularity}
 		
 		\subsection{Boolean systems}
-			
 		
 	\section{Signature Scheme}
 		\subsection{SBC Problem}
 		The problem is the following: let $q$ be a prime power and two positive integers $k$, $n$.
 		\newline
-		Given two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$, which are linearly independent overs $\mathbb{F}_q$, find two vectors $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ such that $$(\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) = (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x})$$
-		where $(\cdot)$ is the dot product between 2 vectors. 
+		Given two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$, which are linearly independent overs $\mathbb{F}_q$, find two non-colinear vectors $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ such that $$(\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) = (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x})$$
+		where $(\cdot)$ is the dot product between 2 vectors.
 		We denote an instance of the SBC problem given by two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$ by $\text{SBC}[\vec{u}, \vec{v}]$. If the vectors $\vec{x},\vec{y} \in (\mathbb{F}_q)^n$ are solution of $\text{SBC}[\vec{u},\vec{v}]$, we use the notation $(\vec{x}, \vec{y}) \in \text{SBC}[\vec{u}, \vec{v}]$.
 		
 		\subsection{NSBC}
 		
 		The authors also introduce a particular version of this problem called normalized SBC (NSBC) where $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ and
-		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$.
+		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$ to ensure that they are not colinear without needing to regenerate each time they are not.
  		
  		\subsection{Keys and parameters estimations}
 		The public key of this signature scheme is $(\vec{u},\vec{v})$ and the private key is $(\vec{x}, \vec{y})$.
