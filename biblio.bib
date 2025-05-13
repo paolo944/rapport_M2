@@ -272,3 +272,80 @@
 	primaryClass={cs.SC},
 	url={https://arxiv.org/abs/cs/0610051}, 
 }
+
+@article{BFSS13,
+	title = {On the complexity of solving quadratic Boolean systems},
+	journal = {Journal of Complexity},
+	volume = {29},
+	number = {1},
+	pages = {53-75},
+	year = {2013},
+	issn = {0885-064X},
+	doi = {https://doi.org/10.1016/j.jco.2012.07.001},
+	url = {https://www.sciencedirect.com/science/article/pii/S0885064X12000611},
+	author = {Magali Bardet and Jean-Charles Faugère and Bruno Salvy and Pierre-Jean Spaenlehauer},
+	keywords = {Boolean quadratic system, Gröbner bases, Complexity, Semi-regularity, Multivariate cryptography},
+	abstract = {A fundamental problem in computer science is that of finding all the common zeros of m quadratic polynomials in n unknowns over F2. The cryptanalysis of several modern ciphers reduces to this problem. Up to now, the best complexity bound was reached by an exhaustive search in 4log2n2n operations. We give an algorithm that reduces the problem to a combination of exhaustive search and sparse linear algebra. This algorithm has several variants depending on the method used for the linear algebra step. We show that, under precise algebraic assumptions on the input system, the deterministic variant of our algorithm has complexity bounded by O(20.841n) when m=n, while a probabilistic variant of the Las Vegas type has expected complexity O(20.792n). Experiments on random systems show that the algebraic assumptions are satisfied with probability very close to 1. We also give a rough estimate for the actual threshold between our method and exhaustive search, which is as low as 200, and thus very relevant for cryptographic applications.}
+}
+
+@misc{BCC+10,
+	author = {Charles Bouillaguet and Chen-Mou Cheng and Tony (Tung) Chou and Ruben Niederhagen and Adi Shamir and Bo-Yin Yang},
+	title = {Fast Exhaustive Search for Polynomial Systems in $F_2$},
+	howpublished = {Cryptology {ePrint} Archive, Paper 2010/313},
+	year = {2010},
+	url = {https://eprint.iacr.org/2010/313}
+}
+
+@article{FY79,
+	title = {Complexity of problems in games, graphs and algebraic equations},
+	journal = {Discrete Applied Mathematics},
+	volume = {1},
+	number = {1},
+	pages = {15-30},
+	year = {1979},
+	issn = {0166-218X},
+	doi = {https://doi.org/10.1016/0166-218X(79)90012-X},
+	url = {https://www.sciencedirect.com/science/article/pii/0166218X7990012X},
+	author = {A.S. Fraenkel and Y. Yesha},
+	abstract = {We prove NP-hardness of six families of naturally defined, interesting board games. Some of them are “only just hard” in the sense that slight variations of them are polynomial. We further prove NP-completeness of two problems on digraphs which are related to game strategies; and NP-completeness and NP-hardness respectively of two classical problems of abstract algebra concerning the existence of solutions of algebraic equations. Also these problems were suggested by an investigation in combinatorial game theory.}
+}
+
+@inbook{Itai21A,
+	author = {Itai Dinur},
+	title = {Improved Algorithms for Solving Polynomial Systems over GF(2) by Multiple Parity-Counting},
+	booktitle = {Proceedings of the 2021 ACM-SIAM Symposium on Discrete Algorithms (SODA)},
+	chapter = {},
+	pages = {2550-2564},
+	doi = {10.1137/1.9781611976465.151},
+	URL = {https://epubs.siam.org/doi/abs/10.1137/1.9781611976465.151},
+	eprint = {https://epubs.siam.org/doi/pdf/10.1137/1.9781611976465.151},
+	abstract = { We consider the problem of finding a solution to a multivariate polynomial equation system of degree d in n variables over . For d = 2, the best-known algorithm for the problem is by Bardet et al. [J. Complexity, 2013] and was shown to run in time O(20.792n) under assumptions that were experimentally found to hold for random equation systems. The best-known worst-case algorithm for the problem is due to Björklund et al. [ICALP'19]. It runs in time O(20.804n) for d = 2 and O(2(1-1/(2.7d))n) for d > 2. In this paper, we devise a worst-case algorithm that improves the one by Björklund et al. It runs in time O(20.6943n) (or O(1.6181n)) for d = 2 and O(2(1–1/(2d))n) for d > 2. Our algorithm thus outperforms all known worst-case algorithms, as well as ones analyzed for random equation systems. We also devise a second algorithm that outputs all solutions to a polynomial system and has similar complexity to the first (provided that the number of solutions is not too large). A central idea in the work of Björklund et al. was to reduce the problem of finding a solution to a polynomial system over to the problem of counting the parity of all solutions. A parity-counting instance was then reduced to many smaller parity-counting instances. Our main observation is that these smaller instances are related and can be solved more efficiently by a new algorithm to a problem which we call multiple parity-counting. }
+}
+
+@InProceedings{Itai21B,
+	author="Dinur, Itai",
+	editor="Canteaut, Anne
+	and Standaert, Fran{\c{c}}ois-Xavier",
+	title="Cryptanalytic Applications of the Polynomial Method for Solving Multivariate Equation Systems over GF(2)",
+	booktitle="Advances in Cryptology -- EUROCRYPT 2021",
+	year="2021",
+	publisher="Springer International Publishing",
+	address="Cham",
+	pages="374--403",
+	abstract="At SODA 2017 Lokshtanov et al. presented the first worst-case algorithms with exponential speedup over exhaustive search for solving polynomial equation systems of degree d in n variables over finite fields. These algorithms were based on the polynomial method in circuit complexity which is a technique for proving circuit lower bounds that has recently been applied in algorithm design. Subsequent works further improved the asymptotic complexity of polynomial method-based algorithms for solving equations over the field {\$}{\$}{\backslash}mathbb {\{}F{\}}{\_}2{\$}{\$}F2. However, the asymptotic complexity formulas of these algorithms hide significant low-order terms, and hence they outperform exhaustive search only for very large values of n.",
+	isbn="978-3-030-77870-5"
+}
+
+@inproceedings{LPT+17,
+	author = {Lokshtanov, Daniel and Paturi, Ramamohan and Tamaki, Suguru and Williams, Ryan and Yu, Huacheng},
+	title = {Beating brute force for systems of polynomial equations over finite fields},
+	year = {2017},
+	publisher = {Society for Industrial and Applied Mathematics},
+	address = {USA},
+	abstract = {We consider the problem of solving systems of multivariate polynomial equations of degree k over a finite field. For every integer k ≥ 2 and finite field 𝔽q where q = pd for a prime p, we give, to the best of our knowledge, the first algorithms that achieve an exponential speedup over the brute force O(qn) time algorithm in the worst case. We present two algorithms, a randomized algorithm with running time qn+o(n) · q−n/O(k) time if q ≤ 24ekd, and [EQUATION] otherwise, where e = 2.718... is Napier's constant, and a deterministic algorithm for counting solutions with running time qn+o(n) ·q−n/O(kq6/7d). For the important special case of quadratic equations in 𝔽2, our randomized algorithm has running time O(20.8765n).For systems over 𝔽2 we also consider the case where the input polynomials do not have bounded degree, but instead can be efficiently represented as a ΣΠΣ circuit, i.e., a sum of products of sums of variables. For this case we present a deterministic algorithm running in time 2n−δn for δ = 1/O(log(s/n)) for instances with s product gates in total and n variables.Our algorithms adapt several techniques recently developed via the polynomial method from circuit complexity. The algorithm for systems of ΣΠΣ polynomials also introduces a new degree reduction method that takes an instance of the problem and outputs a subexponential-sized set of instances, in such a way that feasibility is preserved and every polynomial among the output instances has degree O(log(s/n)).},
+	booktitle = {Proceedings of the Twenty-Eighth Annual ACM-SIAM Symposium on Discrete Algorithms},
+	pages = {2190–2202},
+	numpages = {13},
+	location = {Barcelona, Spain},
+	series = {SODA '17}
+}
