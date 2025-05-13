@@ -56,7 +56,7 @@
 			\item We denote the multivariate polynomial ring defined over a field in $n$ variables $\mathbb{K}[x_1,\dots,x_n] = R$ where $n$ is a positive integer.
 			\item We will use the standard notation for matrix multiplication complexity for a square matrix of size $n$, $\mathcal{O}(n^\omega)$,
 			where $2 \leq \omega \leq 3$.
-			\item Let $R_{\leq s}$ be the polynomials of total degree $\leq s$. $I_{\leq s} = I \cap R_{\leq s}$.
+			\item Let $R_{s}$ be the polynomials of total degree $s$. $I_{s} = I \cap R_{s}$.
 		\end{itemize}
 		
 		\subsection{Gröbner basis theory}
@@ -136,9 +136,9 @@
 		\subsection{Hilbert series}
 		Hilbert-Poincaré series (or just Hilbert series) is a very important tool in algebraic geometry to describe ideals and varieties and their dimensions.
 		\begin{definition}[\cite{CLS}]
-			Let $I$ be an ideal in $R$. The affine Hilbert function of $I$ is the function on the nonnegative integers s defined by
+			Let $I$ be a homogeneous ideal in $R$. The affine Hilbert function of $I$ is the function on the nonnegative integers s defined by
 			$$
-				{}^a HF_{R/I}(s) = dim R_{\leq s} / dim I_{\leq s} = dim R_{\leq s} - dim I_{\leq s}.
+				{}^a HF_{R/I}(s) = dim R_{s} / dim I_{s} = dim R_{s} - dim I_{s}.
 			$$
 		\end{definition}
 		
@@ -156,7 +156,7 @@
 			$$	
 		\end{definition}
 		
-		The smallest integer $s_0$ such that $HF_{R/I}(s_0) \leq 0$ is called the degree of regularity of the ideal $I$.
+		The index of regularity is the smallest integer $s_0$ such that $HF_{R/I}(s_0)$ is equal to a certain polynomial called the Hilbert polynomial. We will denote $H(I)$ as the index or degree of regularity of I.
 		
 		Faugère showed that no reductions to 0 occur in the Macaulay matrix during the F5 algorithm \ref{alg:matrix_f5} until the degree of regularity \cite{F02}.
 		
