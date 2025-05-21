@@ -22,6 +22,7 @@
 \newtheorem{definition}{Definition}[section]
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[section]
+\newtheorem{lemma}{Lemma}[section]
 \newtheorem{example}{Example}[section]
 
 \newcommand{\Mac}[3]{{Mac_{#1, #2}(\mathcal{#3})}}
@@ -435,28 +436,38 @@
 		
 		This algorithm have shown it's effectiveness in practice with good implementations like Bouillaguet and Sauvage's implementation \cite {BS23} that broke records for solving boolean systems on the Fukuaka MQ challenge \cite{MQFUK}.
 		
-	\section{Experimental results}
+	\subsection{Admissible parameters for Crossbred}
 		We tested if small instances of our problem are semi-regular or not using Proposition \ref{PropSemi} and they were not semi-regular. We also remarked that the bilinear criterion \ref{algo:crit} detected reductions to 0 using the original F5 criterion \ref{F5Crit} and Frobenius criterion for systems over $\mathbb{F}_2$ but also detected reductions to 0 on polynomials of degree $n_x$ or $n_y$ according to the algorithms \ref{alg:crit_calc} and \ref{alg:reduc}. In our case, we will use the Crossbred algorithm and we do not think that we will get to these degrees in the Macaulay matrices, so no need to use the bilinear criterion.
 		
 		Even though no concrete complexity analysis is available for the Crossbred algorithm because of it's wide parameters choice, there are some articles that give formal tools to analyze admissible parameters and try to estimate the complexity for these parameters. We choose to focus on the article \cite{VID24} to select valid parameters and estimate the complexity of the algorithm using them.
 		
-		\begin{theorem}
-			Let $H_{m, n}^k(X,Y) = \sum_{d_1 \geq 0, d_2 \geq 0} h_{d1, d2, m}^k X^{d_1}Y^{d_2}$ be the bivariate series with coefficient which is the number of new "independent" polynomials generated during the pre-processing. This series is given by:
+		\begin{theorem}\label{serie_=H}
+			Let $H_{m, n}^k(X,Y) = \sum_{d_1 \geq 0, d_2 \geq 0} h_{d_1, d_2, m}^k X^{d_1}Y^{d_2}$ be the bivariate series with coefficient which is the number of new "independent" polynomials generated during the pre-processing. This series is given by:
 			$$
 				H_{m, n}^k(X, Y) = \frac{1}{Y}\left((1+X)^{n-k} - \frac{(1+XY)^k(1+X)^{n-k}}{(1+X^2Y^2)^m}\right).
 			$$
 		\end{theorem}
 		
-		\begin{proposition}
+		\begin{proposition}\label{serie_G}
 			For fixed values of $m, n \text{ and } k$ the bivariate series $G^{k}_{m,n}(X, Y) = $ \\ $\sum_{d_1 \geq 0, d_2 \geq 0}(\sum_{d_{1}' \leq d_1, d_{2}' \geq d_2} g_{d_{1}',d_{2}',m}^k)X^{d_1}Y^{d_2}$ is given by the formula:
 			$$
 				G^{k}_{m,n}(X, Y) = - \frac{YH_{m, n}^k(X,Y) - H_{m, n}^k(X, 1)}{(1-X)(1-Y)}.
 			$$
-			
 			the coefficient in front of $X^{d_1}Y^{d_2}$ is the number of polynomials generated during the pre-processing step for a given pair $(d_1, d_2)$.
 		\end{proposition}
 		
-		\begin{theorem}
+		We also have that the definition of the coefficient \( h_{d_1, d_2, m}^k \) is given by:
+		\begin{align}
+			h_{d_1, d_2, m}^k =
+			\begin{cases}
+				U_{d_1, d_2, m}^k - M_{d_1, d_2 + 1}^k, & \text{if } d_1 \geq d_2 \geq 0,\ m \geq 1, \\
+				- M_{d_1, 0}, & \text{if } d_1 \geq 0,\ d_2 = -1,\ m \geq 0, \\
+				- M_{d_1, d_2 + 2}^k, & \text{if } d_1 \geq d_2 \geq 0,\ m = 0, \\
+				0, & \text{in all other cases}.
+			\end{cases}
+		\end{align}
+		
+		\begin{theorem}\label{serie_J}
 			Let $\mathcal{F} = {f_1,\dots,f_m}$ be a $\gamma$-strong semi-regular sequence of polynomials in $\mathbb{F}_2[x1,\dots,x_n]$ and consider $D < D_{reg}, d < d_{reg}(k).$ Then $k, D$ and $d$ are potentially admissible parameters for the Crossbred algorithm if the coefficient corresponding to $X^DY^d$ of the following bivariate series
 			$$
 			J_{m, n}^k(X, Y) = \frac{1}{(1-X)(1-Y)}\left(\frac{(1+X^{n-k})(1+XY)^k}{(1+X^2Y^2)^m} - \frac{(1+X)^n}{(1+X^2)^m} - \frac{(1+Y)^k}{(1+Y^2)^m}\right)
@@ -466,11 +477,111 @@
 		
 		We wrote sage scripts that automated the search of admissible parameters using the bivariate series given in \cite{VID24}. We searched for different key sizes to have a rough estimate on the complexity.
 		
-		For the complexity estimate for the precomputation step we took for reference the complexity of block-lanczos and block-wiedemann algorithms which is $\mathcal{O}(n*nnz)$ where $n$ is the number of rows and $nnz$ is the number of non zero elements of the matrix.
+		We discuss more the attacks complexity using Crossbred and different algorithms in the next section.
 		
-		For the space complexity we thought that the best is to consider sparse data storage using CSR format where we store 2 arrays, one array is storing the number of non zero elements per row and the second array stores the columns of the non zero elements. No need to store the coefficients because they are always $1$. So the storage complexity is $\mathcal{O}(nb\_rows + nnz)$ bytes.
+	\section{Security analysis}
+		This section is heavily inspired from the security analysis of the MQOM signature scheme \cite{MQOMv2}.
 		
+		\subsection{Security proofs}
+		To prove the security of a signature schema, one can simulate a game with assumptions and prove that the scheme is not breakable with assumptions on the adversary capabilities and the security goals.
+		
+		There exists 3 main security goals:
+		\begin{itemize}
+			\item \textit{Unbreakability}: the attacker recovers the secret key from the verification key(or public key). It's denoted \textbf{UB}.
+			\item \textit{Universal Unforgeability}: the attacker can produce a valid signature of any message in the message space without necessarily recovering the verification key. It's denoted \textbf{UUF}.
+			\item \textit{Existential Unforgeability}: the attacker creates a message and produces a valid signature of it without necessarily having a choice for the message.
+			It's denoted \textbf{EUF}.
+		\end{itemize}
+		Finally, there are 3 main adversarial models:
+		\begin{itemize}
+			\item \textit{Key-Only Attacks}: The adversary has only access to the verification keys, which is the simplest and unavoidable scenario. It's denoted \textbf{KOA}.
+			\item \textit{Known-Message Attacks}: The adversary has access to a set of messages and their valid signatures. It's denoted \textbf{KMA}. 
+			\item \textit{Chosen-Message Attacks}: The adversary can probe an oracle that can sign any message of his choice and he can request as much as he wants. It's denoted \textbf{CMA}.
+		\end{itemize}
+		The definitions are inspired from Damien Vergnaud's lectures at Sorbonne-Université.
+		
+		The goal of any signature scheme is to be \textbf{EUF-CMA}, which is the strongest security proof. First we prove that the schema is \textbf{UB-KOA}, which is the weakest proof but the easiest.
+		
+		\begin{lemma}\label{UB-KOA}
+			Suppose that the SBC function $\text{SBC}: \mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is ($\tau, \epsilon$)-hard, i.e. there are no $\mathcal{PPT}$ $\mathcal{A}$ with running time upper-bounded by $\tau$ such that the SBC problem is hard to solve for a certain parameter set $(q, n, m)$,
+			\begin{align*}
+				\text{Succ}(\mathcal{A}) = \mathcal{P}\left[
+				\begin{array}{l}
+					(u, v) \leftarrow \mathbb{F}_{q^k}^{2n}, \\
+					(x, y) \leftarrow \mathcal{A}(u, v), \\
+					(x, y) \in \text{SBC}[u, v]
+				\end{array}
+				\right] < \epsilon,
+			\end{align*}
+			then the signature scheme is \textbf{UB-KOA}.
+		\end{lemma}
+		The proof of \ref{UB-KOA} can be found in \ref{appendix:proof}.
+		
+		\begin{theorem}\label{EUF-CMA}
+			Suppose that no adversary can distinguish the PRF used by the protocol from real random bits
+			$$
+				| \mathcal{P}_{seed \in \{0,1\}^n}[b=0 | p \leftarrow PRF(seed)] - \mathcal{P}[b=1 | p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
+			$$
+			Suppose also that the protocol uses a cryptographic hash function which is one-way and does not have collision attacks with better complexity than $\frac{1}{\lambda}$ using a $\mathcal{PPT}$, where $\lambda$ is the number security bits needed for the signature scheme.
+			Finally, suppose that the SBC problem is hard, i.e. the complexity the best attack of the SBC problem has complexity $\frac{1}{\lambda}$ using a $\mathcal{PPT}$.
+			Then, the SBC signature scheme is \textbf{EUF-CMA}.
+		\end{theorem}
+		The proof of \ref{EUF-CMA} can be found in the appendix \ref{appendix:proof}.
+		
+		\subsection{Attacks against SBC signatures}
+		First we need to enumerate the parameters for the signature scheme. The finite field used is $\mathbb{F}_2$ and the vector length $n$ is 130 but we consider the NSBC version so it's 128 in practice with the 2 last coordinates implicitly defined. The field extension used $k$ is 257 which is prime to avoid subfield attacks \cite{Peb24}.
+		
+		For the linear algebra contant $\omega$, we take $\omega = 2.81$ for dense linear algebra using the Strassen algorithm, which is implemented in dense linear boolean algebra software like M4RI and M4RIE \cite{M4RI}.
+		
+		For sparse linear algebra, we suppose the usage of block-Wiedemann algorithm which is the most used widely in software like CADO-NFS \cite{cadonfs} and in XL parallel implementation \cite{NNY17}. The complexity of this algorithm depend on the "blocking factor" that we will denote $\tilde{m}$ and $\tilde{n}$, the size of the matrix denoted $N$ and the number of non-zero elements denoted $nnz$. Most of the algorithm boils down to (sparse $N \times N$ matrix) $\times$ (dense $N$ vector) products. There are 3 phases in the block-Wiedemann algorithm BW1, BW2 and BW3. The reader can refer to \cite{NNY17} for a clear description of these phases. The most costly phase is BW1 where it does $(1/\tilde{n} + 1/\tilde{m})N$ (dense $\tilde{m} \times N$ matrix) x vector products that require $2N\tilde{m}$ operations. The complexity of BW2 and BW3 phases can be negligible compared to BW1. So we estimate the total number of arithmetic operations of the block-Wiedemann algorithm to be $(2(1 + \tilde{n}/\tilde{m})N(nnz + \tilde{m}N))$. \textbf{A préciser et comprendre si possible}.
+		
+		We need also to clarify some properties that we use for the Macaulay matrices. First we know that the number of monomials of degree exactly $d$ (resp. of $\leq d$) in $n$ variables, which is the number of columns of the Macaulay matrix of degree $d$ (resp. of degree $\leq d$), is $\binom{n}{d}$ (resp. $\sum_{i=0}^{d}\binom{n}{d}$) because of the frobenius identity that reduces their number. A good remark is that the number of monomials of system modelisation of SBC problems contain exactly $\frac{n^2}{4} + \frac{n}{2} + 1$ monomials. For the number of rows, we will use bivariate serie G \ref{serie_G}. Finally, we know that Macaulay matrices are very sparse and each row contain at most $(n+1)(n+2)/2$ non zero coefficients.
+		
+		The first attack is exhaustive search which can be done in $\mathcal{O}(ln(n)2^n)$ operations in the field with negligible space complexity \cite{BCC+10}.
+		There is very optimized implementations like libFES by Charles Bouillaguet and there have been implementations on FPGA that broke real world cryptography \cite{DDVY20}.
+		
+		There is also the Hybrid Solve algorithm by Bardet et al. \cite{BFSS13} with average running time $\tilde{\mathcal{O}}(2^{0.792n})$ under some algebraic assumptions like semi-regularity. We do not seem to have this assumption on our systems, but we know thanks to \cite{FSS11} that the degree of regularity upper-bound is lower than for semi-regular systems \textbf{A écrire dans la section de l'article car important et referencer}, but the cost the bilinear criterion seems to be superior to that of the cost of solving \ref{complexCrit} so we will not consider this attack.
+		
+		One type of attack is the probabilistic attacks. The best ones are Dinur's first and second algorithm \cite{Itai21A, Itai21B}.
+		Their complexity is...
+		
+		Finally, the Crossbred algorithm...
 		
 \printbibliography
+
+\appendix
+\section{Security proof}\label{appendix:proof}
+	\begin{lemma}
+		Suppose that the SBC function $\text{SBC}: \mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is ($\tau, \epsilon$)-hard, i.e. there are no $\mathcal{PPT}$ $\mathcal{A}$ with running time upper-bounded by $\tau$ such that the SBC problem is hard to solve for a certain parameter set $(q, n, m)$,
+		\begin{align*}
+			\text{Succ}(\mathcal{A}) = \mathcal{P}\left[
+			\begin{array}{l}
+				(u, v) \leftarrow \mathbb{F}_{q^k}^{2n}, \\
+				(x, y) \leftarrow \mathcal{A}(u, v), \\
+				(x, y) \in \text{SBC}[u, v]
+			\end{array}
+			\right] < \epsilon,
+		\end{align*}
+		then the signature scheme is \textbf{UB-KOA}.
+	\end{lemma}
+	\begin{proof}
+		We need to show that if a $\mathcal{PPT}$ adversary $\mathcal{A}$ can retrieve the private key from the public key, then we can break the SBC function.
+		It's straightforward to show, because if $\mathcal{A}$ can retrieve the private key $(x, y) \in \mathbb{F}_{q}^{2n}$ of a given valid public key $(u, v) \in \mathbb{F}_{q^k}^{2n}$ then no need to convert anything because $(x, y) \in \text{SBC}[u, v]$ directly. So the signature scheme is \textbf{UB-KOA} if the SBC function is ($\tau, \epsilon$)-hard.
+	\end{proof}
+	
+	
+	\begin{theorem}
+		Suppose that no adversary can distinguish the PRF used by the protocol from real random bits
+		$$
+		| \mathcal{P}_{seed \in \{0,1\}^n}[b=0 | p \leftarrow PRF(seed)] - \mathcal{P}[b=1 | p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
+		$$
+		Suppose also that the protocol uses a cryptographic hash function which is one-way and does not have collision attacks with better complexity than $\frac{1}{\lambda}$ using a $\mathcal{PPT}$, where $\lambda$ is the number security bits needed for the signature scheme.
+		Finally, suppose that the SBC problem is hard, i.e. the complexity the best attack of the SBC problem has complexity $\frac{1}{\lambda}$ using a $\mathcal{PPT}$.
+		Then, the SBC signature scheme is \textbf{EUF-CMA}.
+	\end{theorem}
+	\begin{proof}
+		
+	\end{proof}
+
 
 \end{document}
