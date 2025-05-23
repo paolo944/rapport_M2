@@ -548,9 +548,11 @@
 		
 		Finally, the Crossbred algorithm...
 		
-		We need to first compute the number of rows of $\mathcal{M}_{\leq D, \geq d, m}^k(\mathcal{F})$ before and the number of nonzero elements per column for our systems.
+		We need to first compute the number of rows of $\mathcal{M}_{\leq D, \geq d, m}^k(\mathcal{F})$ before and the number of nonzero elements per column for our systems. We focus on this matrix because it's the one on which we apply block-lancszos to find vectors in its co-kernel.
 		The number of rows is bounded by $$nb\_monomials\_\mathcal{M}_{\leq D, \geq d, m}^k = \sum_{i=d+1}^{D}\sum_{j=0}^{d-i} \binom{k}{i} \cdot \binom{n-k}{j}$$
-		Finally, we saw by experiment that the number of monomials present in the our system polynomials is $\frac{n^2}{4} + \frac{n}{2} + 1$ which is the upper-bound for the number of nonzero elements per row.
+		Finally, we saw by experiment that the number of monomials present in the our system polynomials is $\frac{n^2}{4} + \frac{n}{2} + 1$ which is the upper-bound for the number of nonzero elements per row instead of the standard $\mathcal{O}(n^2)$.
+		
+		After finding the vectors, comes the exhaustive search part. We will 
 		
 \printbibliography
 
