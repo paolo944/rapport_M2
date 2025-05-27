@@ -36,7 +36,7 @@
 
 \author{Paul Mekhail\\ \textbf{Advisor:} Sorina Ionica}
 
-\title{Cryptanalysis of post-quantum signature scheme while breaking Dlog}
+\title{Cryptanalysis of SBC based post-quantum signature scheme}
 
 \begin{document}
 	\maketitle
@@ -210,6 +210,8 @@
 		The signature and verification protocol use the MPCitH paradigm, they are described in detail in \cite{HJ23} with proof of soundness, correctness and zero-knowledge.
 		The authors estimate that a good parameter for NSBC problem to be computationally secure are $q = 2, n = 130, k = 257$ using complexity analysis of what they think is the best known cryptanalysis of such problem in \cite{FSS11}.
 		
+		The signature protocol is described in .. with the signature and verification algorithms.
+		
 		\section{Cryptanalysis of the scheme}
 		One of the known attacks given by the authors is through algebraic cryptanalysis.
 		One can model the attack by taking $g$ as the following polynomial
@@ -360,9 +362,15 @@
 		 	Let $m, n_x, n_y \in \mathbb{N}$ such that $m < n_x + n_y$. If Conjecture 1 of \cite{FSS11} is true, then the set of bi-regular sequences $(f_1,...,f_m)$ contains a nonempty Zariski open set. Moreover, if $(f_1,...,f_m)$ is a bi-regular sequence, then there are no reductions to zero with the extended F5 criterion.
 		 \end{theorem}
 		 
-		 Finally, the authors give the following corollary 
+		 An important result of \cite{FSS11} is on the index of regularity of bi-regular systems.
 		 
-		 \begin{corollary}[Corollary 3 in \cite{FSS11}]
+		 \begin{theorem}\label{reg_bi}
+		 	If the system $\mathcal{F}$ is generic, then the degree of regularity of $\mathcal{V}(I)$ is upper bounded by $d_{reg} \leq min(n_x, n_y)$.
+		 \end{theorem}
+		 
+		 Finally, the authors give the following corollary which is the consequence of \ref{reg_bi} by applying the complexity of computing a Gröbner basis given by \cite{Bardet04}.
+		 
+		 \begin{corollary}[Corollary 3 in \cite{FSS11}]\label{complex_bi}
 		 The arithmetic complexity of computing a Gröbner basis of a generic bilinear system $f_1,...,f_{n_x + n_y}$ with the F5 algorithm is bounded by
 		 $$\mathcal{O}\left(\binom{n_x + n_y + min(n_x + 1, n_y + 1)}{min(n_x + 1, n_y + 1)}^\omega\right).$$
 		 \end{corollary}
@@ -414,14 +422,22 @@
 		
 		The algorithm on which I focused on during my internship is Crossbred by Joux and Vitse \cite{JV17}. It mixes the usage of exhaustive search and algebraic algorithms like BooleanSolve hybrid but with a pre-processing step before doing the exhaustive search and applying algebraic algorithms like XL \cite{CKPS00} or it's variants or F5 \cite{F02}.
 		
+		To understand this algorithm, we will need definitions of special Macaulay matrices used by it.
+		
+		We will denote by $deg^k(p)$ the total degree of $p$ in the first $k$ variables.
+		
+		\begin{definition}
+			For a given $\mathcal{F} = \{f_1,\dots,f_m\}$, $Mac_{\leq D, \geq d, m}^k$ is the submatrix of $Mac_{\leq D, m}$ whose rows correspond to a product $uf_i$, $1 \leq i \leq m$, with $deg^k(u) \geq d-1$. Let $\mathcal{M}_{\leq D, \geq d, m}^k$ be the submatrix of $Mac_{\leq D, \geq d, m}^k$ with columns correspond to monomials $m$ such that, $deg^k(m) \geq d+1$.
+		\end{definition}
+		
 		\begin{algorithm}
 			\caption{The CrossBred algorithm}\label{alg:crossbred}
 			\begin{algorithmic}[1]
 				\Require Polynomials $\mathcal{F} = {f_1, \dots, f_m}$ of $n$ variables and integers $D,d,k$
 				\Ensure  A solution for the system if it exists or nothing otherwise.
-				\State Construct $\Mac{arg1}{arg2}{arg3}$
-				\State Compute a basis $(v_1,\dots,v_r)$ if the left kernel of ...
-				\State Construct the polynomials $p_1,\dots,p_r$ corresponding ti ...
+				\State Construct $Mac_{\leq D, \geq d, m}^k(\mathcal{F})$ and $\mathcal{M}_{\leq D, \geq d, m}^k(\mathcal{F})$
+				\State Compute a basis $(v_1,\dots,v_r)$ if the left kernel of $\mathcal{M}_{\leq D, \geq d, m}^k(\mathcal{F})$
+				\State Construct the polynomials $p_1,\dots,p_r$ corresponding to $v_i \cdot Mac_{\leq D, \geq d, m}^k(\mathcal{F})$.
 				\For{$a = (a_{k+1},\dots,a_n) \in \mathbb{F}_{2}^{n-k}$}
 				\State Evaluate the last $n-k$ variables in each $f_i \in \mathcal{F}$ at $(a_{k+1},\dots,a_n)$ and compute $\mathcal{F}*$
 				\State Compute $Mac_{\leq d, m}(\mathcal{F}*)$
@@ -434,7 +450,7 @@
 			\end{algorithmic}
 		\end{algorithm}
 		
-		This algorithm have shown it's effectiveness in practice with good implementations like Bouillaguet and Sauvage's implementation \cite {BS23} that broke records for solving boolean systems on the Fukuaka MQ challenge \cite{MQFUK}.
+		This algorithm have shown it's effectiveness in practice with good implementations like Bouillaguet and Sauvage's implementation \cite {BS23} that broke records for solving boolean systems on the Fukuaka MQ challenge \cite{MQFUK}. Despite that, there are no proven complexity analysis for this algorithm due to it's huge number of possible parameters but we can do some estimations with admissible parameters as we will see in the next section.
 		
 	\subsection{Admissible parameters for Crossbred}
 		We tested if small instances of our problem are semi-regular or not using Proposition \ref{PropSemi} and they were not semi-regular. We also remarked that the bilinear criterion \ref{algo:crit} detected reductions to 0 using the original F5 criterion \ref{F5Crit} and Frobenius criterion for systems over $\mathbb{F}_2$ but also detected reductions to 0 on polynomials of degree $n_x$ or $n_y$ according to the algorithms \ref{alg:crit_calc} and \ref{alg:reduc}. In our case, we will use the Crossbred algorithm and we do not think that we will get to these degrees in the Macaulay matrices, so no need to use the bilinear criterion.
@@ -541,22 +557,42 @@
 		The first attack is exhaustive search which can be done in $\mathcal{O}(ln(n)2^n)$ operations in the field with negligible space complexity \cite{BCC+10}.
 		There is very optimized implementations like libFES by Charles Bouillaguet and there have been implementations on FPGA that broke real world cryptography \cite{DDVY20}.
 		
-		There is also the Hybrid Solve algorithm by Bardet et al. \cite{BFSS13} with average running time $\tilde{\mathcal{O}}(2^{0.792n})$ under some algebraic assumptions like semi-regularity. We do not seem to have this assumption on our systems, but we know thanks to \cite{FSS11} that the degree of regularity upper-bound is lower than for semi-regular systems \textbf{A écrire dans la section de l'article car important et referencer}, but the cost of the bilinear criterion seems to be superior to that of the cost of solving \ref{complexCrit} so we will not consider this attack.
+		There is also the Hybrid Solve algorithm by Bardet et al. \cite{BFSS13} with average running time $\tilde{\mathcal{O}}(2^{0.792n})$ under some algebraic assumptions like semi-regularity. We do not seem to have this assumption on our systems, but we know thanks to \cite{FSS11} that the degree of regularity upper-bound is lower than for semi-regular systems \ref{reg_bi}, but the cost of the bilinear criterion seems to be superior to that of the cost of solving \ref{complexCrit} so we will not consider this attack.
 		
 		One type of attack is the probabilistic attacks. The best ones are Dinur's first and second algorithm \cite{Itai21A, Itai21B}.
-		Their complexity is...
+		The time complexity of Diner's first algorithm is estimated to be $2^{229.19}$. For the second algorithm it is $2^{221.78}$. Of course, these are asymptotic estimations and it can and is very probably an underestimation according to some authors like those of MQOM in their security analysis using these algorithms. We got these estimations from the CryptographicEstimator python library \cite{EVZ+24}.
 		
-		Finally, the Crossbred algorithm...
-		
-		We need to first compute the number of rows of $\mathcal{M}_{\leq D, \geq d, m}^k(\mathcal{F})$ before and the number of nonzero elements per column for our systems. We focus on this matrix because it's the one on which we apply block-lancszos to find vectors in its co-kernel.
+		Now we will estimate attacks based on the Crossbred algorithm. Even though we do not have tight complexity analysis of it, we can do estimations based on some algorithms and common assumptions.
+		We need to first compute the number of rows of $\mathcal{M}_{\leq D, \geq d, m}^k(\mathcal{F})$ and the number of nonzero elements per column for our systems. We focus on this matrix because it's the one on which we apply block-lancszos to find r vectors in its co-kernel.
 		The number of rows is bounded by $$nb\_monomials\_\mathcal{M}_{\leq D, \geq d, m}^k = \sum_{i=d+1}^{D}\sum_{j=0}^{d-i} \binom{k}{i} \cdot \binom{n-k}{j}$$
-		Finally, we saw by experiment that the number of monomials present in the our system polynomials is $\frac{n^2}{4} + \frac{n}{2} + 1$ which is the upper-bound for the number of nonzero elements per row instead of the standard $\mathcal{O}(n^2)$.
+		Finally, we saw by experiment that the number of monomials present in the our system polynomials is $\frac{n^2}{4} + \frac{n}{2} + 1$ which is the upper-bound for the number of nonzero elements per row instead of the standard $\mathcal{O}(n^2)$. The time complexity of this operation is 
+		$$
+		\mathcal{O}\left(\frac{r}{W}max(\frac{n^2}{4} + \frac{n}{2} + 1)c^2/W, c^2\right),
+		$$
+		where $W$ is the machine word size which is 64 on most common machines nowadays and $c$ is the number of rows of $\mathcal{M}(\leq D, \geq d, m)^k$ which is bounded by \textbf{Citer article quand il sera sortie}
+		$$
+			c \leq \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m.
+		$$
+		The authors of \cite{MQOMv2} noticed that if $d \geq 1$, then $\mathcal{M}_{\leq D, \geq d, m}^k$ is a dense matrix, so it's better to just apply strassen to find these vectors. We compute both complexities and take the minimum for our estimations.
+		After finding the vectors, comes the exhaustive search part. First, we compute the specialized system $\mathcal{F}*$ and compute $Mac_{\leq d, m}(\mathcal{F}*)$ and concatenate to the Macaulay matrix the polynomials $\{p_1,\dots,p_r\}$ evaluated and finally we check if the system is full rank by applying XL algorithm using block-wiedemann or just strassen or simply gaussian elimination which is done in hpXbred \cite{BS23}. The most computationally intensive part here is the gaussian elimination that we apply on a matrix almost square matrix of size $\sum_{i=0}^{d}\binom{n-k}{i}$ with complexity $\mathcal{O}(n^3)$ or $\mathcal{O}(n^{2.81})$ using strassen or M4RI algorithms. We then apply these algorithms $2^{n-k}$ times to get an estimation for the time complexity of exhaustive search part.
 		
-		After finding the vectors, comes the exhaustive search part. We will 
+		With all of these estimation, we get a broad estimation for the Crossbred algorithm for a admissible parameters. We wrote sage scripts to compute these estimation which are available in a public github repository
+		\begin{center}
+			\href{http://www.github.com/paolo/MPCitH_SBC}{http://www.github.com/paolo/MPCitH\_SBC}.
+		\end{center}
+		Our best estimations are...\textbf{A suivre}.
 		
+		Finally, the simplest and best attack to our knowledge is to do exhaustive search on all of the $y$ or $x$ variables, then the specialized systems $\mathcal{F}*$ are just linear systems and we could just apply gaussian elimination on it in $\mathcal{O}(n^3)$ operations. The system is of size $257 \times 129$. If the system is full rank, we give the solution, else we continue the exhaustive search. The cost of this attack is 
+		$$
+		\mathcal{O}(2^{128} \cdot 257^{3}) \approx \mathcal{O}(2^{152}).
+		$$
+		One advantage of this attack is that it's memory footprint is negligible.
 \printbibliography
 
 \appendix
+\section{Signature protocol}
+
+
 \section{Security proof}\label{appendix:proof}
 	\begin{lemma}
 		Suppose that the SBC function $\text{SBC}: \mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is ($\tau, \epsilon$)-hard, i.e. there are no $\mathcal{PPT}$ $\mathcal{A}$ with running time upper-bounded by $\tau$ such that the SBC problem is hard to solve for a certain parameter set $(q, n, m)$,
@@ -576,6 +612,7 @@
 		It's straightforward to show, because if $\mathcal{A}$ can retrieve the private key $(x, y) \in \mathbb{F}_{q}^{2n}$ of a given valid public key $(u, v) \in \mathbb{F}_{q^k}^{2n}$ then no need to convert anything because $(x, y) \in \text{SBC}[u, v]$ directly. So the signature scheme is \textbf{UB-KOA} if the SBC function is ($\tau, \epsilon$)-hard.
 	\end{proof}
 	
+	The following proofs have been inspired by the proof of \textbf{EUF-CMA} of SDitH by Thibauld Feneuil \cite{feneu2023}.
 	
 	\begin{theorem}
 		Suppose that no adversary can distinguish the PRF used by the protocol from real random bits
@@ -587,7 +624,7 @@
 		Then, the SBC signature scheme is \textbf{EUF-CMA}.
 	\end{theorem}
 	\begin{proof}
-		
+		\textbf{Il suffit de modeler le schema avec les énoncés de \cite{feneu2023} et hop on peut simplement utiliser ses preuves qui sont assez gnérales pour tout système de signature MPCitH avec une oneway function et une PRF.}
 	\end{proof}
 
 
