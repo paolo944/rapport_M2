@@ -15,7 +15,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{hyperref}
-\usepackage{tcolorbox}
+\usepackage[most]{tcolorbox}
 \usepackage{enumitem}
 \usepackage{fancyvrb}
 \usepackage{multicol}
@@ -598,7 +598,7 @@
 \section{Signature protocol}
 	Here we will show to signature protocol adapted from the identification protocol from \cite{HJ23} in the same format as in \cite{feneu2023} as a 5-round protocol to be able to apply his theorem on EUF-CMA security proof of such protocol.
 		
-		\begin{tcolorbox}[title=Signature Scheme -- Signing algorithm, colback=white, colframe=black]
+		\begin{tcolorbox}[title=Protocol 15: Signing Algorithm, breakable, enhanced, colback=white, colframe=black]
 			\textbf{Inputs:} A public key $x = (\vec{u}, \vec{v})$, a private key $w = (\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ and a message $m \in \{0,1\}^*$.
 			
 			\vspace{0.5em}
@@ -618,16 +618,21 @@
 				\quad $[X_1^{[e]}], [X_2^{[e]}], [Y_1^{[e]}], [Y_2^{[e]}], [R_A^{[e]}], [R_B^{[e]}] \leftarrow \text{Share}(w; r^{[e]}_w)$ \#The shares are in $\mathbb{F}_{q^k}$. \\
 				\quad $[\vec{R}_y^{[e]}], [\vec{R}_y^{[e]}] \leftarrow \text{Share}(w; r^{[e]}_w)$ \#The shares are in $(\mathbb{F}_{q})^n$.
 				
-				\item Compute $X_1, X_2, Y_1, Y_2$ \\
-				\quad $X_1 \leftarrow \sum_{i=1}^{N} [X_1^{[e]}]^{\llbracket i \rrbracket}, X_2 \leftarrow \sum_{i=1}^{N} [X_2^{[e]}]^{\llbracket i \rrbracket}, Y_1 \leftarrow \sum_{i=1}^{N} [Y_1^{[e]}]^{\llbracket i \rrbracket}, Y_2 \leftarrow \sum_{i=1}^{N} [Y_2^{[e]}]^{\llbracket i \rrbracket}$
+				\item Compute $X_1^{[e]}, X_2^{[e]}, Y_1^{[e]}, Y_2^{[e]}$ \\
+				\quad $X_1^{[e]} \leftarrow \sum_{i=1}^{N} [X_1^{[e]}]^{\llbracket i \rrbracket}, X_2^{[e]} \leftarrow \sum_{i=1}^{N} [X_2^{[e]}]^{\llbracket i \rrbracket}, Y_1^{[e]} \leftarrow \sum_{i=1}^{N} [Y_1^{[e]}]^{\llbracket i \rrbracket}, Y_2^{[e]} \leftarrow \sum_{i=1}^{N} [Y_2^{[e]}]^{\llbracket i \rrbracket}$
 				
 				\item Compute $A^{[e]}$ and $B^{[e]}$ and share them: \\
-				\quad $A \leftarrow X_1Y_1 - X_2Y_2$. \\
-				\quad $B \leftarrow X_1(\vec{v} \cdot \vec{y}) + Y_1(\vec{u} \cdot \vec{x}) - X_2(\vec{u} \cdot \vec{y}) - Y_2(\vec{v} \cdot \vec{x})$. \\
-				\quad $\delta_A \leftarrow A - \sum_{i=1}^{N} [R_A^{[e]}]^{\llbracket i \rrbracket}$. \\
-				\quad $\delta_B \leftarrow B - \sum_{i=1}^{N} [R_B^{[e]}]^{\llbracket i \rrbracket}$. \\
-				\quad $\vec{\delta}_x \leftarrow A - \sum_{i=1}^{N} [\vec{R}_x^{[e]}]^{\llbracket i \rrbracket}$. \\
-				\quad $\vec{\delta}_y \leftarrow A - \sum_{i=1}^{N} [\vec{R}_y^{[e]}]^{\llbracket i \rrbracket}$.
+				\quad $A^{[e]} \leftarrow X_1Y_1 - X_2Y_2$. \\
+				\quad $B^{[e]} \leftarrow X_1(\vec{v} \cdot \vec{y}) + Y_1(\vec{u} \cdot \vec{x}) - X_2(\vec{u} \cdot \vec{y}) - Y_2(\vec{v} \cdot \vec{x})$. \\
+				\quad $\delta_A^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [R_A^{[e]}]^{\llbracket i \rrbracket}$. \\
+				\quad $\delta_B^{[e]} \leftarrow B^{[e]} - \sum_{i=1}^{N} [R_B^{[e]}]^{\llbracket i \rrbracket}$. \\
+				\quad $\vec{\delta}_x^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [\vec{R}_x^{[e]}]^{\llbracket i \rrbracket}$. \\
+				\quad $\vec{\delta}_y^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [\vec{R}_y^{[e]}]^{\llbracket i \rrbracket}$.
+				
+				\item Compute random value $t_0^{[e]}$ and share it. \\
+				\quad $[t_0^{[e]}]^{\llbracket i \rrbracket} \leftarrow Hash_0(i || [vec{R}_x^{[e]}]^{\llbracket i \rrbracket}, [\vec{R}_y^{[e]}]^{\llbracket i \rrbracket}, [X_1^{[e]}]^{\llbracket i \rrbracket}, [X_2^{[e]}]^{\llbracket i \rrbracket}, [Y_1^{[e]}]^{\llbracket i \rrbracket}, [Y_2^{[e]}]^{\llbracket i \rrbracket},$ \\ $[R_A^{[e]}]^{\llbracket i \rrbracket}, [R_B^{[e]}]^{\llbracket i \rrbracket} || \vec{\delta}_x^{[e]}, \vec{\delta}_y^{[e]}, \delta_A^{[e]}, \delta_B^{[e]})$. \\
+				\quad $t_0^{[e]} \leftarrow \sum_{i=1}^{N} [t_0^{[e]}]^{\llbracket i \rrbracket}$.
+				
 				
 				\item Compute the commitments \\
 				\quad $\texttt{com}^{[e]}_i := \text{Hash}_0(\texttt{salt}, e, i, [w^{[e]}_i], [g^{[e]}_i])$ \\
@@ -690,6 +695,19 @@
 	\end{proof}
 	
 	The following proofs have been inspired by the proof of \textbf{EUF-CMA} of a generic 5-round protocols by Thibauld Feneuil \cite{feneu2023}.
+	
+	\begin{theorem}[\cite{feneu2023}]
+		Let $\text{Hash}_0, \text{Hash}_1, \text{Hash}_m$ and $\text{Expand}$ be modeled as random oracles, and let $(N, \tau, \lambda, p)$ be parameters of the signature scheme. Let $\mathcal{A}$ be an adversary against the \textbf{EUF-CMA} security of the scheme running in time $t_{\mathcal{A}}$ and making a total of $Q_{RO}$ random oracle queries and $Q_{Sig}$ signing queries. Assuming that $F$ is an $(t_{\mathcal{A}}, \epsilon_{OWF})$-hard one-way function and that PRG is a $(t_{\mathcal{A}}, \epsilon_{PRG})$-secure psuedorandom generator then $\mathcal{A}$'s advantage in the \textbf{EUF-CMA} game is
+		$$
+			\epsilon_{EUF-CMA} \leq \epsilon_{OWF} + \epsilon_{PRG} + \frac{(\tau N + 2)Q^2}{2^{2\lambda}} + Pr[X+Y = \tau],
+		$$
+		where $Q = Q_{RO} + N_{Hash} \cdot Q_{Sig}$ with $N_{Hash} = 2 + \tau(2N - 1)$ the number of hash computations in a signature generation, and where $X, Y$ are defined as
+		\begin{itemize}
+			\item $X = max_{q1 \in \mathcal{Q}_1} \{X_{q1}\} \text{ with } X_{q1} \sim \mathcal{B}\left(\tau, \binom{N}{l+1}p\right)$ and
+			\item $Y = max_{q2 \in \mathcal{Q}_2} \{Y_{q2}\} \text{ with } Y_{q2} \sim \mathcal{B}\left(\tau - X, 1 / \binom{N}{l}\right)$,
+		\end{itemize}
+		where $\mathcal{B}(n_0, p_0)$ denotes the binomial distribution with $n_0$ the number of trials and $p_0$ the success probability of each trial.
+	\end{theorem}
 	
 	\begin{theorem}
 		Suppose that no adversary can distinguish the PRF used by the protocol from real random bits
