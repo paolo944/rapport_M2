@@ -609,9 +609,24 @@
 			$$
 			One important thing to take into account is the size of the coefficients in the arrays. They have to be at least of size $log\left(\sum_{i=0}^{D} \binom{n}{i}\right)$ \textbf{à affiner comme borne}, because it's the number of columns of $Mac_{\leq D, \geq d, m}^k$. So the most accurate estimation is rather
 			$$
-				memory\_footprint \leq \left(\left(\frac{n^2}{4} + \frac{n}{2} + 1\right) + 1\right) \times \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m \times log\left(\sum_{i=0}^{D} \binom{n}{i}\right) \text{ bytes}.
+				memory\_footprint \leq \left(\left(\frac{n^2}{4} + \frac{n}{2} + 1\right) + 1\right) \times \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m \times \lceil \lceil log\left(\sum_{i=0}^{D} \binom{n}{i}\right) \rceil \times \frac{1}{8} \rceil \text{ bytes}.
 			$$
-			\item If we use dense representation, then we could
+			\begin{example}
+				If we have $D = 12, d = 10, n = 256, m = 257, k=176$, the memory\_footprint would be aboult
+				$$
+					\left(\left( \frac{256^2}{4} + \frac{256}{2} + 1 \right) + 1 \right) \times \left(\sum_{i=0}^{12} \binom{256}{i} - \sum_{i=0}^{8} \binom{176}{i}\right) \times 257 \times \lceil \lceil log\left(\sum_{i=0}^{12} \binom{256}{i}\right) \rceil \times \frac{1}{8} \rceil = $$ $$ 5112102637167689483266493844 \approx 2^{92} \text{ bytes}.
+				$$
+			\end{example}
+			\item If we use dense representation, then we could represent each row as a single integer of size $log\left(\sum_{i=0}^{D} \binom{n}{i}\right)$ bits and we would have $\left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m$ of these integers, which is the number of rows. So the memory\_footprint would be
+			$$
+				memory\_footprint \leq \lceil \lceil log\left(\sum_{i=0}^{D} \binom{n}{i}\right) \rceil \times \frac{1}{8} \rceil \times \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m \text{ bytes}.
+			$$
+			\begin{example}
+				If we apply the same last example, this time the footprint would be
+				$$
+					\lceil \lceil log\left(\sum_{i=0}^{12} \binom{256}{i}\right) \rceil \times \frac{1}{8} \rceil \times \left(\sum_{i=0}^{12}\binom{256}{i} - \sum_{i=0}^{8}\binom{176}{i}\right) \times 257 = $$ $$ 309561743803299593270346 \approx 2^{78} \text{ bytes}.
+				$$
+			\end{example}
 		\end{itemize}
 		
 \printbibliography
