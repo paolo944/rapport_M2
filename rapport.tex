@@ -1,3 +1,4 @@
+% !TeX spellcheck = <none>
 % !TXS template
 \documentclass[english]{article}
 \usepackage[T1]{fontenc}
@@ -628,6 +629,10 @@
 				$$
 			\end{example}
 		\end{itemize}
+		
+		These are theoretical estimations and in practice it can be much more. For example, to represent a 67 bit number using the bignum implementation in the GMP library, we would need at least 32 bytes instead of the 9 that we estimated because of memory alignement and the total coast of the structure, but this can be optimized to use less memory for an array usage.
+		
+		\subsubsection{Space complexity of other attacks}
 		
 \printbibliography
 
