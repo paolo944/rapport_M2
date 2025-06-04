@@ -209,7 +209,7 @@
 		\subsection{NSBC variant}
 		
 		The authors also introduce a particular version of this problem called normalized SBC (NSBC) where $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ and
-		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$ to ensure that they are not colinear without needing to regenerate each time they are not. We also denote $(\vec{x}, \vec{y}) \in NSBC[\vec{u}, \vec{v}]$ if $(\vec{x}, \vec{y})$ are solutions to the NSBC problem on $(\vec{u}, \vec{v})$.
+		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$ to ensure that they are not colinear without needing to regenerate each time they are not. We also denote $(\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ if $(\vec{x}, \vec{y})$ are solutions to the NSBC problem on $(\vec{u}, \vec{v})$.
  		
  		\subsection{Keys and parameters estimations}
 		The public key of this signature scheme is $(\vec{u},\vec{v})$ and the private key is $(\vec{x}, \vec{y})$.
@@ -507,25 +507,23 @@
 		\subsection{Security proofs}
 		To prove the security of a signature scheme, one can simulate a game with assumptions and prove that the scheme is not breakable with assumptions on the adversary capabilities and the security goals.
 		
-		There exists 3 main security goals:
+		in the literature, there are three main security goals:
 		\begin{itemize}
-			\item \textit{Unbreakability}: the attacker recovers the secret key from the verification key(or public key). It is denoted \textbf{UB}.
-			\item \textit{Universal Unforgeability}: the attacker can produce a valid signature of any message in the message space without necessarily recovering the verification key. It is denoted \textbf{UUF}.
-			\item \textit{Existential Unforgeability}: the attacker creates a message and produces a valid signature of it without necessarily having a choice for the message.
-			It is denoted \textbf{EUF}.
+			\item \textit{Unbreakability (\textbf{UB})}: the attacker recovers the secret key from the verification key (or public key).
+			\item \textit{Universal Unforgeability (\textbf{UUF})}: the attacker can produce a valid signature of any message in the message space without necessarily recovering the verification key.
+			\item \textit{Existential Unforgeability (\textbf{EUF})}: the attacker creates a message and produces a valid signature of it without necessarily having a choice for the message.
 		\end{itemize}
-		Finally, there are 3 main adversarial models:
+		Finally, there are three main adversarial models:
 		\begin{itemize}
-			\item \textit{Key-Only Attacks}: The adversary has only access to the verification keys, which is the simplest and unavoidable scenario. It is denoted \textbf{KOA}.
-			\item \textit{Known-Message Attacks}: The adversary has access to a set of messages and their valid signatures. It is denoted \textbf{KMA}. 
-			\item \textit{Chosen-Message Attacks}: The adversary can probe an oracle that can sign any message of his choice and he can request as much as he wants. It is denoted \textbf{CMA}.
+			\item \textit{Key-Only Attacks (\textbf{KOA})}: The adversary has only access to the verification keys, which is the simplest and unavoidable scenario.
+			\item \textit{Known-Message Attacks (\textbf{KMA})}: The adversary has access to a set of messages and their valid signatures. 
+			\item \textit{Chosen-Message Attacks (\textbf{CMA})}: The adversary can probe an oracle that can sign any message of his choice and he can request as much as he wants.
 		\end{itemize}
-		The definitions are inspired from Professor Damien Vergnaud's lectures at Sorbonne-Université.
-		
-		The goal of any signature scheme is to be \textbf{EUF-CMA}, which is the strongest security proof. First we prove that the schema is \textbf{UB-KOA}, which is the weakest proof but the easiest.
+
+		When constructing a signature scheme, the goal is to acheive \textbf{EUF-CMA} security, which is the strongest security proof. First we prove that the schema is \textbf{UB-KOA}, which is the weakest proof but the easiest.
 		
 		\begin{lemma}\label{UB-KOA}
-			Suppose that the SBC function $\text{SBC}: \mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is ($\tau, \epsilon$)-hard, i.e. there are no $\mathcal{PPT}$ $\mathcal{A}$ with running time upper-bounded by $\tau$ such that the SBC problem is hard to solve for a certain parameter set $(q, n, m)$,
+			Suppose that the SBC function $\text{SBC}: \mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is ($\tau, \epsilon_{OWF}$)-hard, i.e. there are no $\mathcal{PPT}$ $\mathcal{A}$ with running time upper-bounded by $\tau$ such that the SBC problem is hard to solve for a certain parameter set $(q, n, k)$,
 			\begin{align*}
 				\text{Succ}(\mathcal{A}) = \mathcal{P}\left[
 				\begin{array}{l}
@@ -546,7 +544,7 @@
 			$$
 			Suppose also that the protocol uses a cryptographic hash function which is one-way and does not have collision attacks with better complexity than $2^{\lambda}$ using a $\mathcal{PPT}$, where $\lambda$ is the number security bits needed for the signature scheme.
 			
-			Finally, suppose that the SBC problem is hard, i.e. the complexity of the best attack of the SBC problem has complexity $2^{\lambda}$ using a $\mathcal{PPT}$.
+			Finally, suppose that the SBC problem is hard, i.e. the complexity of the best attack of the SBC problem is $2^{\lambda}$.
 			Then, the SBC signature scheme is \textbf{EUF-CMA}.
 		\end{theorem}
 		The proof of \ref{EUF-CMA} can be found in the appendix \ref{appendix:proof}.
@@ -558,7 +556,7 @@
 		
 		For sparse linear algebra, we suppose the use of block-Wiedemann algorithm which is the most used in software like CADO-NFS \cite{cadonfs} and in XL parallel implementation \cite{NNY17}. The complexity of this algorithm depends on the "blocking factor" that we will denote $\tilde{m}$ and $\tilde{n}$, the size of the matrix denoted $N$ and the number of non-zero elements denoted $nnz$. Most of the algorithm boils down to (sparse $N \times N$ matrix) $\times$ (dense $N$ vector) products. There are 3 phases in the block-Wiedemann algorithm BW1, BW2 and BW3. The reader can refer to \cite{NNY17} for a clear description of these phases. The most costly phase is BW1 where it does $(1/\tilde{n} + 1/\tilde{m})N$ (dense $\tilde{m} \times N$ matrix) x vector products that require $2N\tilde{m}$ operations. The complexity of BW2 and BW3 phases can be negligible compared to BW1. So we estimate the total number of arithmetic operations of the block-Wiedemann algorithm to be $(2(1 + \tilde{n}/\tilde{m})N(nnz + \tilde{m}N))$. In \cite{NNY17}, which describes the only and best implementation of XL using also a good implementation of the block-wiedemann algorithm, they suggest $\tilde{n} = \tilde{m} = 512$ for $\mathbb{F}_2$ and that is what we used for our estimations. \textbf{A préciser et comprendre si possible}.
 		
-		We also need to clarify some properties that we use for the Macaulay matrices. First we know that the number of monomials of degree exactly $d$ (resp. of $\leq d$) in $n$ variables, which is the number of columns of the Macaulay matrix of degree $d$ (resp. of degree $\leq d$), is $\binom{n}{d}$ (resp. $\sum_{i=0}^{d}\binom{n}{d}$) because of the frobenius identity that reduces their number. A good remark is that the number of monomials of system modelisation of SBC problems contain exactly $\frac{n^2}{4} + \frac{n}{2} + 1$ monomials. For the number of rows, we will use the bivariate series G \ref{serie_G}. Finally, we know that Macaulay matrices are very sparse and each row contain at most $(n+1)(n+2)/2$ non zero coefficients.
+		We also need to clarify some properties that we use for the Macaulay matrices. First we know that the number of monomials of degree exactly $d$ (resp. of $\leq d$) in $n$ variables, which is the number of columns of the Macaulay matrix of degree $d$ (resp. of degree $\leq d$), is $\binom{n}{d}$ (resp. $\sum_{i=0}^{d}\binom{n}{d}$) because of the Frobenius identity that reduces their number. A good remark is that the number of monomials of system modelisation of SBC problems contain exactly $\frac{n^2}{4} + \frac{n}{2} + 1$ monomials. For the number of rows, we will use the bivariate series G \ref{serie_G}. Finally, we know that Macaulay matrices are very sparse and each row contain at most $(n+1)(n+2)/2$ non zero coefficients.
 		
 		The first attack is exhaustive search which can be done in $\mathcal{O}(ln(n)2^n)$ operations in the field with negligible space complexity \cite{BCC+10}.
 		There is very optimized implementations like \textit{libFES-lite} \cite{Bouilla22} by Charles Bouillaguet and there have been implementations on FPGA that broke real world cryptography \cite{DDVY20}.
@@ -610,7 +608,7 @@
 			$$
 			One important thing to take into account is the size of the coefficients in the arrays. They have to be at least of size $log\left(\sum_{i=0}^{D} \binom{n}{i}\right)$ \textbf{à affiner comme borne}, because it's the number of columns of $Mac_{\leq D, \geq d, m}^k$. So the most accurate estimation is rather
 			$$
-				memory\_footprint \leq \left(\left(\frac{n^2}{4} + \frac{n}{2} + 1\right) + 1\right) \times \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m \times \lceil \lceil log\left(\sum_{i=0}^{D} \binom{n}{i}\right) \rceil \times \frac{1}{8} \rceil \text{ bytes}.
+				\left(\left(\frac{n^2}{4} + \frac{n}{2} + 1\right) + 1\right) \times \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m \times \lceil \lceil log\left(\sum_{i=0}^{D} \binom{n}{i}\right) \rceil \times \frac{1}{8} \rceil \text{ bytes}.
 			$$
 			\begin{example}
 				If we have $D = 12, d = 10, n = 256, m = 257, k=176$, the memory\_footprint would be aboult
@@ -719,7 +717,7 @@
 
 \section{Security proof}\label{appendix:proof}
 	\begin{lemma}
-		Suppose that the SBC function $\text{SBC}: \mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is ($\tau, \epsilon$)-hard, i.e. there are no $\mathcal{PPT}$ $\mathcal{A}$ with running time upper-bounded by $\tau$ such that the SBC problem is hard to solve for a certain parameter set $(q, n, m)$,
+		Suppose that the SBC function $\text{SBC}: \mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is ($\tau, \epsilon_{OWF}$)-hard, i.e. there are no $\mathcal{PPT}$ $\mathcal{A}$ with running time upper-bounded by $\tau$ such that the SBC problem is hard to solve for a certain parameter set $(q, n, m)$,
 		\begin{align*}
 			\text{Succ}(\mathcal{A}) = \mathcal{P}\left[
 			\begin{array}{l}
