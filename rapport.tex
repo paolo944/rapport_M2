@@ -21,8 +21,15 @@
 \usepackage{fancyvrb}
 \usepackage{multicol}
 \usepackage{stmaryrd}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{caption}
+\usetikzlibrary{arrows.meta, positioning}
 
 \addbibresource{biblio.bib}
+
+\newlength{\participantimgsize}
+\setlength{\participantimgsize}{1.8cm}
 
 \newtheorem{proposition}{Proposition}[section]
 \newtheorem{definition}{Definition}[section]
@@ -48,7 +55,7 @@
 	\maketitle
 	
 	\begin{abstract}
-		The \emph{MPC-in-the-Head} (MPCitH) paradigm, first introduced in~\cite{IKOS07}, has recently gained significant attention—particularly in the second round of NIST’s post-quantum signature standardization process, where 5 out of 14 candidate schemes were based on this approach.
+		The \emph{MPC-in-the-Head} (MPCitH) paradigm, first introduced in \cite{IKOS07}, has recently gained significant attention—particularly in the second round of NIST’s post-quantum signature standardization process, where 5 out of 14 candidate schemes were based on this approach.
 		
 		The core idea of this paradigm is to leverage an NP-relation $\mathcal{R}(x, w)$ to construct a zero-knowledge (ZK) protocol. In such a protocol, a prover $\mathcal{P}$ convinces a verifier $\mathcal{V}$ that they possess a valid witness $w$ for a given public input $x$, without revealing any additional information about $w$.
 		
@@ -58,17 +65,86 @@
 	\end{abstract}
 		
 	\section{MPCitH and SBC signature scheme}
-		In this section, we introduce some standard notations of the field and notions that we will use.
+		This section presents the MPCitH framework, the Subfield Bilinear Collision (SBC) problem, and the associated signature scheme.
 		
-		\subsubsection{Notations}
+		\subsection{Multiparty Computation}
+
 		
-		\begin{itemize}
-			\item Let $\mathbb{F}$ be a finite field and $\mathbb{K}$ a field not necessarily finite. 
-			\item We denote the multivariate polynomial ring defined over a field in $n$ variables $\mathbb{K}[x_1,\dots,x_n] = R$ where $n$ is a positive integer.
-			\item We will use the standard notation for matrix multiplication complexity for a square matrix of size $n$, $\mathcal{O}(n^\omega)$,
-			where $2 \leq \omega \leq 3$.
-			\item Let $R_{s}$ be the polynomials of total degree $s$. $I_{s} = I \cap R_{s}$ where $I$ is an ideal.
-		\end{itemize}
+		A standard example is to make construct a $(N-1)$-private arithmetic circuit among $N$ participants and they all broadcast their results. See figure \ref{fig:mpc}.
+		
+		\begin{figure}[h]
+			\centering
+			\begin{tikzpicture}[
+				participant/.style={
+					thick, 
+					minimum size=2cm, 
+					inner sep=0pt
+				},
+				image/.style={
+					anchor=center
+				},
+				arrow/.style={
+					-{Latex[length=3mm, width=2mm]}, 
+					thick
+				}
+				]
+				
+				% Nœuds des participants avec images
+				\node[participant] (A) at (0,0) {\includegraphics[width=\participantimgsize]{flash.png}};
+				\node[participant] (B) at (2,-3) {\includegraphics[width=\participantimgsize]{hudson.png}};
+				\node[participant] (C) at (5,-3) {\includegraphics[width=\participantimgsize]{martin.png}};
+				\node[participant] (D) at (7,0) {\includegraphics[width=\participantimgsize]{king.png}};
+				\node[participant] (E) at (2,3) {\includegraphics[width=\participantimgsize]{sally.png}};
+				\node[participant] (F) at (5,3) {\includegraphics[width=\participantimgsize]{sheriff.png}};
+				
+				% Communications (flèches)
+				\draw[<->] (A) -- (B);
+				\draw[<->] (A) -- (C);
+				\draw[<->] (A) -- (D);
+				\draw[<->] (A) -- (E);
+				\draw[<->] (A) -- (F);
+				\draw[<->] (B) -- (C);
+				\draw[<->] (B) -- (D);
+				\draw[<->] (B) -- (E);
+				\draw[<->] (B) -- (F);
+				\draw[<->] (C) -- (D);
+				\draw[<->] (C) -- (E);
+				\draw[<->] (C) -- (F);
+				\draw[<->] (D) -- (E);
+				\draw[<->] (D) -- (F);
+				\draw[<->] (E) -- (F);
+				
+				
+			\end{tikzpicture}
+			\caption{MPC protocol with broadcast communication}
+			\label{fig:mpc}
+		\end{figure}
+		
+		To evaluate the circuit that depends on the secret witness $w$, each party holds a secret share $[w]$. They perform local computations on their respective shares, then broadcast the results, which are subsequently combined to obtain the final output.
+		
+		\subsection{MPCitH}
+		
+		The \emph{MPC-in-the-Head} (MPCitH) framework, introduced by~\cite{IKOS07}, is a technique for constructing zero-knowledge proofs. It enables a prover to convince a verifier that they possess a secret witness $w$ for a given public input $x$, without revealing any information about the witness itself.
+		
+		The main idea is to simulate a secure multiparty computation (MPC) protocol internally—\textit{in the head}—of the prover $\mathcal{P}$. This simulation involves a set of fictitious parties who jointly evaluate a circuit that depends on the witness $w$. The verifier $\mathcal{V}$ is then allowed to inspect a subset of the simulated views to ensure the prover is behaving honestly, while maintaining the zero-knowledge property.
+		
+		To represent the secret witness $w$, a linear secret sharing scheme is used among $N$ simulated parties. Each party $i$ receives a random share denoted by $[w]^{\llbracket i \rrbracket}$, and the prover computes an additional correction term defined as:
+		$$
+		\delta_w = w - \sum_{i=1}^{N} [w]^{\llbracket i \rrbracket}.
+		$$
+		This ensures that the full witness can be correctly reconstructed from the shares and the correction term during the simulated execution.
+		
+		Next, the prover $\mathcal{P}$ commits to the views of the $N$ fictitious parties, denoted as $View_i$, and sends these commitments to the verifier $\mathcal{V}$. Each view contains all messages sent and received by the corresponding party during the simulated execution of the MPC protocol.
+		
+		The verifier $\mathcal{V}$ then selects a random index $i \in [1, N]$ and sends it to $\mathcal{P}$. In response, $\mathcal{P}$ opens the views of all parties except the $i$-th one, i.e., for all $i' \in [1, N]$ such that $i' \neq i$.
+		
+		In order for this protocol to satisfy the zero-knowledge property, the underlying MPC protocol must be $(N-1)$-private, meaning that the joint view of any $N-1$ parties reveals no information about the secret witness $w$.
+
+		
+		Since the introduction of the framework, many optimizations have been published to reduce the communication or the computation cost. We will discuss some of them.
+		
+		\subsubsection{GGM tree}
+			
 		
 		\subsection{SBC Problem}
 		The problem is the following: let $q$ be a prime power and two positive integers $k$, $n$.
