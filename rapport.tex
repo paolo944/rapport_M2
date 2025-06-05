@@ -1,4 +1,4 @@
-% !TeX spellcheck = <none>
+% !TeX spellcheck = en_US
 % !TXS template
 \documentclass[english]{article}
 \usepackage[T1]{fontenc}
@@ -420,11 +420,11 @@
 		 We used the computer algebra system SageMath \cite{sagemath} to test numerically when using the F5 extended criterion of \cite{FSS11} becomes negligible compared to the computations of reductions to 0, we see experimentally that $Adv(10, 12) = 2498903$, i.e. the theoretical advantage becomes negligible and it would be advantageous to simply compute reductions to 0 instead of applying the F5 extended criterion. This number grows exponentially with $n$ and $m$. For those who wonder, what would be the estimated theoretical advantage computing reductions to 0 for the parameters given by \cite{HJ23} $Adv(256, 257)$ is a 514 bit number.
 		 
 	\section{Boolean systems}
-		Sometimes, the finite field used is $\mathbb{F}_2$ because it is still supposedly hard to solve but is very easy to use and manipulate on computers. But in such small fields one can begin to use exhaustive search to obtain the solution to the system. The best algorithm known to the authors for exhaustive search for multivariate polynomial system $f_1,\dots,f_m$ over $\mathbb{F}_2[x_1,\dots,x_n]$ is \cite{BCC+10} with a complexity $\mathcal{O}(ln(n)2^n)$. What is remarkable is that the complexity does not implicate the number of polynomials in the system, $m$. There is also a software made by one of the authors, Charles Bouillaguet, that is available online and easy to use, \textit{libFES-lite} \cite{Bouilla22}.
+		Sometimes, the finite field used is $\mathbb{F}_2$ because it is still supposedly hard to solve but is very easy to use and manipulate on computers. But in such small fields one can begin to use exhaustive search to obtain the solution to the system. The best algorithm known to the authors for exhaustive search for multivariate polynomial system $f_1,\dots,f_m$ over $\mathbb{F}_2[x_1,\dots,x_n]$ is \cite{BCC+10} with a complexity $\mathcal{O}(ln(n)2^n)$. What is remarkable is that the complexity does not implicate the number of polynomials in the system, $m$. There is also a software made by one of the authors, Charles Bouillaguet, that is available online and easy to use, \textit{libFES-lite} \cite{Bouilla22} and there have been implementations on FPGA that broke real world cryptography \cite{DDVY20}..
 		
 		Another type of algorithms uses exhaustive search combined with probabilistic algorithms. \cite{LPT+17} gave an algorithm that finds the solution to a polynomial system with complexity $\tilde{\mathcal{O}}(2^{0.8765n})$ which is better than exhaustive search. Even though it is asymptotically better, there are no known implementations because of the huge constant factors present in the complexity that makes it worse than exhaustive search for any systems that can be solved on modern computers. New algorithms have been proposed by Itai Dinur \cite{Itai21A, Itai21B} where the complexity is brought down to $\tilde{\mathcal{O}}(2^{0.6943n})$, but still no implementation known to the authors.
 		
-		The last type is a hybrid algorithms using gröbner basis algorithms and exhaustive search to find solutions. The most known and the best one is BooleanSolve hybrid by Bardet, Faugère, Salvy and Spaenlehauer \cite{BFSS13} where we guess a certain number of variables $k$ and apply F5 algorithm on the specialized systems. Under semi-regularity assumption, the algorithm finds the solution in $\mathcal{O}^(2^{0.792n})$ if $n = m$ and $k = 0.55n$. This is better than exhaustive search, but still, the constant factors are too big for it to be better for systems smaller with less than 200 variables.
+		The last type is a hybrid algorithms using Gröbner basis algorithms and exhaustive search to find solutions. The most known and the best one is BooleanSolve hybrid by Bardet, Faugère, Salvy and Spaenlehauer \cite{BFSS13} where we guess a certain number of variables $k$ and apply F5 algorithm on the specialized systems. Under semi-regularity assumption, the algorithm finds the solution in $\mathcal{O}^(2^{0.792n})$ if $n = m$ and $k = 0.55n$. This is better than exhaustive search, but still, the constant factors are too big for it to be better for systems smaller with less than 200 variables.
 		
 		The algorithm on which I focused on during my internship is Crossbred by Joux and Vitse \cite{JV17}. It mixes the usage of exhaustive search and algebraic algorithms like BooleanSolve hybrid but with a pre-processing step before doing the exhaustive search and applying algebraic algorithms like XL \cite{CKPS00} or it's variants or F5 \cite{F02}.
 		
@@ -497,7 +497,7 @@
 			is non-negative.
 		\end{theorem}
 		
-		We wrote sage scripts that automated the search of admissible parameters using the bivariate series given in \cite{VID24}. We searched for different key sizes to have a rough estimate on the complexity.
+		We wrote SageMath scripts that automated the search of admissible parameters using the bivariate series given in \cite{VID24}. We searched for different key sizes to have a rough estimate on the complexity.
 		
 		We discuss more the attacks complexity using Crossbred and different algorithms in the next section.
 		
@@ -505,9 +505,9 @@
 		This section is heavily inspired from the security analysis of the MQOM signature scheme \cite{MQOMv2}.
 		
 		\subsection{Security proofs}
-		To prove the security of a signature scheme, one can simulate a game with assumptions and prove that the scheme is not breakable with assumptions on the adversary capabilities and the security goals.
+		The security of the signature scheme is demonstrated under standard assumptions regarding the adversary’s capabilities, ensuring that the scheme meets well-defined security goals.
 		
-		in the literature, there are three main security goals:
+		In the literature, there are three main security goals:
 		\begin{itemize}
 			\item \textit{Unbreakability (\textbf{UB})}: the attacker recovers the secret key from the verification key (or public key).
 			\item \textit{Universal Unforgeability (\textbf{UUF})}: the attacker can produce a valid signature of any message in the message space without necessarily recovering the verification key.
@@ -517,13 +517,13 @@
 		\begin{itemize}
 			\item \textit{Key-Only Attacks (\textbf{KOA})}: The adversary has only access to the verification keys, which is the simplest and unavoidable scenario.
 			\item \textit{Known-Message Attacks (\textbf{KMA})}: The adversary has access to a set of messages and their valid signatures. 
-			\item \textit{Chosen-Message Attacks (\textbf{CMA})}: The adversary can probe an oracle that can sign any message of his choice and he can request as much as he wants.
+			\item \textit{Chosen-Message Attacks (\textbf{CMA})}: The adversary can probe an oracle that can sign any message of his choice and he can request as many signatures as he wants.
 		\end{itemize}
 
-		When constructing a signature scheme, the goal is to acheive \textbf{EUF-CMA} security, which is the strongest security proof. First we prove that the schema is \textbf{UB-KOA}, which is the weakest proof but the easiest.
+		In constructing a signature scheme, the objective is to achieve \textbf{EUF-CMA} security, which represents the strongest and most desirable level of security. As a first step, we demonstrate that the scheme satisfies the \textbf{UB-KOA} property, which is a weaker but more tractable security notion.
 		
 		\begin{lemma}\label{UB-KOA}
-			Suppose that the SBC function $\text{SBC}: \mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is ($\tau, \epsilon_{OWF}$)-hard, i.e. there are no $\mathcal{PPT}$ $\mathcal{A}$ with running time upper-bounded by $\tau$ such that the SBC problem is hard to solve for a certain parameter set $(q, n, k)$,
+			Let $(q,n,k)$ be a set of parameters for the NSBC problem. Assume that the NSBC function $\text{NSBC} :\mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is $(\tau, \epsilon_{OWF})$-hard, meaning that no probabilistic polynomial-time ($\mathcal{PPT}$) adversary $mathbb{A}$ running in time at most $\tau$ can solve the NSBC problem with probability greater than $\epsilon_{OWF}$.
 			\begin{align*}
 				\text{Succ}(\mathcal{A}) = \mathcal{P}\left[
 				\begin{array}{l}
@@ -531,21 +531,21 @@
 					(x, y) \leftarrow \mathcal{A}(u, v), \\
 					(x, y) \in \text{SBC}[u, v]
 				\end{array}
-				\right] < \epsilon,
+				\right] < \epsilon_{OWF}.
 			\end{align*}
-			then the signature scheme is \textbf{UB-KOA}.
+			Then the signature scheme is \textbf{UB-KOA}.
 		\end{lemma}
 		The proof of \ref{UB-KOA} can be found in \ref{appendix:proof}.
 		
 		\begin{theorem}\label{EUF-CMA}
-			Suppose that no adversary can distinguish the PRF used by the protocol from real random bits
+			Assume that no adversary can distinguish the output of the pseudorandom function (PRF) used in the protocol from truly random bits. The adversary outputs a bit $b$, where $b=0$ indicates that they believe the bits originate from the PRF, and $b=1$ indicates they believe the bits are uniformly random
 			$$
 				| \mathcal{P}_{seed \in \{0,1\}^n}[b=0 | p \leftarrow PRF(seed)] - \mathcal{P}[b=1 | p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
 			$$
 			Suppose also that the protocol uses a cryptographic hash function which is one-way and does not have collision attacks with better complexity than $2^{\lambda}$ using a $\mathcal{PPT}$, where $\lambda$ is the number security bits needed for the signature scheme.
 			
-			Finally, suppose that the SBC problem is hard, i.e. the complexity of the best attack of the SBC problem is $2^{\lambda}$.
-			Then, the SBC signature scheme is \textbf{EUF-CMA}.
+			Finally, suppose that the NSBC problem is hard, i.e. the complexity of the best attack of the NSBC problem is $2^{\lambda}$.
+			Then, the NSBC signature scheme is \textbf{EUF-CMA}.
 		\end{theorem}
 		The proof of \ref{EUF-CMA} can be found in the appendix \ref{appendix:proof}.
 		
@@ -554,20 +554,12 @@
 		
 		For the linear algebra constant $\omega$, we take $\omega = 2.81$ for dense linear algebra using the Strassen algorithm, which is implemented in dense linear boolean algebra software like M4RI and M4RIE \cite{M4RI}.
 		
-		For sparse linear algebra, we suppose the use of block-Wiedemann algorithm which is the most used in software like CADO-NFS \cite{cadonfs} and in XL parallel implementation \cite{NNY17}. The complexity of this algorithm depends on the "blocking factor" that we will denote $\tilde{m}$ and $\tilde{n}$, the size of the matrix denoted $N$ and the number of non-zero elements denoted $nnz$. Most of the algorithm boils down to (sparse $N \times N$ matrix) $\times$ (dense $N$ vector) products. There are 3 phases in the block-Wiedemann algorithm BW1, BW2 and BW3. The reader can refer to \cite{NNY17} for a clear description of these phases. The most costly phase is BW1 where it does $(1/\tilde{n} + 1/\tilde{m})N$ (dense $\tilde{m} \times N$ matrix) x vector products that require $2N\tilde{m}$ operations. The complexity of BW2 and BW3 phases can be negligible compared to BW1. So we estimate the total number of arithmetic operations of the block-Wiedemann algorithm to be $(2(1 + \tilde{n}/\tilde{m})N(nnz + \tilde{m}N))$. In \cite{NNY17}, which describes the only and best implementation of XL using also a good implementation of the block-wiedemann algorithm, they suggest $\tilde{n} = \tilde{m} = 512$ for $\mathbb{F}_2$ and that is what we used for our estimations. \textbf{A préciser et comprendre si possible}.
+		For sparse linear algebra, we suppose the use of block-Wiedemann algorithm which is the most used in software like CADO-NFS \cite{cadonfs} and in XL parallel implementation \cite{NNY17}. The complexity of this algorithm depends on the "blocking factor" that we will denote $\tilde{m}$ and $\tilde{n}$, the size of the matrix denoted $N$ and the number of non-zero elements denoted $nnz$. Most of the algorithm boils down to (sparse $N \times N$ matrix) $\times$ (dense $N$ vector) products. There are 3 phases in the block-Wiedemann algorithm BW1, BW2 and BW3. The reader can refer to \cite{NNY17} for a clear description of these phases. The most costly phase is BW1 where it does $(1/\tilde{n} + 1/\tilde{m})N$ (dense $\tilde{m} \times N$ matrix) x vector products that require $2N\tilde{m}$ operations. The complexity of BW2 and BW3 phases can be negligible compared to BW1. So we estimate the total number of arithmetic operations of the block-Wiedemann algorithm to be $(2(1 + \tilde{n}/\tilde{m})N(nnz + \tilde{m}N))$. In \cite{NNY17}, which describes the only and best implementation of XL using also a good implementation of the block-Wiedemann algorithm, they suggest $\tilde{n} = \tilde{m} = 512$ for $\mathbb{F}_2$ and that is what we used for our estimations. \textbf{A préciser et comprendre si possible}.
 		
 		We also need to clarify some properties that we use for the Macaulay matrices. First we know that the number of monomials of degree exactly $d$ (resp. of $\leq d$) in $n$ variables, which is the number of columns of the Macaulay matrix of degree $d$ (resp. of degree $\leq d$), is $\binom{n}{d}$ (resp. $\sum_{i=0}^{d}\binom{n}{d}$) because of the Frobenius identity that reduces their number. A good remark is that the number of monomials of system modelisation of SBC problems contain exactly $\frac{n^2}{4} + \frac{n}{2} + 1$ monomials. For the number of rows, we will use the bivariate series G \ref{serie_G}. Finally, we know that Macaulay matrices are very sparse and each row contain at most $(n+1)(n+2)/2$ non zero coefficients.
 		
-		The first attack is exhaustive search which can be done in $\mathcal{O}(ln(n)2^n)$ operations in the field with negligible space complexity \cite{BCC+10}.
-		There is very optimized implementations like \textit{libFES-lite} \cite{Bouilla22} by Charles Bouillaguet and there have been implementations on FPGA that broke real world cryptography \cite{DDVY20}.
-		
-		There is also the Hybrid Solve algorithm by Bardet et al. \cite{BFSS13} with average running time $\tilde{\mathcal{O}}(2^{0.792n})$ under some algebraic assumptions like semi-regularity. We do not seem to have this assumption on our systems, but we know thanks to \cite{FSS11} that the degree of regularity upper-bound is lower than for semi-regular systems \ref{reg_bi}, but the cost of the bilinear criterion seems to be superior to that of the cost of solving \ref{complexCrit} so we will not consider this attack.
-		
-		One type of attack is the probabilistic attacks. The best ones are Dinur's first and second algorithm \cite{Itai21A, Itai21B}.
-		The time complexity of Diner's first algorithm is estimated to be $2^{229.19}$. For the second algorithm it is $2^{221.78}$. Of course, these are asymptotic estimations and it can and is very probably an underestimation according to some authors like those of MQOM in their security analysis using these algorithms. We got these estimations from the CryptographicEstimator python library \cite{EVZ+24}.
-		
 		Now we will estimate attacks based on the Crossbred algorithm. Even though we do not have tight complexity analysis of it, we can do estimations based on some algorithms and common assumptions.
-		We need to first compute the number of rows of $\mathcal{M}_{\leq D, \geq d, m}^k(\mathcal{F})$ and the number of nonzero elements per column for our systems. We focus on this matrix because it is the one on which we apply block-lancszos to find r vectors in its co-kernel.
+		We need to first compute the number of rows of $\mathcal{M}_{\leq D, \geq d, m}^k(\mathcal{F})$ and the number of nonzero elements per column for our systems. We focus on this matrix because it is the one on which we apply block-Lancszos to find r vectors in its co-kernel.
 		The number of rows is bounded by $$nb\_monomials\_\mathcal{M}_{\leq D, \geq d, m}^k = \sum_{i=d+1}^{D}\sum_{j=0}^{d-i} \binom{k}{i} \cdot \binom{n-k}{j}$$
 		Finally, we saw by experiment that the number of monomials present in the our system polynomials is $\frac{n^2}{4} + \frac{n}{2} + 1$ which is the upper-bound for the number of nonzero elements per row instead of the standard $\mathcal{O}(n^2)$. The time complexity of this operation is 
 		$$
@@ -577,16 +569,16 @@
 		$$
 			c \leq \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m.
 		$$
-		The authors of \cite{MQOMv2} noticed that if $d \geq 1$, then $\mathcal{M}_{\leq D, \geq d, m}^k$ is a dense matrix, so it is better to just apply strassen to find these vectors. We compute both complexities and take the minimum for our estimations.
-		After finding the vectors, comes the exhaustive search part. First, we compute the specialized system $\mathcal{F}*$ and compute $Mac_{\leq d, m}(\mathcal{F}*)$ and concatenate to the Macaulay matrix the polynomials $\{p_1,\dots,p_r\}$ evaluated and finally we check if the system is full rank by applying XL algorithm using block-wiedemann or just strassen or simply gaussian elimination which is done in \textit{hpXbred} \cite{BS23}. The most computationally intensive part here is the gaussian elimination that we apply on a matrix almost square matrix of size $\sum_{i=0}^{d}\binom{n-k}{i}$ with complexity $\mathcal{O}(n^3)$ or $\mathcal{O}(n^{2.81})$ using strassen or M4RI algorithms. We then apply these algorithms $2^{n-k}$ times to get an estimation for the time complexity of exhaustive search part.
+		The authors of \cite{MQOMv2} noticed that if $d \geq 1$, then $\mathcal{M}_{\leq D, \geq d, m}^k$ is a dense matrix, so it is better to just apply Strassen to find these vectors. We compute both complexities and take the minimum for our estimations.
+		After finding the vectors, comes the exhaustive search part. First, we compute the specialized system $\mathcal{F}*$ and compute $Mac_{\leq d, m}(\mathcal{F}*)$ and concatenate to the Macaulay matrix the polynomials $\{p_1,\dots,p_r\}$ evaluated and finally we check if the system is full rank by applying XL algorithm using block-Wiedemann or just Strassen or simply Gaussian elimination which is done in \textit{hpXbred} \cite{BS23}. The most computationally intensive part here is the Gaussian elimination that we apply on a matrix almost square matrix of size $\sum_{i=0}^{d}\binom{n-k}{i}$ with complexity $\mathcal{O}(n^3)$ or $\mathcal{O}(n^{2.81})$ using Strassen or M4RI algorithms. We then apply these algorithms $2^{n-k}$ times to get an estimation for the time complexity of exhaustive search part.
 		
-		With all of these estimation, we get a broad estimation for the Crossbred algorithm for a admissible parameters. We wrote sage scripts to compute these estimation which are available in a public github repository
+		With all of these estimation, we get a broad estimation for the Crossbred algorithm for a admissible parameters. We wrote SageMath scripts to compute these estimation which are available in a public github repository
 		\begin{center}
 			\href{http://www.github.com/paolo/MPCitH_SBC}{http://www.github.com/paolo/MPCitH\_SBC}.
 		\end{center}
 		Our best estimations are...\textbf{A suivre}.
 		
-		Finally, the simplest and best attack to our knowledge is to do exhaustive search on all of the $y$ or $x$ variables, then the specialized systems $\mathcal{F}*$ are just linear systems and we could just apply gaussian elimination or system solving using M4RI \cite{M4RI} on it in $\mathcal{O}(n^{log(7)})$ operations. The system is of size $257 \times 129$. If the system is full rank, we give the solution, else we continue the exhaustive search. The cost of this attack is 
+		Finally, the simplest and best attack to our knowledge is to do exhaustive search on all of the $y$ or $x$ variables, then the specialized systems $\mathcal{F}*$ are just linear systems and we could just apply Gaussian elimination or system solving using M4RI \cite{M4RI} on it in $\mathcal{O}(n^{log(7)})$ operations. The system is of size $257 \times 129$. If the system is full rank, we give the solution, else we continue the exhaustive search. The cost of this attack is 
 		$$
 		\mathcal{O}(2^{128} \cdot 257^{log(7)}) \approx \mathcal{O}(2^{150.5}).
 		$$
@@ -594,14 +586,19 @@
 		
 		\subsection{Memory footprint of the attacks}
 		
-		One important thing to consider for practical implementations of attacks is the memory footprint. There exist a lot of algorithms that are either galactic, i.e. that have good asymptotic complexity but will never be used in practice because of big-Oh factors, famous examples of galactic algorithms are matrix multiplication in $\mathcal{O}(n^{2.371552})$ \cite{WXXZ23} or integer multiplication in $\mathcal{O}(nlog(n))$ \cite{HH21}. Other algorithms can be very practical but necessitate a huge amount of memory like birthday attacks or rainbow table attacks on hash functions thus making them impractical.
+		One important consideration for practical implementations of cryptographic attacks is the memory footprint. In the literature, many algorithms are classified as \emph{galactic}, meaning that although they exhibit favorable asymptotic complexity, they are unlikely to be used in practice due to large constant factors hidden in the big-O notation. Well-known examples of galactic algorithms include matrix multiplication in $\mathcal{O}(n^{2.371552})$~\cite{WXXZ23} and integer multiplication in $\mathcal{O}(n \log n)$~\cite{HH21}. 
 		
+		On the other hand, some algorithms are practically efficient in terms of computation but require an enormous amount of memory, such as birthday attacks or rainbow table attacks on hash functions, which often renders them impractical in real-world scenarios.
+	
 		In this section we discuss the memory needed by the Crossbred algorithm to attack the SBC signature scheme.
 		
-		First, we need to construct $Mac_{\leq D, \geq d, m}^k$ and $\mathcal{M}_{\leq D, \geq d, m}^k$, but the second is by definition a sub matrix of the first, so we would only need to construct the first. We can construct $\mathcal{M}_{\leq D, \geq d, m}^k$ by only manipulating pointers on $Mac_{\leq D, \geq d, m}^k$ for example. So, the important memory footprint that we need to consider in the first part is the one of $Mac_{\leq D, \geq d, m}^k$. Let us consider the following cases
+		We first need to construct $Mac_{\leq D, \geq d, m}^k$, and then consider its submatrix $\mathcal{M}_{\leq D, \geq d, m}^k$. In practice, $\mathcal{M}_{\leq D, \geq d, m}^k$ can be obtained by manipulating pointers to $Mac_{\leq D, \geq d, m}^k$, without duplicating data. Therefore, the primary memory footprint to consider at this stage is that of $Mac_{\leq D, \geq d, m}^k$. 
+		
+		Let us now analyze the following cases:
 		\begin{itemize}
-			\item We use the sparse representation. Then we can use the CSR representation which needs to store an array of column index of the non-zero $col\_index$ elements and an array containing the number of non-zero elements per row $row\_index$. We do not need a third array of coefficients because all the non-zero coefficients are equal to 1.
-			The size of $col\_index$ is $nnz$ and the size of $row\_index$ is the number of rows of the matrix.
+			\item We use a sparse matrix representation based on the Compressed Sparse Row (CSR) format, which requires storing two arrays: the array of column indices of non-zero elements, denoted as \texttt{col\_index}, and the array that indicates the number of non-zero elements per row, denoted as \texttt{row\_index}. A third array for storing the actual coefficients is not needed, since all non-zero entries are equal to 1.
+			
+			The size of \texttt{col\_index} is $nnz$ and the size of \texttt{row\_index} is the number of rows of the matrix.
 			So, the memory footprint for the storage of $Mac_{\leq D, \geq d, m}^k$ is in our case
 			$$
 				memory\_footprint \leq \left(\left(\frac{n^2}{4} + \frac{n}{2} + 1\right) + 1\right) \times \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m \times 4 \text{ bytes}.
@@ -610,8 +607,8 @@
 			$$
 				\left(\left(\frac{n^2}{4} + \frac{n}{2} + 1\right) + 1\right) \times \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m \times \lceil \lceil log\left(\sum_{i=0}^{D} \binom{n}{i}\right) \rceil \times \frac{1}{8} \rceil \text{ bytes}.
 			$$
-			\begin{example}
-				If we have $D = 12, d = 10, n = 256, m = 257, k=176$, the memory\_footprint would be aboult
+			\begin{example}\label{exempleCSR}
+				If we have $D = 12, d = 10, n = 256, m = 257, k=176$, the memory\_footprint would be:
 				$$
 					\left(\left( \frac{256^2}{4} + \frac{256}{2} + 1 \right) + 1 \right) \times \left(\sum_{i=0}^{12} \binom{256}{i} - \sum_{i=0}^{8} \binom{176}{i}\right) \times 257 \times \lceil \lceil log\left(\sum_{i=0}^{12} \binom{256}{i}\right) \rceil \times \frac{1}{8} \rceil = $$ $$ 5112102637167689483266493844 \approx 2^{92} \text{ bytes}.
 				$$
@@ -621,7 +618,7 @@
 				memory\_footprint \leq \lceil \lceil log\left(\sum_{i=0}^{D} \binom{n}{i}\right) \rceil \times \frac{1}{8} \rceil \times \left(\sum_{i=0}^{D}\binom{n}{i} - \sum_{i=0}^{d-2}\binom{k}{i}\right)m \text{ bytes}.
 			$$
 			\begin{example}
-				If we apply the same last example, this time the footprint would be
+				For the parameter choice in Example \ref{exempleCSR}, the memory footprint of the dense representation would be:
 				$$
 					\lceil \lceil log\left(\sum_{i=0}^{12} \binom{256}{i}\right) \rceil \times \frac{1}{8} \rceil \times \left(\sum_{i=0}^{12}\binom{256}{i} - \sum_{i=0}^{8}\binom{176}{i}\right) \times 257 = $$ $$ 309561743803299593270346 \approx 2^{78} \text{ bytes}.
 				$$
@@ -716,19 +713,7 @@
 	
 
 \section{Security proof}\label{appendix:proof}
-	\begin{lemma}
-		Suppose that the SBC function $\text{SBC}: \mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is ($\tau, \epsilon_{OWF}$)-hard, i.e. there are no $\mathcal{PPT}$ $\mathcal{A}$ with running time upper-bounded by $\tau$ such that the SBC problem is hard to solve for a certain parameter set $(q, n, m)$,
-		\begin{align*}
-			\text{Succ}(\mathcal{A}) = \mathcal{P}\left[
-			\begin{array}{l}
-				(u, v) \leftarrow \mathbb{F}_{q^k}^{2n}, \\
-				(x, y) \leftarrow \mathcal{A}(u, v), \\
-				(x, y) \in \text{SBC}[u, v]
-			\end{array}
-			\right] < \epsilon,
-		\end{align*}
-		then the signature scheme is \textbf{UB-KOA}.
-	\end{lemma}
+	Proof of Lemma \ref{UB-KOA}:
 	\begin{proof}
 		We need to show that if a $\mathcal{PPT}$ adversary $\mathcal{A}$ can retrieve the private key from the public key, then we can break the SBC function.
 		It is straightforward to show, because if $\mathcal{A}$ can retrieve the private key $(x, y) \in \mathbb{F}_{q}^{2n}$ of a given valid public key $(u, v) \in \mathbb{F}_{q^k}^{2n}$ then no need to convert anything because $(x, y) \in \text{SBC}[u, v]$ directly. So the signature scheme is \textbf{UB-KOA} if the SBC function is ($\tau, \epsilon$)-hard.
@@ -749,15 +734,7 @@
 		where $\mathcal{B}(n_0, p_0)$ denotes the binomial distribution with $n_0$ the number of trials and $p_0$ the success probability of each trial.
 	\end{theorem}
 	
-	\begin{theorem}
-		Suppose that no adversary can distinguish the PRF used by the protocol from real random bits
-		$$
-		| \mathcal{P}_{seed \in \{0,1\}^n}[b=0 | p \leftarrow PRF(seed)] - \mathcal{P}[b=1 | p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
-		$$
-		Suppose also that the protocol uses a cryptographic hash function which is one-way and does not have collision attacks with better complexity than $\frac{1}{\lambda}$ using a $\mathcal{PPT}$, where $\lambda$ is the number security bits needed for the signature scheme.
-		Finally, suppose that the SBC problem is hard, i.e. the complexity the best attack of the SBC problem has complexity $\frac{1}{\lambda}$ using a $\mathcal{PPT}$.
-		Then, the SBC signature scheme is \textbf{EUF-CMA}.
-	\end{theorem}
+	Proof of theorem \ref{EUF-CMA}:
 	\begin{proof}
 		\textbf{Il suffit de modeler le schema avec les énoncés de \cite{feneu2023} et hop on peut simplement utiliser ses preuves qui sont assez gnérales pour tout système de signature MPCitH avec une oneway function et une PRF.}
 		
