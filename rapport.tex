@@ -47,11 +47,15 @@
 \begin{document}
 	\maketitle
 	
-	\section{Introduction}
-		The MPC in the head paradigm is a new framework introduced in \cite{IKOS07} which is in vogue recently as we saw in NIST's second round competition for post-quantum signature schemes where 5 of the 14 candidates are based on this paradigm.
-		The general idea is to use a NP-relation $\mathcal{R}(x, w)$ to obtain a ZK-protocol in which a prover $\mathcal{P}$ convinces a verifier $\mathcal{V}$ that she knows a valid witness $w$ for a given (public) value of $x$ without revealing any information about $x$.
-		In \cite{HJ23}, the authors introduce a problem called subfield bilinear collision problem (SBC) which originates from the discrete logarithm problem and constructed a post-quantum signature scheme based on this problem using the MPCitH framework.
-		The goal of this internship is to perform a cryptanalysis of this signature scheme and try to improve it.
+	\begin{abstract}
+		The \emph{MPC-in-the-Head} (MPCitH) paradigm, first introduced in~\cite{IKOS07}, has recently gained significant attention—particularly in the second round of NIST’s post-quantum signature standardization process, where 5 out of 14 candidate schemes were based on this approach.
+		
+		The core idea of this paradigm is to leverage an NP-relation $\mathcal{R}(x, w)$ to construct a zero-knowledge (ZK) protocol. In such a protocol, a prover $\mathcal{P}$ convinces a verifier $\mathcal{V}$ that they possess a valid witness $w$ for a given public input $x$, without revealing any additional information about $w$.
+		
+		In~\cite{HJ23}, the authors introduced the \emph{Subfield Bilinear Collision} (SBC) problem, which is rooted in the hardness of the discrete logarithm problem \cite{Joux13}. Based on this assumption, they proposed a post-quantum signature scheme constructed using the MPCitH framework.
+		
+		The objective of this internship is to conduct a cryptanalysis of this scheme, assess its security and efficiency, and explore potential improvements.
+	\end{abstract}
 		
 	\section{Preliminaries and notations}
 		In this section, we introduce some standard notations of the field and notions that we will use.
