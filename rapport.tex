@@ -57,7 +57,7 @@
 		The objective of this internship is to conduct a cryptanalysis of this scheme, assess its security and efficiency, and explore potential improvements.
 	\end{abstract}
 		
-	\section{Preliminaries and notations}
+	\section{MPCitH and SBC signature scheme}
 		In this section, we introduce some standard notations of the field and notions that we will use.
 		
 		\subsubsection{Notations}
@@ -70,7 +70,26 @@
 			\item Let $R_{s}$ be the polynomials of total degree $s$. $I_{s} = I \cap R_{s}$ where $I$ is an ideal.
 		\end{itemize}
 		
-		\subsection{Gröbner basis theory}
+		\subsection{SBC Problem}
+		The problem is the following: let $q$ be a prime power and two positive integers $k$, $n$.
+		\newline
+		Given two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$, which are linearly independent over $\mathbb{F}_q$, find two non-colinear vectors $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ such that $$(\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) = (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x})$$
+		where $(\cdot)$ is the dot product between 2 vectors.
+		We denote an instance of the SBC problem given by two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$ by $\text{SBC}[\vec{u}, \vec{v}]$. If the vectors $\vec{x},\vec{y} \in (\mathbb{F}_q)^n$ are solution of $\text{SBC}[\vec{u},\vec{v}]$, we use the notation $(\vec{x}, \vec{y}) \in \text{SBC}[\vec{u}, \vec{v}]$.
+		
+		\subsection{NSBC variant}
+		
+		The authors also introduce a particular version of this problem called normalized SBC (NSBC) where $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ and
+		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$ to ensure that they are not colinear without needing to regenerate each time they are not. We also denote $(\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ if $(\vec{x}, \vec{y})$ are solutions to the NSBC problem on $(\vec{u}, \vec{v})$.
+		
+		\subsection{Keys and parameters estimations}
+		The public key of this signature scheme is $(\vec{u},\vec{v})$ and the private key is $(\vec{x}, \vec{y})$.
+		The signature and verification protocol use the MPCitH paradigm, they are described in detail in \cite{HJ23} with proof of soundness, correctness and zero-knowledge.
+		The authors estimate that a good parameter for NSBC problem to be computationally secure are $q = 2, n = 130, k = 257$ using complexity analysis of what they think is the best known cryptanalysis of such problem in \cite{FSS11}.
+		
+		The signature protocol is described in .. with the signature and verification algorithms.
+		
+	\section{Polynomial system solving}
 		Gröbner basis theory was first introduced by Buchberger in his thesis \cite{Buc} and he gave an algorithm to compute the Gröbner basis of an ideal.
 		Gröbner basis algorithms like Buchberger's Algorithm \cite{Buc}, are used to find solutions for polynomial systems using algebraic geometry tools. For a gentle introduction to this subject \cite{CLS}.
 		
@@ -202,88 +221,13 @@
 			\end{itemize}
 		\end{proposition}
 		
-	\section{SBC Signature Scheme}
-		\subsection{SBC Problem}
-		The problem is the following: let $q$ be a prime power and two positive integers $k$, $n$.
-		\newline
-		Given two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$, which are linearly independent over $\mathbb{F}_q$, find two non-colinear vectors $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ such that $$(\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) = (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x})$$
-		where $(\cdot)$ is the dot product between 2 vectors.
-		We denote an instance of the SBC problem given by two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$ by $\text{SBC}[\vec{u}, \vec{v}]$. If the vectors $\vec{x},\vec{y} \in (\mathbb{F}_q)^n$ are solution of $\text{SBC}[\vec{u},\vec{v}]$, we use the notation $(\vec{x}, \vec{y}) \in \text{SBC}[\vec{u}, \vec{v}]$.
-		
-		\subsection{NSBC variant}
-		
-		The authors also introduce a particular version of this problem called normalized SBC (NSBC) where $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ and
-		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$ to ensure that they are not colinear without needing to regenerate each time they are not. We also denote $(\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ if $(\vec{x}, \vec{y})$ are solutions to the NSBC problem on $(\vec{u}, \vec{v})$.
- 		
- 		\subsection{Keys and parameters estimations}
-		The public key of this signature scheme is $(\vec{u},\vec{v})$ and the private key is $(\vec{x}, \vec{y})$.
-		The signature and verification protocol use the MPCitH paradigm, they are described in detail in \cite{HJ23} with proof of soundness, correctness and zero-knowledge.
-		The authors estimate that a good parameter for NSBC problem to be computationally secure are $q = 2, n = 130, k = 257$ using complexity analysis of what they think is the best known cryptanalysis of such problem in \cite{FSS11}.
-		
-		The signature protocol is described in .. with the signature and verification algorithms.
-		
-		\section{Cryptanalysis of the scheme}
-		One of the known attacks given by the authors is through algebraic cryptanalysis.
-		One can model the attack by taking $g$ as the following polynomial
-		$$
-		g(x_1,...,x_n,y_1,...,y_n) := (\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) - (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x}).
-		$$
-		We consider
-		$$
-		g(x_1,..,x_{n-2},y_1,..,y_{n-2}) := (\sum_{i = 1}^{n-2}u_{i}x_{i} + u_{n-1})(\sum_{i = 1}^{n-2}v_{i}y_{i} + v_{n}) - (\sum_{i = 1}^{n-2}u_{i}y_{i} + u_{n})(\sum_{i = 1}^{n-2}v_{i}x_{i} + v_{n-1}).
-		$$
-		
-		Then, one can perform a Weil descent on the polynomial $g$ because $\mathbb{F}_{q^k}$ is a $\mathbb{F}_q$-vector space and obtain the polynomial system
-		
-
-		\begin{align}
-			g_1(x_1, \dots, x_{n-2},& y_1, \dots, y_{n-2}) = 0 \notag \\
-			&\vdots \notag \\
-			g_k(x_1, \dots, x_{n-2},& y_1, \dots, y_{n-2}) = 0 \notag
-		\end{align}
-		
-		where $g_i$ are polynomials with coefficients in $\mathbb{F}_q$.
-		
-		The most straightforward cryptanalysis of this type of systems is to perform a Gröbner basis algorithm like Buchberger's algorithm \cite{Buc}, Faugère's F4 \cite{F99}, F5 \cite{F02} or their multiple variants \cite{EF19}.
-		
-		Huth and Joux cite a complexity result in \cite{FSS11} to argue their parameters choice, we will dive deeper into this article  results in a later section.
-
-		\subsection{Algebraic cryptanalysis}
-		
-		Bardet showed in \cite{Bardet04} that F5 criterion removed reductions to 0 for semi-regular sequences until the degree $H(I) - 1$, where $I$ is the ideal generated by the polynomials of the system.
-		
-		\begin{theorem}[Theorem 3.2.10 in \cite{Bardet04}]
-			Let $f_1,...,f_m$ a homogeneous sequence, such that $\langle f_1,...,f_m \rangle$ is 0-dimensional and
-			$\prec$ an admissible graded monomial ordering. We have,
-			\begin{itemize}
-				\item[-] If the sequence is semi-regular, then no reductions to 0 are performed during the F5-matrix algorithm until the degree $d = H(I) - 1$
-				\item[-] If there are no reductions to 0 during the F5-matrix algorithm until the degree $D - 1$, and if the matrix of degree D is full rank and is the first matrix to have more rows than columns, then the sequence is semi-regular and its index of regularity is $H(I) = D$.
-			\end{itemize}
-		\end{theorem}
-		
-		In \cite{BFS15}, the authors show that the complexity of computing the Gröbner basis of a semi-regular system $f_1,...,f_m \in \mathbb{K}[x_1,...,x_n]$ is $O\left(mD\binom{n+D-1}{D}^\omega \right)$.
-		
-		
-		We will also need the next definition of $\gamma$-strong semi-regularity.
-		
-		 \begin{definition}[Definition 4 of \cite{VID24}]
-			Let $\mathcal{F} = {f_1,...,f_m}$ be a semi-regular sequence of polynomials in $\mathbb{F}_2[x_1,...,x_n]$ and let $0 \leq \gamma \leq 1$ such that $k = (1 - \gamma)n$. We say that this sequence is $\gamma$-strong semi-regular if
-			$$
-			\mathcal{S}(I) = \{(a_{k+1},...,a_n) \in \mathbb{F}_{2}^{n-k} |
-			$$
-			$$
-			\{f_1(x_1,...,x_k,a_{k+1},...,a_n),...,f_m(x_1,...,x_k,a_{k+1},...,a_n)\} \text{ is not semi-regular}\}
-			$$
-			has cardinality $\mathcal{O}(2^{-\gamma n})$.
-		\end{definition}
-		
 		\subsection{Bilinear systems case}
 		Our NSBC instances are quadratic systems that are bilinear in the variables of degree 2 and overdetermined.
 		
 		\begin{definition}
 			A homogeneous polynomial $f \in \mathbb{K}[x_1,\dots,x_{n_x},y_1,\dots,y_{n_y}]$ is called bilinear if we have:
 			$$
-				\forall \lambda, \mu \in \mathbb{K}, f(\lambda x_1,\dots,\lambda x_{n_x}, \mu y_1,\dots, \mu y_{n_y}) = \lambda \mu f(x_1,\dots,x_{n_x},y_1,\dots,y_{n_y}).
+			\forall \lambda, \mu \in \mathbb{K}, f(\lambda x_1,\dots,\lambda x_{n_x}, \mu y_1,\dots, \mu y_{n_y}) = \lambda \mu f(x_1,\dots,x_{n_x},y_1,\dots,y_{n_y}).
 			$$
 		\end{definition}
 		
@@ -310,7 +254,7 @@
 		As Theorem \ref{theoremMaxMin} indicates, reductions to 0 may also arise from the maximal minors of the jacobian matrix, so the signatures ($s, f_i$) where $s$ is a linear combination of maximal minors of $jac_{x}(F_{i-1})$ or $jac_{y}(F_{i-1})$ is a reduction to 0.
 		This explains Algorithm \ref{alg:crit_calc} where we compute the maximal minors of jacobian matrices before applying Algorithm \ref{alg:reduc} where we compute linear combinations of these maximal minors.
 		This means that Algorithm \ref{alg:crit_calc} computes all the signatures that will arise in reductions to 0 that involve the maximal minors of jacobian matrices instead of being incremental like F5 criterions \cite{F02}.
-					
+		
 		\begin{algorithm}
 			\caption{Reduce}\label{alg:reduc}
 			\begin{algorithmic}[1]
@@ -322,108 +266,108 @@
 			\end{algorithmic}
 		\end{algorithm}
 		
-		 \begin{algorithm}
-		 	\caption{BL\_Criterion}\label{alg:crit_calc}
-		 	\begin{algorithmic}[1]
-		 		\Require $m$ bilinear polynomials $f1,...f_m$ such that $m \leq n_x + n_y$.\newline $\prec$ a monomial ordering overs $R$.
-		 		\Ensure $V$ a set of pairs $(h, f_i)$ such that $h \in I_{i-1} : f_i$ and $h \notin I_{i-1}$.
-		 		\State $V \gets \emptyset$
-		 		\For{$i$ from 2 to $m$}
-					\If{$i > n_y$}
-						\State $T \gets \mathbf{Reduce}(MaxMinors(jac_y(F_{i-1})), n_y + 1)$
-						\For{$h$ in $T$}
-							\State $V \gets V \cup \{(h, f_i)\}$
-						\EndFor
-					\EndIf
-					\If{$i > n_x$}
-						\State $T' \gets \mathbf{Reduce}(MaxMinors(jac_x(F_{i-1})), n_x + 1)$
-						\For{$h$ in $T'$}
-							\State $V \gets V \cup \{(h, f_i)\}$
-						\EndFor
-					\EndIf
+		\begin{algorithm}
+			\caption{BL\_Criterion}\label{alg:crit_calc}
+			\begin{algorithmic}[1]
+				\Require $m$ bilinear polynomials $f1,...f_m$ such that $m \leq n_x + n_y$.\newline $\prec$ a monomial ordering overs $R$.
+				\Ensure $V$ a set of pairs $(h, f_i)$ such that $h \in I_{i-1} : f_i$ and $h \notin I_{i-1}$.
+				\State $V \gets \emptyset$
+				\For{$i$ from 2 to $m$}
+				\If{$i > n_y$}
+				\State $T \gets \mathbf{Reduce}(MaxMinors(jac_y(F_{i-1})), n_y + 1)$
+				\For{$h$ in $T$}
+				\State $V \gets V \cup \{(h, f_i)\}$
+				\EndFor
+				\EndIf
+				\If{$i > n_x$}
+				\State $T' \gets \mathbf{Reduce}(MaxMinors(jac_x(F_{i-1})), n_x + 1)$
+				\For{$h$ in $T'$}
+				\State $V \gets V \cup \{(h, f_i)\}$
+				\EndFor
+				\EndIf
 				\EndFor
 				\State \textbf{Return} $V$
-		 	\end{algorithmic}
-		 \end{algorithm}
-		 
-		 \begin{algorithm}
-		 	\caption{BilinF5Criterion}\label{algo:crit}
-		 	\begin{algorithmic}[1]
-		 		\Require $(t, f_i)$ the signature of a row. \newline A matrix $M$ in row echelon form.
-		 		\Ensure $True$ if the row will reduce to 0 otherwise $False$.
-		 		\If{$t$ is the leading monomial of a row of $M$ \textbf{or}
-		 		\newline $\exists (h, f_i) \in V$ such that $LM(h) = t$}
-		 		\State \textbf{Return} $True$.
-		 		\Else \textbf{ Return} $False$.
-		 		\EndIf
-		 	\end{algorithmic}
-		 \end{algorithm}
-		 
-		 \begin{definition}[Definition 8 in \cite{FSS11}]
-		 	Let $\prec$ be a monomial ordering such that its restriction to $\mathbb{K}[x_1,\dots,x_{n_x}]$ (resp. $\mathbb{K}[y_1,\dots,y_{n_y}]$) is the grevlex ordering. Let $m \leq n_x + n_y$ and $f_1,\dots,f_m$ be bilinear polynomials or $R$. We say that the polynomial sequence ($f_1,\dots,f_m$) is a \textit{bi-regular} sequence if $m = 1$ or if ($f_1,\dots,f_m$) is a \textit{bi-regular} sequence and
-		 	$$
-		 		LM(I_{m-1} : f_m) = \langle Monomials_{m - n_y - 2}^x(n_y + 1) \rangle + \langle Monomials_{m - n_x - 2}^y(n_x + 1) + LM(I_{m-1})\rangle.
-		 	$$
-		 \end{definition}
-		 
-		 The following theorem, ensures that there are no reductions to 0 with extended the F5 criterion. \textbf{Ce théorème est en suspens pour utiliser une autre formulation sans utiliser la topologie de Zariski}
-		 
-		 \begin{theorem}[Theorem 4 in \cite{FSS11}]
-		 	Let $m, n_x, n_y \in \mathbb{N}$ such that $m < n_x + n_y$. If Conjecture 1 of \cite{FSS11} is true, then the set of bi-regular sequences $(f_1,...,f_m)$ contains a nonempty Zariski open set. Moreover, if $(f_1,...,f_m)$ is a bi-regular sequence, then there are no reductions to zero with the extended F5 criterion.
-		 \end{theorem}
-		 
-		 An important result of \cite{FSS11} is on the index of regularity of bi-regular systems.
-		 
-		 \begin{theorem}\label{reg_bi}
-		 	If the system $\mathcal{F}$ is generic, then the degree of regularity of $\mathcal{V}(I)$ is upper bounded by $d_{reg} \leq min(n_x, n_y)$.
-		 \end{theorem}
-		 
-		 Finally, the authors give the following corollary which is the consequence of \ref{reg_bi} by applying the complexity of computing a Gröbner basis given by \cite{Bardet04}.
-		 
-		 \begin{corollary}[Corollary 3 in \cite{FSS11}]\label{complex_bi}
-		 The arithmetic complexity of computing a Gröbner basis of a generic bilinear system $f_1,...,f_{n_x + n_y}$ with the F5 algorithm is bounded by
-		 $$\mathcal{O}\left(\binom{n_x + n_y + min(n_x + 1, n_y + 1)}{min(n_x + 1, n_y + 1)}^\omega\right).$$
-		 \end{corollary}
-		 
-		 First, we can clearly see that the complexity of Algorithm \ref{alg:crit_calc} is exponential and we will show that in the following proposition.
-		 
-		 \begin{proposition}\label{complexCrit}
-		 	The complexity of Algorithm \ref{alg:crit_calc} is
-		 	$$
-		 	\mathcal{O}\left(\left(\sum_{i = n_x}^{m} \binom{i}{n_x}n_x^{\omega} + \binom{2n_x + 1}{n_x}^\omega\right) + \left(\sum_{i = n_y}^{m} \binom{i}{n_y}n_y^{\omega} + \binom{2n_y + 1}{n_y}^\omega\right)\right).
-		 	$$
-		 \end{proposition}
-		 
-		 \begin{proof}
-		 	First, if $i > n_y$ (resp. $i > n_x$), we construct the jacobian matrix $jac_y(F_{i-1})$ (resp. $jac_x(F_{i-1})$) which is of size $n_y \times n_y$ (resp. $n_x \times n_x$) for the first one and $m-1 \times n_y$ (resp. $m-1 \times n_x$) for the last one i.e. $i = m$. We suppose here that the construction of such matrices is free. Computing the $MaxMinors(jac_y(F_{i-1}))$ (resp. $MaxMinors(jac_x(F_{i-1}))$)means that we have to compute the determinants of all the sub-matrices of size $n_y \times n_y$ (resp. $n_x \times n_x$) and for a matrix $M$ of size $l \times c$ with $l > c$ there are $\binom{l}{c}$ sub-matrices of size $c \times c$, hence the term $\binom{i}{n_y}n_y^{\omega}$ in the sum if we suppose the complexity of computing the determinant of a square multivariate polynomial matrix of size $c \times c$ to be $\mathcal{O}(c^\omega)$, which is not the case but let us suppose the best case ever. \textbf{faudrait trouver la vraie complexité de ça pour être plus juste.}
-		 	For now, we have a sequence of polynomials and we apply the algorithm \textbf{Reduce} \ref{alg:reduc} on them with degree $n_y + 1$ (resp. $n_x + 1$).
-		 	In \textbf{Reduce}, we construct the Macaulay matrix of the sequence of degree $n_y + 1$ (resp. $n_x + 1$) and compute it's row echelon form.
-		 	The size of Macauly matrix is bounded by $\binom{n + D}{D}$ where D is the degree and n the number variables. So the complexity of \textbf{Reduce} is $$\mathcal{O}\left(\binom{n_y + n_y + 1}{n_y + 1}^\omega \right)$$ (resp. $$\mathcal{O}\left(\binom{n_x + n_x + 1}{n_x + 1}^\omega \right)$$). Hence the second term in the sum, because we call \textbf{Reduce} at each iteration of the for loop. We finally suppose that the iteration on the elements of the output of \textbf{Reduce} is negligible in the big $\mathcal{O}$ notation.
-		 \end{proof}
-		 
-		 It is an asymptotic complexity which does not take into account the constant factor in implementations that could slow down a lot the algorithm.
-		 We also recall that in our case with NSBC, $n_x = n_y$. So we get
-		 $$
-		 \mathcal{O}\left(2n_x^{\omega}\left(\sum_{i = n_x}^{m} \binom{i}{n_x} + \binom{2n_x + 1}{n_x}^\omega\right)\right).
-		 $$
-		 
-		 Since we have quadratic systems, reductions to 0 would not appear before degree 4 of the Macaulay matrix. Also, in practice we are using $q=2$ and there are much better algorithms in the literature for boolean systems than basic Gröbner basis algorithms like F5. The best algorithm used at the moment is CrossBred \cite{JV17}. Most of the time in practical implementations, we stop at degree 4 of the Macaulay in pre-processing step. So, to know what advantage we could have if we use the extended F5 criterion, we will suppose the worst, meaning that all of our entries will reduce to 0 at degree 4 of the Macaulay matrix, which is unlikely.
-		 
-		 In following, we will denote $n_x + n_y$ by simply $n$.
-		 
-		 If this case arises, the only computations that would be done are for extended F5 criterion. The complexity for F5-Matrix algorithm with only the Frobenius criterion \ref{Frob} is 
-		 $$
-		 \mathcal{O}\left(\binom{n + 4}{4}^\omega\right).
-		 $$
-		 If we only take into consideration the big O notation and not the constants, which is not realistic at all for efficient implementations to really break a cryptographic scheme, we get
-		 \begin{equation}
-		 Adv(n, m) = 2\left(\sum_{i = n/2}^{m}\binom{i}{n/2}\left(\frac{n}{2}\right)^\omega + \binom{n + 1}{n/2}^\omega\right) - \binom{n + 4}{4}^\omega.
-		 \label{equation_complex}
-		 \end{equation}
-		 
-		 We used the computer algebra system SageMath \cite{sagemath} to test numerically when using the F5 extended criterion of \cite{FSS11} becomes negligible compared to the computations of reductions to 0, we see experimentally that $Adv(10, 12) = 2498903$, i.e. the theoretical advantage becomes negligible and it would be advantageous to simply compute reductions to 0 instead of applying the F5 extended criterion. This number grows exponentially with $n$ and $m$. For those who wonder, what would be the estimated theoretical advantage computing reductions to 0 for the parameters given by \cite{HJ23} $Adv(256, 257)$ is a 514 bit number.
-		 
-	\section{Boolean systems}
+			\end{algorithmic}
+		\end{algorithm}
+		
+		\begin{algorithm}
+			\caption{BilinF5Criterion}\label{algo:crit}
+			\begin{algorithmic}[1]
+				\Require $(t, f_i)$ the signature of a row. \newline A matrix $M$ in row echelon form.
+				\Ensure $True$ if the row will reduce to 0 otherwise $False$.
+				\If{$t$ is the leading monomial of a row of $M$ \textbf{or}
+					\newline $\exists (h, f_i) \in V$ such that $LM(h) = t$}
+				\State \textbf{Return} $True$.
+				\Else \textbf{ Return} $False$.
+				\EndIf
+			\end{algorithmic}
+		\end{algorithm}
+		
+		\begin{definition}[Definition 8 in \cite{FSS11}]
+			Let $\prec$ be a monomial ordering such that its restriction to $\mathbb{K}[x_1,\dots,x_{n_x}]$ (resp. $\mathbb{K}[y_1,\dots,y_{n_y}]$) is the grevlex ordering. Let $m \leq n_x + n_y$ and $f_1,\dots,f_m$ be bilinear polynomials or $R$. We say that the polynomial sequence ($f_1,\dots,f_m$) is a \textit{bi-regular} sequence if $m = 1$ or if ($f_1,\dots,f_m$) is a \textit{bi-regular} sequence and
+			$$
+			LM(I_{m-1} : f_m) = \langle Monomials_{m - n_y - 2}^x(n_y + 1) \rangle + \langle Monomials_{m - n_x - 2}^y(n_x + 1) + LM(I_{m-1})\rangle.
+			$$
+		\end{definition}
+		
+		The following theorem, ensures that there are no reductions to 0 with extended the F5 criterion. \textbf{Ce théorème est en suspens pour utiliser une autre formulation sans utiliser la topologie de Zariski}
+		
+		\begin{theorem}[Theorem 4 in \cite{FSS11}]
+			Let $m, n_x, n_y \in \mathbb{N}$ such that $m < n_x + n_y$. If Conjecture 1 of \cite{FSS11} is true, then the set of bi-regular sequences $(f_1,...,f_m)$ contains a nonempty Zariski open set. Moreover, if $(f_1,...,f_m)$ is a bi-regular sequence, then there are no reductions to zero with the extended F5 criterion.
+		\end{theorem}
+		
+		An important result of \cite{FSS11} is on the index of regularity of bi-regular systems.
+		
+		\begin{theorem}\label{reg_bi}
+			If the system $\mathcal{F}$ is generic, then the degree of regularity of $\mathcal{V}(I)$ is upper bounded by $d_{reg} \leq min(n_x, n_y)$.
+		\end{theorem}
+		
+		Finally, the authors give the following corollary which is the consequence of \ref{reg_bi} by applying the complexity of computing a Gröbner basis given by \cite{Bardet04}.
+		
+		\begin{corollary}[Corollary 3 in \cite{FSS11}]\label{complex_bi}
+			The arithmetic complexity of computing a Gröbner basis of a generic bilinear system $f_1,...,f_{n_x + n_y}$ with the F5 algorithm is bounded by
+			$$\mathcal{O}\left(\binom{n_x + n_y + min(n_x + 1, n_y + 1)}{min(n_x + 1, n_y + 1)}^\omega\right).$$
+		\end{corollary}
+		
+		First, we can clearly see that the complexity of Algorithm \ref{alg:crit_calc} is exponential and we will show that in the following proposition.
+		
+		\begin{proposition}\label{complexCrit}
+			The complexity of Algorithm \ref{alg:crit_calc} is
+			$$
+			\mathcal{O}\left(\left(\sum_{i = n_x}^{m} \binom{i}{n_x}n_x^{\omega} + \binom{2n_x + 1}{n_x}^\omega\right) + \left(\sum_{i = n_y}^{m} \binom{i}{n_y}n_y^{\omega} + \binom{2n_y + 1}{n_y}^\omega\right)\right).
+			$$
+		\end{proposition}
+		
+		\begin{proof}
+			First, if $i > n_y$ (resp. $i > n_x$), we construct the jacobian matrix $jac_y(F_{i-1})$ (resp. $jac_x(F_{i-1})$) which is of size $n_y \times n_y$ (resp. $n_x \times n_x$) for the first one and $m-1 \times n_y$ (resp. $m-1 \times n_x$) for the last one i.e. $i = m$. We suppose here that the construction of such matrices is free. Computing the $MaxMinors(jac_y(F_{i-1}))$ (resp. $MaxMinors(jac_x(F_{i-1}))$)means that we have to compute the determinants of all the sub-matrices of size $n_y \times n_y$ (resp. $n_x \times n_x$) and for a matrix $M$ of size $l \times c$ with $l > c$ there are $\binom{l}{c}$ sub-matrices of size $c \times c$, hence the term $\binom{i}{n_y}n_y^{\omega}$ in the sum if we suppose the complexity of computing the determinant of a square multivariate polynomial matrix of size $c \times c$ to be $\mathcal{O}(c^\omega)$, which is not the case but let us suppose the best case ever. \textbf{faudrait trouver la vraie complexité de ça pour être plus juste.}
+			For now, we have a sequence of polynomials and we apply the algorithm \textbf{Reduce} \ref{alg:reduc} on them with degree $n_y + 1$ (resp. $n_x + 1$).
+			In \textbf{Reduce}, we construct the Macaulay matrix of the sequence of degree $n_y + 1$ (resp. $n_x + 1$) and compute it's row echelon form.
+			The size of Macauly matrix is bounded by $\binom{n + D}{D}$ where D is the degree and n the number variables. So the complexity of \textbf{Reduce} is $$\mathcal{O}\left(\binom{n_y + n_y + 1}{n_y + 1}^\omega \right)$$ (resp. $$\mathcal{O}\left(\binom{n_x + n_x + 1}{n_x + 1}^\omega \right)$$). Hence the second term in the sum, because we call \textbf{Reduce} at each iteration of the for loop. We finally suppose that the iteration on the elements of the output of \textbf{Reduce} is negligible in the big $\mathcal{O}$ notation.
+		\end{proof}
+		
+		It is an asymptotic complexity which does not take into account the constant factor in implementations that could slow down a lot the algorithm.
+		We also recall that in our case with NSBC, $n_x = n_y$. So we get
+		$$
+		\mathcal{O}\left(2n_x^{\omega}\left(\sum_{i = n_x}^{m} \binom{i}{n_x} + \binom{2n_x + 1}{n_x}^\omega\right)\right).
+		$$
+		
+		Since we have quadratic systems, reductions to 0 would not appear before degree 4 of the Macaulay matrix. Also, in practice we are using $q=2$ and there are much better algorithms in the literature for boolean systems than basic Gröbner basis algorithms like F5. The best algorithm used at the moment is CrossBred \cite{JV17}. Most of the time in practical implementations, we stop at degree 4 of the Macaulay in pre-processing step. So, to know what advantage we could have if we use the extended F5 criterion, we will suppose the worst, meaning that all of our entries will reduce to 0 at degree 4 of the Macaulay matrix, which is unlikely.
+		
+		In following, we will denote $n_x + n_y$ by simply $n$.
+		
+		If this case arises, the only computations that would be done are for extended F5 criterion. The complexity for F5-Matrix algorithm with only the Frobenius criterion \ref{Frob} is 
+		$$
+		\mathcal{O}\left(\binom{n + 4}{4}^\omega\right).
+		$$
+		If we only take into consideration the big O notation and not the constants, which is not realistic at all for efficient implementations to really break a cryptographic scheme, we get
+		\begin{equation}
+			Adv(n, m) = 2\left(\sum_{i = n/2}^{m}\binom{i}{n/2}\left(\frac{n}{2}\right)^\omega + \binom{n + 1}{n/2}^\omega\right) - \binom{n + 4}{4}^\omega.
+			\label{equation_complex}
+		\end{equation}
+		
+		We used the computer algebra system SageMath \cite{sagemath} to test numerically when using the F5 extended criterion of \cite{FSS11} becomes negligible compared to the computations of reductions to 0, we see experimentally that $Adv(10, 12) = 2498903$, i.e. the theoretical advantage becomes negligible and it would be advantageous to simply compute reductions to 0 instead of applying the F5 extended criterion. This number grows exponentially with $n$ and $m$. For those who wonder, what would be the estimated theoretical advantage computing reductions to 0 for the parameters given by \cite{HJ23} $Adv(256, 257)$ is a 514 bit number.
+		
+		\subsection{Boolean systems}
 		Sometimes, the finite field used is $\mathbb{F}_2$ because it is still supposedly hard to solve but is very easy to use and manipulate on computers. But in such small fields one can begin to use exhaustive search to obtain the solution to the system. The best algorithm known to the authors for exhaustive search for multivariate polynomial system $f_1,\dots,f_m$ over $\mathbb{F}_2[x_1,\dots,x_n]$ is \cite{BCC+10} with a complexity $\mathcal{O}(ln(n)2^n)$. What is remarkable is that the complexity does not implicate the number of polynomials in the system, $m$. There is also a software made by one of the authors, Charles Bouillaguet, that is available online and easy to use, \textit{libFES-lite} \cite{Bouilla22} and there have been implementations on FPGA that broke real world cryptography \cite{DDVY20}..
 		
 		Another type of algorithms uses exhaustive search combined with probabilistic algorithms. \cite{LPT+17} gave an algorithm that finds the solution to a polynomial system with complexity $\tilde{\mathcal{O}}(2^{0.8765n})$ which is better than exhaustive search. Even though it is asymptotically better, there are no known implementations because of the huge constant factors present in the complexity that makes it worse than exhaustive search for any systems that can be solved on modern computers. New algorithms have been proposed by Itai Dinur \cite{Itai21A, Itai21B} where the complexity is brought down to $\tilde{\mathcal{O}}(2^{0.6943n})$, but still no implementation known to the authors.
@@ -461,6 +405,63 @@
 		\end{algorithm}
 		
 		This algorithm have shown it's effectiveness in practice with good implementations like Bouillaguet and Sauvage's implementation \cite {BS23} that broke records for solving boolean systems on the Fukuaka MQ challenge \cite{MQFUK}. Despite that, there are no proven complexity analysis for this algorithm due to it's huge number of possible parameters but we can do some estimations with admissible parameters as we will see in the next section.
+
+	\section{Contributions}
+		
+		\subsection{System Modeling}
+		One of the known attacks given by the authors is through algebraic cryptanalysis.
+		One can model the attack by taking $g$ as the following polynomial
+		$$
+		g(x_1,...,x_n,y_1,...,y_n) := (\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) - (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x}).
+		$$
+		We consider
+		$$
+		g(x_1,..,x_{n-2},y_1,..,y_{n-2}) := (\sum_{i = 1}^{n-2}u_{i}x_{i} + u_{n-1})(\sum_{i = 1}^{n-2}v_{i}y_{i} + v_{n}) - (\sum_{i = 1}^{n-2}u_{i}y_{i} + u_{n})(\sum_{i = 1}^{n-2}v_{i}x_{i} + v_{n-1}).
+		$$
+		
+		Then, one can perform a Weil descent on the polynomial $g$ because $\mathbb{F}_{q^k}$ is a $\mathbb{F}_q$-vector space and obtain the polynomial system
+		
+		
+		\begin{align}
+			g_1(x_1, \dots, x_{n-2},& y_1, \dots, y_{n-2}) = 0 \notag \\
+			&\vdots \notag \\
+			g_k(x_1, \dots, x_{n-2},& y_1, \dots, y_{n-2}) = 0 \notag
+		\end{align}
+		
+		where $g_i$ are polynomials with coefficients in $\mathbb{F}_q$.
+		
+		The most straightforward cryptanalysis of this type of systems is to perform a Gröbner basis algorithm like Buchberger's algorithm \cite{Buc}, Faugère's F4 \cite{F99}, F5 \cite{F02} or their multiple variants \cite{EF19}.
+		
+		Huth and Joux cite a complexity result in \cite{FSS11} to argue their parameters choice, we will dive deeper into this article  results in a later section.
+		
+		\subsection{Algebraic cryptanalysis}
+		
+		Bardet showed in \cite{Bardet04} that F5 criterion removed reductions to 0 for semi-regular sequences until the degree $H(I) - 1$, where $I$ is the ideal generated by the polynomials of the system.
+		
+		\begin{theorem}[Theorem 3.2.10 in \cite{Bardet04}]
+			Let $f_1,...,f_m$ a homogeneous sequence, such that $\langle f_1,...,f_m \rangle$ is 0-dimensional and
+			$\prec$ an admissible graded monomial ordering. We have,
+			\begin{itemize}
+				\item[-] If the sequence is semi-regular, then no reductions to 0 are performed during the F5-matrix algorithm until the degree $d = H(I) - 1$
+				\item[-] If there are no reductions to 0 during the F5-matrix algorithm until the degree $D - 1$, and if the matrix of degree D is full rank and is the first matrix to have more rows than columns, then the sequence is semi-regular and its index of regularity is $H(I) = D$.
+			\end{itemize}
+		\end{theorem}
+		
+		In \cite{BFS15}, the authors show that the complexity of computing the Gröbner basis of a semi-regular system $f_1,...,f_m \in \mathbb{K}[x_1,...,x_n]$ is $O\left(mD\binom{n+D-1}{D}^\omega \right)$.
+		
+		
+		We will also need the next definition of $\gamma$-strong semi-regularity.
+		
+		 \begin{definition}[Definition 4 of \cite{VID24}]
+			Let $\mathcal{F} = {f_1,...,f_m}$ be a semi-regular sequence of polynomials in $\mathbb{F}_2[x_1,...,x_n]$ and let $0 \leq \gamma \leq 1$ such that $k = (1 - \gamma)n$. We say that this sequence is $\gamma$-strong semi-regular if
+			$$
+			\mathcal{S}(I) = \{(a_{k+1},...,a_n) \in \mathbb{F}_{2}^{n-k} |
+			$$
+			$$
+			\{f_1(x_1,...,x_k,a_{k+1},...,a_n),...,f_m(x_1,...,x_k,a_{k+1},...,a_n)\} \text{ is not semi-regular}\}
+			$$
+			has cardinality $\mathcal{O}(2^{-\gamma n})$.
+		\end{definition}
 		
 	\subsection{Admissible parameters for Crossbred}
 		We tested if small instances of our problem are semi-regular or not using Proposition \ref{PropSemi} and they were not semi-regular. We also remarked that the bilinear criterion \ref{algo:crit} detected reductions to 0 using the original F5 criterion \ref{F5Crit} and Frobenius criterion for systems over $\mathbb{F}_2$ but also detected reductions to 0 on polynomials of degree $n_x$ or $n_y$ according to the algorithms \ref{alg:crit_calc} and \ref{alg:reduc}. In our case, we will use the Crossbred algorithm and we do not think that we will get to these degrees in the Macaulay matrices, so no need to use the bilinear criterion.
@@ -504,9 +505,6 @@
 		We wrote SageMath scripts that automated the search of admissible parameters using the bivariate series given in \cite{VID24}. We searched for different key sizes to have a rough estimate on the complexity.
 		
 		We discuss more the attacks complexity using Crossbred and different algorithms in the next section.
-		
-	\section{Security analysis}
-		This section is heavily inspired from the security analysis of the MQOM signature scheme \cite{MQOMv2}.
 		
 		\subsection{Security proofs}
 		The security of the signature scheme is demonstrated under standard assumptions regarding the adversary’s capabilities, ensuring that the scheme meets well-defined security goals.
@@ -553,7 +551,9 @@
 		\end{theorem}
 		The proof of \ref{EUF-CMA} can be found in the appendix \ref{appendix:proof}.
 		
-		\subsection{Attacks against SBC signatures}
+		\subsection{Security analysis}
+		This section is heavily inspired from the security analysis of the MQOM signature scheme \cite{MQOMv2}.
+
 		First we need to enumerate the parameters for the signature scheme. The finite field used is $\mathbb{F}_2$ and the vector length $n$ is 130 but we consider the NSBC version so it is 128 in practice with the 2 last coordinates implicitly defined. The field extension used $k$ is 257 which is prime to avoid subfield attacks \cite{Peb24}.
 		
 		For the linear algebra constant $\omega$, we take $\omega = 2.81$ for dense linear algebra using the Strassen algorithm, which is implemented in dense linear boolean algebra software like M4RI and M4RIE \cite{M4RI}.
@@ -588,7 +588,7 @@
 		$$
 		One advantage of this attack is that it's memory footprint is negligible.
 		
-		\subsection{Memory footprint of the attacks}
+		\subsection{Space complexity of Crossbred}
 		
 		One important consideration for practical implementations of cryptographic attacks is the memory footprint. In the literature, many algorithms are classified as \emph{galactic}, meaning that although they exhibit favorable asymptotic complexity, they are unlikely to be used in practice due to large constant factors hidden in the big-O notation. Well-known examples of galactic algorithms include matrix multiplication in $\mathcal{O}(n^{2.371552})$~\cite{WXXZ23} and integer multiplication in $\mathcal{O}(n \log n)$~\cite{HH21}. 
 		
