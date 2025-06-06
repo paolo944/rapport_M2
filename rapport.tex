@@ -124,9 +124,11 @@
 		
 		\subsection{MPCitH}
 		
-		The \emph{MPC-in-the-Head} (MPCitH) framework, introduced by~\cite{IKOS07}, is a technique for constructing zero-knowledge proofs. It enables a prover to convince a verifier that they possess a secret witness $w$ for a given public input $x$, without revealing any information about the witness itself.
+		The \emph{MPC-in-the-Head} (MPCitH) framework, introduced by \cite{IKOS07}, is a technique for constructing zero-knowledge proofs. It enables a prover to convince a verifier that they possess a secret witness $w$ for a given public input $x$, without revealing any information about the witness itself.
 		
-		The main idea is to simulate a secure multiparty computation (MPC) protocol internally—\textit{in the head}—of the prover $\mathcal{P}$. This simulation involves a set of fictitious parties who jointly evaluate a circuit that depends on the witness $w$. The verifier $\mathcal{V}$ is then allowed to inspect a subset of the simulated views to ensure the prover is behaving honestly, while maintaining the zero-knowledge property.
+		Given $\mathcal{L}$ a language in NP (i.e. $x \in \mathcal{L} \Longleftrightarrow \exists w, \mathcal{R}(x, w) = 1$). Given a public $x$, $\mathcal{P}$ wants to prove that he knows $w$ such that: $\mathcal{R}(x, w)$.
+		
+		The main idea is to simulate a secure multiparty computation (MPC) protocol internally \textit{in the head} of the prover $\mathcal{P}$. This simulation involves a set of fictitious parties who jointly evaluate a circuit that depends on the witness $w$. The verifier $\mathcal{V}$ is then allowed to inspect a subset of the simulated views to ensure the prover is behaving honestly, while maintaining the zero-knowledge property.
 		
 		To represent the secret witness $w$, a linear secret sharing scheme is used among $N$ simulated parties. Each party $i$ receives a random share denoted by $[w]^{\llbracket i \rrbracket}$, and the prover computes an additional correction term defined as:
 		$$
