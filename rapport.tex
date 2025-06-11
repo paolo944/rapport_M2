@@ -274,7 +274,7 @@
 		Thus, Bardet studied a new concept called semi-regularity for overdetermined system to allow their study and analysis. The definition of a semi-regular sequence is given by Bardet \cite{Bardet04}.
 		
 		\begin{definition}
-			A homogeneous sequence $f_1,\dots,f_m \subset R$ is semi-regular if the following conditions are verified:
+			A zero-dimensional homogeneous sequence $f_1,\dots,f_m \subset R$ is semi-regular if the following conditions are verified:
 			\begin{itemize}
 				\item $I = \langle f_1,\dots,f_m \rangle \neq R$,
 				\item For $i \in [1:m]$, if $g_if_i = 0$ in $R/\langle f_1,\dots,f_m \rangle$ and $deg(g_if_i) < H(I)$ then $g_i = 0$ in $R/\langle f_1,\dots,f_m \rangle$.
@@ -397,7 +397,7 @@
 		An important result of \cite{FSS11} is on the index of regularity of bi-regular systems.
 		
 		\begin{theorem}\label{reg_bi}
-			If the system $\mathcal{F}$ is generic, then the degree of regularity of $\mathcal{V}(I)$ is upper bounded by $d_{reg} \leq min(n_x, n_y)$.
+			If the system $\mathcal{F}$ is a generic bilinear system, then the degree of regularity of $\mathcal{V}(I)$ is upper bounded by $d_{reg} \leq min(n_x, n_y)$.
 		\end{theorem}
 		
 		Finally, the authors give the following corollary which is the consequence of \ref{reg_bi} by applying the complexity of computing a Gröbner basis given by \cite{Bardet04}.
@@ -620,7 +620,7 @@
 		\begin{theorem}\label{EUF-CMA}
 			Assume that no adversary can distinguish the output of the pseudorandom function (PRF) used in the protocol from truly random bits. The adversary outputs a bit $b$, where $b=0$ indicates that they believe the bits originate from the PRF, and $b=1$ indicates they believe the bits are uniformly random
 			$$
-				| \mathcal{P}_{seed \in \{0,1\}^n}[b=0 | p \leftarrow PRF(seed)] - \mathcal{P}[b=1 | p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
+				| \mathcal{P}_{seed \in \{0,1\}^n}[b=0 \mid p \leftarrow PRF(seed)] - \mathcal{P}[b=1 \mid p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
 			$$
 			Suppose also that the protocol uses a cryptographic hash function which is one-way and does not have collision attacks with better complexity than $2^{\lambda}$ using a $\mathcal{PPT}$, where $\lambda$ is the number security bits needed for the signature scheme.
 			
