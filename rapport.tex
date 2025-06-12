@@ -112,8 +112,7 @@
 				\draw[<->] (C) -- (F);
 				\draw[<->] (D) -- (E);
 				\draw[<->] (D) -- (F);
-				\draw[<->] (E) -- (F);
-				
+				\draw[<->] (E) -- (F);				
 				
 			\end{tikzpicture}
 			\caption{MPC protocol with broadcast communication}
@@ -146,7 +145,14 @@
 		Since the introduction of the framework, many optimizations have been published to reduce the communication or the computation cost. We will discuss some of them.
 		
 		\subsubsection{GGM tree}
-			
+		Since most of the values used in the MPC protocol are randomly generated, a technique known as the GGM tree can be employed to transmit only a seed, rather than all the individual random values.
+		
+		A GGM tree is essentially a binary tree rooted at a seed, on which a pseudorandom function (PRF) is applied. The PRF must produce an output of twice the bit-length of its input. The first half of the output serves as the root of the left subtree, and the second half as the root of the right subtree. This process is applied recursively until enough leaves are generated, which correspond to the required random values.
+		
+		In our case, we do not transmit the seed due to the use of linear secret sharing. Since we typically employ an $(N-1)$-private MPC protocol, we only share the co-path of the $i$-th leaf, which remains hidden from $\mathcal{V}$. As a result, instead of sharing $N$ values, we only need to share $log_2(N)$ values.
+		
+		\subsubsection{HyperCube technique}
+ 
 		
 		\subsection{SBC Problem}
 		The problem is the following: let $q$ be a prime power and two positive integers $k$, $n$.
@@ -403,8 +409,12 @@
 		Finally, the authors give the following corollary which is the consequence of \ref{reg_bi} by applying the complexity of computing a Gröbner basis given by \cite{Bardet04}.
 		
 		\begin{corollary}[Corollary 3 in \cite{FSS11}]\label{complex_bi}
-			The arithmetic complexity of computing a Gröbner basis of a generic bilinear system $f_1,...,f_{n_x + n_y}$ with the F5 algorithm is bounded by
+			The arithmetic complexity of computing a Gröbner basis of a generic affine bilinear system $f_1,...,f_{n_x + n_y}$ with the F5 algorithm is bounded by
 			$$\mathcal{O}\left(\binom{n_x + n_y + min(n_x + 1, n_y + 1)}{min(n_x + 1, n_y + 1)}^\omega\right).$$
+		\end{corollary}
+		
+		\begin{corollary}
+			
 		\end{corollary}
 		
 		First, we can clearly see that the complexity of Algorithm \ref{alg:crit_calc} is exponential and we will show that in the following proposition.
@@ -459,7 +469,7 @@
 		We will denote by $deg^k(p)$ the total degree of $p$ in the first $k$ variables.
 		
 		\begin{definition}
-			For a given $\mathcal{F} = \{f_1,\dots,f_m\}$, $Mac_{\leq D, \geq d, m}^k$ is the submatrix of $Mac_{\leq D, m}$ whose rows correspond to a product $uf_i$, $1 \leq i \leq m$, with $deg^k(u) \geq d-1$. Let $\mathcal{M}_{\leq D, \geq d, m}^k$ be the submatrix of $Mac_{\leq D, \geq d, m}^k$ with columns correspond to monomials $m$ such that, $deg^k(m) \geq d+1$.
+			For a given $\mathcal{F} = \{f_1,\dots,f_m\}$, $Mac_{\leq D, \geq d, m}^k$ is the submatrix of $Mac_{\leq D, m}$ whose rows correspond to a product $uf_i$, $1 \leq i \leq m$, with $deg^k(u) \geq d-1$. Let $\mathcal{M}_{\leq D, \geq d, m}^k$ be the submatrix of $Mac_{\leq D, \geq d, m}^k$ with columns correspond to monomials $m$ such that, $deg^k(m) \geq d+1$.
 		\end{definition}
 		
 		\begin{algorithm}
@@ -620,7 +630,7 @@
 		\begin{theorem}\label{EUF-CMA}
 			Assume that no adversary can distinguish the output of the pseudorandom function (PRF) used in the protocol from truly random bits. The adversary outputs a bit $b$, where $b=0$ indicates that they believe the bits originate from the PRF, and $b=1$ indicates they believe the bits are uniformly random
 			$$
-				| \mathcal{P}_{seed \in \{0,1\}^n}[b=0 \mid p \leftarrow PRF(seed)] - \mathcal{P}[b=1 \mid p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
+				| \mathcal{P}_{seed \in \{0,1\}^n}[b=0 \mid p \leftarrow PRF(seed)] - \mathcal{P}[b=1 \mid p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
 			$$
 			Suppose also that the protocol uses a cryptographic hash function which is one-way and does not have collision attacks with better complexity than $2^{\lambda}$ using a $\mathcal{PPT}$, where $\lambda$ is the number security bits needed for the signature scheme.
 			
@@ -709,7 +719,28 @@
 		
 		These are theoretical estimations and in practice it can be much more. For example, to represent a 67 bit number using the bignum implementation in the GMP library, we would need at least 32 bytes instead of the 9 that we estimated because of memory alignement and the total coast of the structure, but this can be optimized to use less memory for an array usage.
 		
-		\subsubsection{Space complexity of other attacks}
+	\subsection{Attacks summary}
+		\begin{table}[h!]
+		\begin{center}
+			\begin{tabular}{|c|c|c|c|}
+				\hline
+				Algorithm & Parameters & Time & Memory \\
+				\hline
+				Exhaustive search & / & 260 & 24 \\
+				\hline
+				Dinur First & / & 229 & 200 \\
+				\hline
+				Dinur Second & / & 221 & 172 \\
+				\hline
+				Crossbred & D=12, d=10, k=130 & 159 & 90 \\
+				\hline
+				Naive & / & 150 & 15 \\
+				\hline
+			\end{tabular}
+			\caption{Time and memory complexity of given algorithms in powers of 2.
+				For Exhaustive search, Dinur First and Dinur second, the estimations were obtained using CryptographicEstimator \cite{EVZ+24}}
+		\end{center}
+		\end{table}
 		
 \printbibliography
 
@@ -749,7 +780,7 @@
 				\quad $\vec{\delta}_y^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [\vec{R}_y^{[e]}]^{\llbracket i \rrbracket}$.
 				
 				\item Compute random value $t_0^{[e]}$ and share it. \\
-				\quad $[t_0^{[e]}]^{\llbracket i \rrbracket} \leftarrow Hash_0(i || [vec{R}_x^{[e]}]^{\llbracket i \rrbracket}, [\vec{R}_y^{[e]}]^{\llbracket i \rrbracket}, [X_1^{[e]}]^{\llbracket i \rrbracket}, [X_2^{[e]}]^{\llbracket i \rrbracket}, [Y_1^{[e]}]^{\llbracket i \rrbracket}, [Y_2^{[e]}]^{\llbracket i \rrbracket},$ \\ $[R_A^{[e]}]^{\llbracket i \rrbracket}, [R_B^{[e]}]^{\llbracket i \rrbracket} || \vec{\delta}_x^{[e]}, \vec{\delta}_y^{[e]}, \delta_A^{[e]}, \delta_B^{[e]})$. \\
+				\quad $[t_0^{[e]}]^{\llbracket i \rrbracket} \leftarrow Hash_0(i || [vec{R}_x^{[e]}]^{\llbracket i \rrbracket}, [\vec{R}_y^{[e]}]^{\llbracket i \rrbracket}, [X_1^{[e]}]^{\llbracket i \rrbracket}, [X_2^{[e]}]^{\llbracket i \rrbracket}, [Y_1^{[e]}]^{\llbracket i \rrbracket}, [Y_2^{[e]}]^{\llbracket i \rrbracket},$ \\ $[R_A^{[e]}]^{\llbracket i \rrbracket}, [R_B^{[e]}]^{\llbracket i \rrbracket} || \vec{\delta}_x^{[e]}, \vec{\delta}_y^{[e]}, \delta_A^{[e]}, \delta_B^{[e]})$. \\
 				\quad $t_0^{[e]} \leftarrow \sum_{i=1}^{N} [t_0^{[e]}]^{\llbracket i \rrbracket}$.
 				
 				
