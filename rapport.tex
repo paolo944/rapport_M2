@@ -65,61 +65,6 @@
 	\end{abstract}
 		
 	\section{MPCitH and SBC signature scheme}
-		This section presents the MPCitH framework, the Subfield Bilinear Collision (SBC) problem, and the associated signature scheme.
-		
-		\subsection{Multiparty Computation}
-
-		
-		A standard example is to make construct a $(N-1)$-private arithmetic circuit among $N$ participants and they all broadcast their results. See figure \ref{fig:mpc}.
-		
-		\begin{figure}[h]
-			\centering
-			\begin{tikzpicture}[
-				participant/.style={
-					thick, 
-					minimum size=2cm, 
-					inner sep=0pt
-				},
-				image/.style={
-					anchor=center
-				},
-				arrow/.style={
-					-{Latex[length=3mm, width=2mm]}, 
-					thick
-				}
-				]
-				
-				% Nœuds des participants avec images
-				\node[participant] (A) at (0,0) {\includegraphics[width=\participantimgsize]{flash.png}};
-				\node[participant] (B) at (2,-3) {\includegraphics[width=\participantimgsize]{hudson.png}};
-				\node[participant] (C) at (5,-3) {\includegraphics[width=\participantimgsize]{martin.png}};
-				\node[participant] (D) at (7,0) {\includegraphics[width=\participantimgsize]{king.png}};
-				\node[participant] (E) at (2,3) {\includegraphics[width=\participantimgsize]{sally.png}};
-				\node[participant] (F) at (5,3) {\includegraphics[width=\participantimgsize]{sheriff.png}};
-				
-				% Communications (flèches)
-				\draw[<->] (A) -- (B);
-				\draw[<->] (A) -- (C);
-				\draw[<->] (A) -- (D);
-				\draw[<->] (A) -- (E);
-				\draw[<->] (A) -- (F);
-				\draw[<->] (B) -- (C);
-				\draw[<->] (B) -- (D);
-				\draw[<->] (B) -- (E);
-				\draw[<->] (B) -- (F);
-				\draw[<->] (C) -- (D);
-				\draw[<->] (C) -- (E);
-				\draw[<->] (C) -- (F);
-				\draw[<->] (D) -- (E);
-				\draw[<->] (D) -- (F);
-				\draw[<->] (E) -- (F);				
-				
-			\end{tikzpicture}
-			\caption{MPC protocol with broadcast communication}
-			\label{fig:mpc}
-		\end{figure}
-		
-		To evaluate the circuit that depends on the secret witness $w$, each party holds a secret share $[w]$. They perform local computations on their respective shares, then broadcast the results, which are subsequently combined to obtain the final output.
 		
 		\subsection{MPCitH}
 		
@@ -140,19 +85,27 @@
 		The verifier $\mathcal{V}$ then selects a random index $i \in [1, N]$ and sends it to $\mathcal{P}$. In response, $\mathcal{P}$ opens the views of all parties except the $i$-th one, i.e., for all $i' \in [1, N]$ such that $i' \neq i$.
 		
 		In order for this protocol to satisfy the zero-knowledge property, the underlying MPC protocol must be $(N-1)$-private, meaning that the joint view of any $N-1$ parties reveals no information about the secret witness $w$.
-
 		
-		Since the introduction of the framework, many optimizations have been published to reduce the communication or the computation cost. We will discuss some of them.
+		We introduce some standard notations in MPCitH protocols. 
+		\begin{itemize}
+			\item $[w]$, $w$ is a shared value.
+			\item $w^{\llbracket i \rrbracket}$ is the $i$-th share of w.
+			\item $w^[e]$ is a value used in the $e$-th round of the protocol.
+			\item $\delta_x$ is the offset for the additive sharing of $x$ s.t. $x = \delta_x + \sum_i x^{\llbracket i \rrbracket}$
+		\end{itemize}
+		
+		
+		Finally, we discuss several optimizations that have been proposed in the literature since and are now considered standard and widely used.
 		
 		\subsubsection{GGM tree}
 		Since most of the values used in the MPC protocol are randomly generated, a technique known as the GGM tree can be employed to transmit only a seed, rather than all the individual random values.
 		
 		A GGM tree is essentially a binary tree rooted at a seed, on which a pseudorandom function (PRF) is applied. The PRF must produce an output of twice the bit-length of its input. The first half of the output serves as the root of the left subtree, and the second half as the root of the right subtree. This process is applied recursively until enough leaves are generated, which correspond to the required random values.
 		
-		In our case, we do not transmit the seed due to the use of linear secret sharing. Since we typically employ an $(N-1)$-private MPC protocol, we only share the co-path of the $i$-th leaf, which remains hidden from $\mathcal{V}$. As a result, instead of sharing $N$ values, we only need to share $log_2(N)$ values.
+		In our case, we do not transmit the seed due to the use of linear secret sharing. Since we typically employ an $(N-1)$-private MPC protocol, we only share the co-path of the $i$-th leaf, which remains hidden from $\mathcal{V}$. As a result, instead of sharing $N$ values, we only need to share $log(N)$ values.
 		
 		\subsubsection{HyperCube technique}
- 
+ 		This optimization technique was introduced in \cite{AGHH+22} and is commonly used in MPCitH schemes. This geometric approach models the $N$ shares as forming a $d$-dimensional hypercube of side length $k$. The often used parameters are $k = 2$ and $N = 2^d$, so the number party counts reduces to $log(N) + 1$. This technique often leads to MPC computations less expensive, smaller proof sizes and larger party sizes. However, these benefits come at the cost of increased reliance on GGM tree generation, which can become computationally expensive.
 		
 		\subsection{SBC Problem}
 		The problem is the following: let $q$ be a prime power and two positive integers $k$, $n$.
@@ -161,8 +114,7 @@
 		where $(\cdot)$ is the dot product between 2 vectors.
 		We denote an instance of the SBC problem given by two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$ by $\text{SBC}[\vec{u}, \vec{v}]$. If the vectors $\vec{x},\vec{y} \in (\mathbb{F}_q)^n$ are solution of $\text{SBC}[\vec{u},\vec{v}]$, we use the notation $(\vec{x}, \vec{y}) \in \text{SBC}[\vec{u}, \vec{v}]$.
 		
-		\subsection{NSBC variant}
-		
+		\textbf{NSBC variant}.
 		The authors also introduce a particular version of this problem called normalized SBC (NSBC) where $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ and
 		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$ to ensure that they are not colinear without needing to regenerate each time they are not. We also denote $(\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ if $(\vec{x}, \vec{y})$ are solutions to the NSBC problem on $(\vec{u}, \vec{v})$.
 		
@@ -171,7 +123,14 @@
 		The signature and verification protocol use the MPCitH paradigm, they are described in detail in \cite{HJ23} with proof of soundness, correctness and zero-knowledge.
 		The authors estimate that a good parameter for NSBC problem to be computationally secure are $q = 2, n = 130, k = 257$ using complexity analysis of what they think is the best known cryptanalysis of such problem in \cite{FSS11}.
 		
-		The signature protocol is described in .. with the signature and verification algorithms.
+		\subsection{Multiparty protocol for the SBC problem}
+		
+		
+		
+		\subsection{Identification Protocol}
+		We present the identification protocol, which serves as a basis for constructing the signature scheme using the Fiat-Shamir transformation.
+		
+		
 		
 	\section{Polynomial system solving}
 		Gröbner basis theory was first introduced by Buchberger in his thesis \cite{Buc} and he gave an algorithm to compute the Gröbner basis of an ideal.
@@ -739,6 +698,7 @@
 			\end{tabular}
 			\caption{Time and memory complexity of given algorithms in powers of 2.
 				For Exhaustive search, Dinur First and Dinur second, the estimations were obtained using CryptographicEstimator \cite{EVZ+24}}
+			\label{tab_attacks}
 		\end{center}
 		\end{table}
 		
