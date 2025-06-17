@@ -708,7 +708,7 @@
 \section{Signature protocol}
 	Here we will show to signature protocol adapted from the identification protocol from \cite{HJ23} in the same format as in \cite{feneu2023} as a 5-round protocol to be able to apply his theorem on EUF-CMA security proof of such protocol.
 		
-		\begin{tcolorbox}[title=Protocol 15: Signing Algorithm, breakable, enhanced, colback=white, colframe=black]
+		\begin{tcolorbox}[title=Protocol 15: Signing Algorithm, breakable, enhanced, colback=white, colframe=black]\label{Protocol_sig}
 			\textbf{Inputs:} A public key $x = (\vec{u}, \vec{v})$, a private key $w = (\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ and a message $m \in \{0,1\}^*$.
 			
 			\vspace{0.5em}
@@ -794,8 +794,8 @@
 	
 	The following proofs have been inspired by the proof of \textbf{EUF-CMA} of a generic 5-round protocols by Thibauld Feneuil \cite{feneu2023}.
 	
-	\begin{theorem}[\cite{feneu2023}]
-		Let $\text{Hash}_0, \text{Hash}_1, \text{Hash}_m$ and $\text{Expand}$ be modeled as random oracles, and let $(N, \tau, \lambda, p)$ be parameters of the signature scheme. Let $\mathcal{A}$ be an adversary against the \textbf{EUF-CMA} security of the scheme running in time $t_{\mathcal{A}}$ and making a total of $Q_{RO}$ random oracle queries and $Q_{Sig}$ signing queries. Assuming that $F$ is an $(t_{\mathcal{A}}, \epsilon_{OWF})$-hard one-way function and that PRG is a $(t_{\mathcal{A}}, \epsilon_{PRG})$-secure psuedorandom generator then $\mathcal{A}$'s advantage in the \textbf{EUF-CMA} game is
+	\begin{theorem}[\cite{feneu2023}]\label{theorem_feneu}
+		Let $\text{Hash}_0, \text{Hash}_1, \text{Hash}_m$ and $\text{Expand}$ be modeled as random oracles, and let $(N, \tau, \lambda, p)$ be parameters of the signature scheme. Let $\mathcal{A}$ be an adversary against the \textbf{EUF-CMA} security of the scheme running in time $t_{\mathcal{A}}$ and making a total of $Q_{RO}$ random oracle queries and $Q_{Sig}$ signing queries. Assuming that $F$ is a $(t_{\mathcal{A}}, \epsilon_{OWF})$-hard one-way function and that PRG is a $(t_{\mathcal{A}}, \epsilon_{PRG})$-secure psuedorandom generator then $\mathcal{A}$'s advantage in the \textbf{EUF-CMA} game is
 		$$
 			\epsilon_{EUF-CMA} \leq \epsilon_{OWF} + \epsilon_{PRG} + \frac{(\tau N + 2)Q^2}{2^{2\lambda}} + Pr[X+Y = \tau],
 		$$
@@ -809,8 +809,7 @@
 	
 	Proof of theorem \ref{EUF-CMA}:
 	\begin{proof}
-		\textbf{Il suffit de modeler le schema avec les énoncés de \cite{feneu2023} et hop on peut simplement utiliser ses preuves qui sont assez gnérales pour tout système de signature MPCitH avec une oneway function et une PRF.}
-		
+		We model the $SBC$ signature scheme \cite{HJ23} as a 5-round protocol (see Protocol~\ref{Protocol_sig}). By applying Theorem~\ref{theorem_feneu} from \cite{feneu2023}, and under the assumption that the underlying PRG is a $(t_{\mathcal{A}}, \epsilon_{\mathrm{PRG}})$-secure pseudorandom generator, and as established in Lemma~\ref{UB-KOA} that the $SBC$ function is a $(t_{\mathcal{A}}, \epsilon_{\mathrm{OWF}})$-secure one-way function, we conclude that the $SBC$ signature scheme achieves $EUF$-$CMA$ security.
 	\end{proof}
 
 
