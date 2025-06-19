@@ -40,6 +40,7 @@
 
 \newcommand{\Mac}[3]{{Mac_{#1, #2}(\mathcal{#3})}}
 \newcommand{\Mact}[3]{{\widetilde{Mac}_{#1, #2}(\mathcal{#3})}}
+\newcommand{\lir}{\llbracket i \rrbracket}
 
 \newcommand{\propositionTitre}[2]{
 	\begin{proposition}[#1]
@@ -74,9 +75,9 @@
 		
 		The main idea is to simulate a secure multiparty computation (MPC) protocol internally \textit{in the head} of the prover $\mathcal{P}$. This simulation involves a set of fictitious parties who jointly evaluate a circuit that depends on the witness $w$. The verifier $\mathcal{V}$ is then allowed to inspect a subset of the simulated views to ensure the prover is behaving honestly, while maintaining the zero-knowledge property.
 		
-		To represent the secret witness $w$, a linear secret sharing scheme is used among $N$ simulated parties. Each party $i$ receives a random share denoted by $[w]^{\llbracket i \rrbracket}$, and the prover computes an additional correction term defined as:
+		To represent the secret witness $w$, a linear secret sharing scheme is used among $N$ simulated parties. Each party $i$ receives a random share denoted by $[w]^{\lir}$, and the prover computes an additional correction term defined as:
 		$$
-		\delta_w = w - \sum_{i=1}^{N} [w]^{\llbracket i \rrbracket}.
+		\delta_w = w - \sum_{i=1}^{N} [w]^{\lir}.
 		$$
 		This ensures that the full witness can be correctly reconstructed from the shares and the correction term during the simulated execution.
 		
@@ -89,9 +90,9 @@
 		We introduce some standard notations in MPCitH protocols. 
 		\begin{itemize}
 			\item $[w]$, $w$ is a shared value.
-			\item $w^{\llbracket i \rrbracket}$ is the $i$-th share of w.
+			\item $w^{\lir}$ is the $i$-th share of w.
 			\item $w^[e]$ is a value used in the $e$-th round of the protocol.
-			\item $\delta_x$ is the offset for the additive sharing of $x$ s.t. $x = \delta_x + \sum_i x^{\llbracket i \rrbracket}$
+			\item $\delta_x$ is the offset for the additive sharing of $x$ s.t. $x = \delta_x + \sum_i x^{\lir}$
 		\end{itemize}
 		
 		
@@ -729,31 +730,40 @@
 				\quad $[\vec{R}_y^{[e]}], [\vec{R}_y^{[e]}] \leftarrow \text{Share}(w; r^{[e]}_w)$ \#The shares are in $(\mathbb{F}_{q})^n$.
 				
 				\item Compute $X_1^{[e]}, X_2^{[e]}, Y_1^{[e]}, Y_2^{[e]}$ \\
-				\quad $X_1^{[e]} \leftarrow \sum_{i=1}^{N} [X_1^{[e]}]^{\llbracket i \rrbracket}, X_2^{[e]} \leftarrow \sum_{i=1}^{N} [X_2^{[e]}]^{\llbracket i \rrbracket}, Y_1^{[e]} \leftarrow \sum_{i=1}^{N} [Y_1^{[e]}]^{\llbracket i \rrbracket}, Y_2^{[e]} \leftarrow \sum_{i=1}^{N} [Y_2^{[e]}]^{\llbracket i \rrbracket}$
+				\quad $X_1^{[e]} \leftarrow \sum_{i=1}^{N} [X_1^{[e]}]^{\lir}$. \\
+				\quad $X_2^{[e]} \leftarrow \sum_{i=1}^{N} [X_2^{[e]}]^{\lir}$. \\
+				\quad $Y_1^{[e]} \leftarrow \sum_{i=1}^{N} [Y_1^{[e]}]^{\lir}$. \\
+				\quad $Y_2^{[e]} \leftarrow \sum_{i=1}^{N} [Y_2^{[e]}]^{\lir}$.
 				
 				\item Compute $A^{[e]}$ and $B^{[e]}$ and share them: \\
 				\quad $A^{[e]} \leftarrow X_1Y_1 - X_2Y_2$. \\
 				\quad $B^{[e]} \leftarrow X_1(\vec{v} \cdot \vec{y}) + Y_1(\vec{u} \cdot \vec{x}) - X_2(\vec{u} \cdot \vec{y}) - Y_2(\vec{v} \cdot \vec{x})$. \\
-				\quad $\delta_A^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [R_A^{[e]}]^{\llbracket i \rrbracket}$. \\
-				\quad $\delta_B^{[e]} \leftarrow B^{[e]} - \sum_{i=1}^{N} [R_B^{[e]}]^{\llbracket i \rrbracket}$. \\
-				\quad $\vec{\delta}_x^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [\vec{R}_x^{[e]}]^{\llbracket i \rrbracket}$. \\
-				\quad $\vec{\delta}_y^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [\vec{R}_y^{[e]}]^{\llbracket i \rrbracket}$.
+				\quad $\delta_A^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [R_A^{[e]}]^{\lir}$. \\
+				\quad $\delta_B^{[e]} \leftarrow B^{[e]} - \sum_{i=1}^{N} [R_B^{[e]}]^{\lir}$. \\
+				\quad $\vec{\delta}_x^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [\vec{R}_x^{[e]}]^{\lir}$. \\
+				\quad $\vec{\delta}_y^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [\vec{R}_y^{[e]}]^{\lir}$.
 				
 				\item Compute random value $t_0^{[e]}$ and share it. \\
-				\quad $[t_0^{[e]}]^{\llbracket i \rrbracket} \leftarrow Hash_0(i || [vec{R}_x^{[e]}]^{\llbracket i \rrbracket}, [\vec{R}_y^{[e]}]^{\llbracket i \rrbracket}, [X_1^{[e]}]^{\llbracket i \rrbracket}, [X_2^{[e]}]^{\llbracket i \rrbracket}, [Y_1^{[e]}]^{\llbracket i \rrbracket}, [Y_2^{[e]}]^{\llbracket i \rrbracket},$ \\ $[R_A^{[e]}]^{\llbracket i \rrbracket}, [R_B^{[e]}]^{\llbracket i \rrbracket} || \vec{\delta}_x^{[e]}, \vec{\delta}_y^{[e]}, \delta_A^{[e]}, \delta_B^{[e]})$. \\
-				\quad $t_0^{[e]} \leftarrow \sum_{i=1}^{N} [t_0^{[e]}]^{\llbracket i \rrbracket}$.
+				\quad $[t_0^{[e]}]^{\lir} \leftarrow Hash_0(i || [\vec{R}_x^{[e]}]^{\lir}, [\vec{R}_y^{[e]}]^{\lir}, [X_1^{[e]}]^{\lir}, [X_2^{[e]}]^{\lir}, [Y_1^{[e]}]^{\lir}, [Y_2^{[e]}]^{\lir},$ \\ $[R_A^{[e]}]^{\lir}, [R_B^{[e]}]^{\lir} || \vec{\delta}_x^{[e]}, \vec{\delta}_y^{[e]}, \delta_A^{[e]}, \delta_B^{[e]})$. \\
+				\quad $t_0^{[e]} \leftarrow \sum_{i=1}^{N} [t_0^{[e]}]^{\lir}$.
 				
 				
 				\item Compute the commitments \\
-				\quad $\texttt{com}^{[e]}_i := \text{Hash}_0(\texttt{salt}, e, i, [w^{[e]}_i], [g^{[e]}_i])$ \\
-				for all $i \in [1:N]$, and compute the Merkle root \\
-				\quad $\tilde{h}^{[e]} := \text{MerkleTree}(\texttt{com}^{[e]}_1, \dots, \texttt{com}^{[e]}_N)$.
+				\quad $View_i \leftarrow (
+				[t_0^{[e]}]^{\lir},
+				[(X_1 + t_0(\vec{u} \cdot \vec{x}))^{[e]}]^{\lir},
+				[(X_2 + t_0(\vec{v} \cdot \vec{x}))^{[e]}]^{\lir},
+				[(Y_1 + t_0(\vec{v} \cdot \vec{y}))^{[e]}]^{\lir},
+				[(Y_2 + t_0(\vec{u} \cdot \vec{y}))^{[e]}]^{\lir},
+				[(A + t_0 B)^{[e]}]^{\lir}
+				)$. \\
+				\quad $\texttt{com}^{[e]} := \text{Hash}_0(\texttt{salt}, e, View_1, \dots, View_N, \vec{\delta}_x, \vec{\delta}_y, \delta_A, \delta_B)$
 			\end{enumerate}
 			
 			\vspace{0.5em}
 			\textbf{Phase 2: First challenge (randomness for the MPC protocol).}
 			\begin{enumerate}[label=\arabic*.]
-				\item Compute $h_1 := \text{Hash}(m, \texttt{salt}, \tilde{h}^{[1]}, \dots, \tilde{h}^{[\tau]})$.
+				\item Compute $h_1 := \text{Hash}(m, \texttt{salt}, \texttt{comm}^{[1]}, \dots, \texttt{comm}^{[\tau]})$.
 				\item Expand $h_1$ as $(e^{[e]})_{e \in [1:\tau]} \leftarrow \text{Expand}(h_1)$.
 			\end{enumerate}
 			
@@ -763,8 +773,6 @@
 				\item Computes, for $i \in S$, \\
 				\quad $[\alpha^{[e]}_i] := \varphi_{x,e,f}([w^{[e]}_i], [g^{[e]}_i])$ \\
 				and recomposes $\alpha^{[e]}$. \\
-				
-				\textit{This step is repeated as many times as in the MPC protocol (cf Protocol 11).}
 			\end{enumerate}
 			
 			\vspace{0.5em}
@@ -792,7 +800,7 @@
 		It is straightforward to show, because if $\mathcal{A}$ can retrieve the private key $(x, y) \in \mathbb{F}_{q}^{2n}$ of a given valid public key $(u, v) \in \mathbb{F}_{q^k}^{2n}$ then no need to convert anything because $(x, y) \in \text{SBC}[u, v]$ directly. So the signature scheme is \textbf{UB-KOA} if the SBC function is ($\tau, \epsilon$)-hard.
 	\end{proof}
 	
-	The following proofs have been inspired by the proof of \textbf{EUF-CMA} of a generic 5-round protocols by Thibauld Feneuil \cite{feneu2023}.
+	We rely on the following theorem from Thibault Feneuil's PhD thesis \cite{feneu2023}, which states that any 5-round signing protocol instantiated within the MPC-in-the-Head (MPCitH) framework is \textbf{EUF-CMA} secure, under certain assumptions specified in the theorem.
 	
 	\begin{theorem}[\cite{feneu2023}]\label{theorem_feneu}
 		Let $\text{Hash}_0, \text{Hash}_1, \text{Hash}_m$ and $\text{Expand}$ be modeled as random oracles, and let $(N, \tau, \lambda, p)$ be parameters of the signature scheme. Let $\mathcal{A}$ be an adversary against the \textbf{EUF-CMA} security of the scheme running in time $t_{\mathcal{A}}$ and making a total of $Q_{RO}$ random oracle queries and $Q_{Sig}$ signing queries. Assuming that $F$ is a $(t_{\mathcal{A}}, \epsilon_{OWF})$-hard one-way function and that PRG is a $(t_{\mathcal{A}}, \epsilon_{PRG})$-secure psuedorandom generator then $\mathcal{A}$'s advantage in the \textbf{EUF-CMA} game is
