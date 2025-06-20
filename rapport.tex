@@ -709,9 +709,11 @@
 \section{Signature protocol}
 	Here we will show to signature protocol adapted from the identification protocol from \cite{HJ23} in the same format as in \cite{feneu2023} as a 5-round protocol to be able to apply his theorem on EUF-CMA security proof of such protocol.
 	
-	To lighten the notation, we will not write the index of the round, but all the sharing elements are per round $e \in [1, \tau]$.
+	To simplify the notation, we omit the round index when it is clear from context. Unless stated otherwise, all sharing-related elements are defined per round $e \in [1, \tau]$.
 	
-	\textbf{Introduire le reste des notations}
+	We denote by $\mathcal{K}^e$ the punctured key corresponding to round $e$. This punctured key represents the co-path in the GGM tree used to derive the associated random values.
+	
+	The function Expand is a generic function, that expands the hash to extract different psuedo-random values from it.
 		
 		\begin{tcolorbox}[title=Protocol 15: Signing Algorithm, breakable, enhanced, colback=white, colframe=black]\label{Protocol_sig}
 			\textbf{Inputs:} A public key $x = (\vec{u}, \vec{v})$, a private key $w = (\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ and a message $m \in \{0,1\}^*$.
