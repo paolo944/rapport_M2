@@ -725,7 +725,7 @@
 				\item Derive randomness $r^{[e]}_{w}, r^{[e]}_r, r^{[e]}_{\psi}$ from the root seed $\rho$: \\
 				\quad $(r^{[e]}_w, r^{[e]}_r, r^{[e]}_{\psi}) \leftarrow \text{PRG}(\texttt{salt}, e, \rho)$.
 				
-				\item Share the witness $w$ into an $(N, N)$-threshold linear secret sharing $[w^{[e]}_i]$: \\
+				\item Share the witness $w$ into an $(N-1)$-private linear secret sharing $[w^{[e]}_i]$: \\
 				\quad $[X_1^{[e]}], [X_2^{[e]}], [Y_1^{[e]}], [Y_2^{[e]}], [R_A^{[e]}], [R_B^{[e]}] \leftarrow \text{Share}(w; r^{[e]}_w)$ \#The shares are in $\mathbb{F}_{q^k}$. \\
 				\quad $[\vec{R}_y^{[e]}], [\vec{R}_y^{[e]}] \leftarrow \text{Share}(w; r^{[e]}_w)$ \#The shares are in $(\mathbb{F}_{q})^n$.
 				
@@ -734,21 +734,30 @@
 				\quad $X_2^{[e]} \leftarrow \sum_{i=1}^{N} [X_2^{[e]}]^{\lir}$. \\
 				\quad $Y_1^{[e]} \leftarrow \sum_{i=1}^{N} [Y_1^{[e]}]^{\lir}$. \\
 				\quad $Y_2^{[e]} \leftarrow \sum_{i=1}^{N} [Y_2^{[e]}]^{\lir}$.
+			\end{enumerate}
+			
+			\vspace{0.5em}
+			\textbf{Phase 2: First challenge (randomness for the MPC protocol).}
+			\begin{enumerate}[label=\arabic*.]
+				\item Expand $h_1$ as $(e^{[e]})_{e \in [1:\tau]} \leftarrow \text{Expand}(h_1)$.
 				
+				\item Compute random value $t_0^{[e]}$ and share it. \\
+				\quad $[t_0^{[e]}]^{\lir} \leftarrow Hash_0(i || [\vec{R}_x^{[e]}]^{\lir}, [\vec{R}_y^{[e]}]^{\lir}, [X_1^{[e]}]^{\lir}, [X_2^{[e]}]^{\lir}, [Y_1^{[e]}]^{\lir}, [Y_2^{[e]}]^{\lir},$ \\ $[R_A^{[e]}]^{\lir}, [R_B^{[e]}]^{\lir} || \vec{\delta}_x^{[e]}, \vec{\delta}_y^{[e]}, \delta_A^{[e]}, \delta_B^{[e]})$. \\
+				\quad $t_0^{[e]} \leftarrow \sum_{i=1}^{N} [t_0^{[e]}]^{\lir}$.
+			\end{enumerate}
+			
+			\vspace{0.5em}
+			\textbf{Phase 3: Simulation of the MPC protocol.} For each $e \in [1:\tau]$:
+			\begin{enumerate}[label=\arabic*.]
 				\item Compute $A^{[e]}$ and $B^{[e]}$ and share them: \\
 				\quad $A^{[e]} \leftarrow X_1Y_1 - X_2Y_2$. \\
 				\quad $B^{[e]} \leftarrow X_1(\vec{v} \cdot \vec{y}) + Y_1(\vec{u} \cdot \vec{x}) - X_2(\vec{u} \cdot \vec{y}) - Y_2(\vec{v} \cdot \vec{x})$. \\
 				\quad $\delta_A^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [R_A^{[e]}]^{\lir}$. \\
 				\quad $\delta_B^{[e]} \leftarrow B^{[e]} - \sum_{i=1}^{N} [R_B^{[e]}]^{\lir}$. \\
-				\quad $\vec{\delta}_x^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [\vec{R}_x^{[e]}]^{\lir}$. \\
-				\quad $\vec{\delta}_y^{[e]} \leftarrow A^{[e]} - \sum_{i=1}^{N} [\vec{R}_y^{[e]}]^{\lir}$.
+				\quad $\vec{\delta}_x^{[e]} \leftarrow \vec{x}^{[e]} - \sum_{i=1}^{N} [\vec{R}_x^{[e]}]^{\lir}$. \\
+				\quad $\vec{\delta}_y^{[e]} \leftarrow \vec{y}^{[e]} - \sum_{i=1}^{N} [\vec{R}_y^{[e]}]^{\lir}$.
 				
-				\item Compute random value $t_0^{[e]}$ and share it. \\
-				\quad $[t_0^{[e]}]^{\lir} \leftarrow Hash_0(i || [\vec{R}_x^{[e]}]^{\lir}, [\vec{R}_y^{[e]}]^{\lir}, [X_1^{[e]}]^{\lir}, [X_2^{[e]}]^{\lir}, [Y_1^{[e]}]^{\lir}, [Y_2^{[e]}]^{\lir},$ \\ $[R_A^{[e]}]^{\lir}, [R_B^{[e]}]^{\lir} || \vec{\delta}_x^{[e]}, \vec{\delta}_y^{[e]}, \delta_A^{[e]}, \delta_B^{[e]})$. \\
-				\quad $t_0^{[e]} \leftarrow \sum_{i=1}^{N} [t_0^{[e]}]^{\lir}$.
-				
-				
-				\item Compute the commitments \\
+								\item Compute the commitments \\
 				\quad $View_i \leftarrow (
 				[t_0^{[e]}]^{\lir},
 				[(X_1 + t_0(\vec{u} \cdot \vec{x}))^{[e]}]^{\lir},
@@ -757,39 +766,37 @@
 				[(Y_2 + t_0(\vec{u} \cdot \vec{y}))^{[e]}]^{\lir},
 				[(A + t_0 B)^{[e]}]^{\lir}
 				)$. \\
-				\quad $\texttt{com}^{[e]} := \text{Hash}_0(\texttt{salt}, e, View_1, \dots, View_N, \vec{\delta}_x, \vec{\delta}_y, \delta_A, \delta_B)$
-			\end{enumerate}
-			
-			\vspace{0.5em}
-			\textbf{Phase 2: First challenge (randomness for the MPC protocol).}
-			\begin{enumerate}[label=\arabic*.]
+				\quad $\texttt{com}^{[e]} := \text{Hash}_0(e, View_1, \dots, View_N, \vec{\delta}_x, \vec{\delta}_y, \delta_A, \delta_B)$
+				
 				\item Compute $h_1 := \text{Hash}(m, \texttt{salt}, \texttt{comm}^{[1]}, \dots, \texttt{comm}^{[\tau]})$.
-				\item Expand $h_1$ as $(e^{[e]})_{e \in [1:\tau]} \leftarrow \text{Expand}(h_1)$.
-			\end{enumerate}
-			
-			\vspace{0.5em}
-			\textbf{Phase 3: Simulation of the MPC protocol.} For each $e \in [1:\tau]$:
-			\begin{enumerate}[label=\arabic*.]
-				\item Computes, for $i \in S$, \\
-				\quad $[\alpha^{[e]}_i] := \varphi_{x,e,f}([w^{[e]}_i], [g^{[e]}_i])$ \\
-				and recomposes $\alpha^{[e]}$. \\
 			\end{enumerate}
 			
 			\vspace{0.5em}
 			\textbf{Phase 4: Second challenge (parties to be opened).}
 			\begin{enumerate}[label=\arabic*.]
 				\item Compute $h_2 := \text{Hash}(\texttt{salt}, h_1, [\alpha^{[1]}]_{S}, \dots, [\alpha^{[\tau]}]_{S})$.
-				\item Expand $h_2$ as $(r^{[e]})_{e \in [1:\tau]} \leftarrow \text{Expand}(h_2)$.
+				\item Expand $h_2$ as $(I^{[e]})_{e \in [1:\tau]} \leftarrow \text{Expand}(h_2)$ where, for every $e, I^{[e]} \in [1:N]$ the party that will not be opened.
 			\end{enumerate}
 			
 			\vspace{0.5em}
 			\textbf{Phase 5: Building of the signature.} Output the signature $\sigma$ built as:
 			
-			\[
-			\sigma := \texttt{salt} \parallel h_1 \parallel h_2 \parallel (([w^{[e]}_i], [g^{[e]}_i])_{i \in r^{[e]}}, \texttt{auth}^{[e]}, \alpha^{[e]})_{e \in [1:\tau]}
-			\]
-			
-			where $\texttt{auth}^{[e]}$ is the authentication path for $\{\texttt{com}^{[e]}_i\}_{i \in r^{[e]}}$ w.r.t. Merkle root $\tilde{h}^{[e]}$ and $i^{[e]} \notin r^{[e]}$.
+			$$
+			\sigma := \texttt{salt} \parallel
+			h_1 \parallel
+			punctured\_keys \parallel
+			[\delta_A^{[e]}]_{e\in[1,\tau]} \parallel
+			[\delta_B^{[e]}]_{e\in[1,\tau]} \parallel
+			$$
+			$$
+			[\vec{\delta}_x^{[e]}]_{e\in[1,\tau]} \parallel [\vec{\delta}_y^{[e]}]_{e\in[1,\tau]} \parallel
+			[(X_1 + t_0(\vec{u} \cdot \vec{x}))^{[e]}]_{e\in[1,\tau]} \parallel
+			[(X_2 + t_0(\vec{v} \cdot \vec{x}))^{[e]}]_{e\in[1,\tau]} \parallel
+			$$
+			$$
+			[(Y_1 + t_0(\vec{v} \cdot \vec{y}))^{[e]}]_{e\in[1,\tau]} \parallel
+			[(Y_2 + t_0(\vec{u} \cdot \vec{y}))^{[e]}]_{e\in[1,\tau]}
+			$$
 		\end{tcolorbox}
 	
 
