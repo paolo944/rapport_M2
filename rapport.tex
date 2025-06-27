@@ -24,10 +24,13 @@
 \usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{caption}
+\usepackage[affil-it]{authblk}
 
 \usetikzlibrary{arrows.meta, positioning}
 
 \addbibresource{biblio.bib}
+
+\graphicspath{./}
 
 \newlength{\participantimgsize}
 \setlength{\participantimgsize}{1.8cm}
@@ -49,7 +52,13 @@
 	\end{proposition}
 }
 
-\author{Paul Mekhail\\ \textbf{Advisor:} Sorina Ionica}
+\author{Paul Mekhail
+	\thanks{\texttt{paul.mekhail4@pm.me}}}
+\affil{Laboratoire MIS, Université de Picardie Jules Verne, Amiens, France\\Sorbonne Université, Paris, France}
+
+\author{\textbf{Advisor}: Sorina Ionica
+	\thanks{\texttt{sorina.ionica@u-picardie.fr}}}
+\affil{Laboratoire MIS, Université de Picardie Jules Verne, Amiens, France}
 
 \title{Cryptanalysis of SBC based post-quantum signature scheme}
 
@@ -86,6 +95,13 @@
 		In Section~\ref{sec3}, we present key results in polynomial system solving and describe the main algorithms and results used in our cryptanalysis.
 		
 		Finally, in Section~\ref{sec4}, we detail our contributions, including the cryptanalysis and formal security evaluation of the SBC-based signature scheme, and summarize the most efficient known attacks against it.
+	
+		\begin{figure}[H]
+			\begin{center}
+				\includegraphics[scale=0.04]{unilasalle.jpg}
+				\caption{UniLaSalle Engineering School, where the MIS offices are located(for now). Observant readers may notice the unusual UFO-like structure situated in front of the building.}
+			\end{center}	
+		\end{figure}
 	
 	\newpage
 	\tableofcontents
