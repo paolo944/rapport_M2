@@ -24,6 +24,7 @@
 \usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{caption}
+
 \usetikzlibrary{arrows.meta, positioning}
 
 \addbibresource{biblio.bib}
@@ -135,9 +136,47 @@
 			\item we compute the offset $\delta_x = x - \sum_{i=1}^{N} x^{\lir} \text{ mod } \mathbb{F}_q$.
 		\end{enumerate}
 		
+		\begin{figure}[H]
+			\begin{center}
+				\begin{tikzpicture}
+					\node {$F(\rho)$} [sibling distance = 3cm]
+					child {node {$F\lceil(F(\rho)\rceil)$} 
+						child {node {$F(\lceil F(\lceil F(\rho)\rceil)\rceil)$}}
+						child {node [yshift = 0.5cm, xshift = -0.8cm]{$F(\lfloor F\lceil(F(\rho)\rceil)\rfloor)$}}}
+					child {node {$F(\lfloor F(\rho)\rfloor)$}
+						child {node {$F(\lceil F(\lfloor F(\rho)\rfloor)\rceil)$}}
+						child {node {$F(\lfloor F(\lfloor F(\rho)\rfloor)\rfloor)$}
+						}
+					};
+				\end{tikzpicture}
+				\caption{GGM tree example to secretly share a value $x$ using a PRF $F$. $\lceil F(\rho)\rceil$ (resp. $\lceil F(\rho)\rceil$) denotes the first (resp. second) half of the output of $F(\rho)$.}
+				\label{fig:GGMtree}
+			\end{center}
+		\end{figure}
+		
 		One challenge in this approach is the need to communicate the offset to the verifier so that they can verify the computations. However, a recent technique called \emph{Correlated GGM} (cGGM) has been introduced in \cite{GYWZ+22}, which allows the prover to generate random values $x^{\lir}$ using a modified GGM tree, such that $\sum_{i=1}^{N} x^{\lir} = x$, with no computational.
-		This is achieved by enforcing an invariant over the cGGM tree: at each level, the sum of the nodes remains constant. More precisely, given a parent node $x$, the left child is defined as $H(x)$ and the right child as $x - H(x)$, where $H$ is a cryptographic hash function. As a result, only approximately half of the tree nodes require hash evaluations, compared to all nodes in the classical GGM construction.
-		This technique not only reduces the computational cost but also eliminates the need to transmit the offset to the verifier, thereby improving the overall communication efficiency. 
+		This is achieved by enforcing an invariant over the cGGM tree: at each level, the sum of the nodes remains constant. More precisely, given a parent node $x$, the left child is defined as $F(x)$ and the right child as $x - F(x)$, where $F$ is a cryptographic psuedorandom function. As a result, only approximately half of the tree nodes require PRF evaluations, compared to all nodes in the classical GGM construction.
+		This technique not only reduces the computational cost but also eliminates the need to transmit the offset to the verifier, thereby improving the overall communication efficiency.
+		
+		\begin{figure}[H]
+		\begin{center}
+			\begin{tikzpicture}
+				\node {$x$} [sibling distance = 3cm]
+				child {node {$F(x)$} 
+					child {node {$F(F(x))$}}
+					child {node [yshift = 0.5cm, xshift = -0.8cm]{$F(x) - F(F(x))$}}}
+				child {node {$x - F(x)$}
+					child {node {$F(x - F(x))$}}
+					child {node {$x - F(x) - F(x -F(x))$}
+					}
+				};
+			\end{tikzpicture}
+			\caption{cGGM tree example. Here, it is easy to verify that the sum at each level is equal to $x$.}
+			\label{fig:cGGMtree}
+		\end{center}
+		\end{figure}
+		
+		In practice, the PRF used is AES specially because of it's hardware implementation which enables much faster tree generation than other PRF like SHA256 or other hash functions. The security of AES as a cryptographic PRF in a GGM tree generation has been studied in \cite{BCCG+24}.
 		
 		\subsubsection{HyperCube technique}
  		This optimization technique was introduced in \cite{AGHH+22} and is commonly used in MPCitH schemes. This geometric approach models the $N$ shares as forming a $d$-dimensional hypercube of side length $k$. The often used parameters are $k = 2$ and $N = 2^d$, so the number party counts reduces to $log(N) + 1$. This technique often leads to MPC computations less expensive, smaller proof sizes and larger party sizes. However, these benefits come at the cost of increased reliance on GGM tree generation, which can become computationally expensive.
