@@ -11,7 +11,7 @@
 \usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{mathtools}
-\usepackage[backend=bibtex]{biblatex}
+\usepackage[backend=bibtex,style=alphabetic]{biblatex}
 \usepackage{csquotes}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -55,17 +55,41 @@
 \begin{document}
 	\maketitle
 	
-	\begin{abstract}
+	\section{Introduction}
+		Since the emergence of quantum computing in the late 1990s, several breakthroughs have been achieved in the field of quantum algorithms. Some of these advancements have found applications in areas such as medicine and physics, while others have demonstrated the ability to break cryptographic problems that are currently assumed to be hard for classical computers, such as RSA and ECDH.
+		
+		In particular, quantum algorithms like Grover's \cite{Grover} and Shor's \cite{Shor} have shown that existing public-key cryptosystems are vulnerable in a post-quantum setting. This has led to an urgent need for new hard problems on which to base quantum-resistant public-key cryptography.
+		
+		Post-quantum cryptographic schemes are generally built upon four main problem classes: isogeny-based, multivariate, code-based, and lattice-based cryptography. In recent years, new paradigms have also been explored to improve the efficiency and security of schemes within these classes. One such paradigm is the \emph{MPC-in-the-Head} approach.
+		
+		Although these underlying problems are believed to be hard even for quantum computers, some have been shown to be vulnerable to classical attacks due to hidden structures. A notable example is the NIST finalist Rainbow \cite{JD05}, a multivariate signature scheme that was broken in 2022 by Beullens \cite{Beu22} through exploitation of structural weaknesses.
+	
+		
+		One might argue that post-quantum cryptography is not yet necessary, given that large-scale quantum computers capable of breaking classical cryptography do not currently exist. However, adversaries could perform so-called \emph{harvest-and-decrypt-later} attacks, in which encrypted data is collected today and decrypted in the future when quantum capabilities become available.
+		
+		In response to these concerns, the National Institute of Standards and Technology (NIST) launched an international competition in 2016 to standardize post-quantum cryptographic primitives.
+	
 		The \emph{MPC-in-the-Head} (MPCitH) paradigm, first introduced in \cite{IKOS07}, has recently gained significant attention—particularly in the second round of NIST’s post-quantum signature standardization process, where 5 out of 14 candidate schemes were based on this approach.
 		
 		The core idea of this paradigm is to leverage an NP-relation $\mathcal{R}(x, w)$ to construct a zero-knowledge (ZK) protocol. In such a protocol, a prover $\mathcal{P}$ convinces a verifier $\mathcal{V}$ that they possess a valid witness $w$ for a given public input $x$, without revealing any additional information about $w$.
 		
+		The main appeal of the MPCitH paradigm lies in the fact that it enables the construction of efficient, non-interactive, and quantum-resistant signature schemes with relatively small signature sizes and low verification cost and extremely small keys size.
+		
 		In~\cite{HJ23}, the authors introduced the \emph{Subfield Bilinear Collision} (SBC) problem, which is rooted in the hardness of the discrete logarithm problem \cite{Joux13}. Based on this assumption, they proposed a post-quantum signature scheme constructed using the MPCitH framework.
 		
 		The objective of this internship is to conduct a cryptanalysis of this scheme, assess its security and efficiency, and explore potential improvements.
-	\end{abstract}
+		This includes evaluating its concrete security parameters and identifying potential structural weaknesses.
 		
-	\section{MPCitH and SBC signature scheme}
+		In Section~\ref{sec2}, we introduce the MPCitH paradigm and provide an overview of the SBC problem, including its variants as well as the identification and signature schemes built upon it. 
+		
+		In Section~\ref{sec3}, we present key results in polynomial system solving and describe the main algorithms and results used in our cryptanalysis.
+		
+		Finally, in Section~\ref{sec4}, we detail our contributions, including the cryptanalysis and formal security evaluation of the SBC-based signature scheme, and summarize the most efficient known attacks against it.
+	
+	\newpage
+	\tableofcontents
+	\newpage
+	\section{MPCitH and SBC signature scheme}\label{sec2}
 		
 		\subsection{MPCitH}
 		
@@ -99,11 +123,19 @@
 		Finally, we discuss several optimizations that have been proposed in the literature since and are now considered standard and widely used.
 		
 		\subsubsection{GGM tree}
-		Since most of the values used in the MPC protocol are randomly generated, a technique known as the GGM tree can be employed to transmit only a seed, rather than all the individual random values.
+		Since most of the values used in the MPC protocol are randomly generated, a technique known as the GGM tree can be employed to transmit only a seed, rather than all the individual random values. This technique has been introduced in \cite{GGM86}.
 		
 		A GGM tree is essentially a binary tree rooted at a seed, on which a pseudorandom function (PRF) is applied. The PRF must produce an output of twice the bit-length of its input. The first half of the output serves as the root of the left subtree, and the second half as the root of the right subtree. This process is applied recursively until enough leaves are generated, which correspond to the required random values.
 		
 		In our case, we do not transmit the seed due to the use of linear secret sharing. Since we typically employ an $(N-1)$-private MPC protocol, we only share the co-path of the $i$-th leaf, which remains hidden from $\mathcal{V}$. As a result, instead of sharing $N$ values, we only need to share $log(N)$ values.
+		
+		Usually, the linear private share of a value $x$ is done this way:
+		\begin{enumerate}
+			\item we create $n$ random shares $x^{\lir} \overset{{\scriptscriptstyle\$}}\gets \mathbb{F}_q, \forall i \in [1,N]$.
+			\item we compute the offset $\delta_x = x - \sum_{i=1}^{N} x^{\lir} \text{ mod } \mathbb{F}_q$.
+		\end{enumerate}
+		
+		One challenge in this approach is the need to communicate the offset to the verifier so that they can verify the computations. However, a recent technique called \emph{Correlated GGM} (cGGM) has been introduced in \cite{GYWZ+22}, which allows the prover to generate random values $x^{\lir}$ using a modified GGM tree, such that $\sum_{i=1}^{N} x^{\lir} = x$, with minimal computational overhead.
 		
 		\subsubsection{HyperCube technique}
  		This optimization technique was introduced in \cite{AGHH+22} and is commonly used in MPCitH schemes. This geometric approach models the $N$ shares as forming a $d$-dimensional hypercube of side length $k$. The often used parameters are $k = 2$ and $N = 2^d$, so the number party counts reduces to $log(N) + 1$. This technique often leads to MPC computations less expensive, smaller proof sizes and larger party sizes. However, these benefits come at the cost of increased reliance on GGM tree generation, which can become computationally expensive.
@@ -133,7 +165,7 @@
 		
 		
 		
-	\section{Polynomial system solving}
+	\section{Polynomial system solving}\label{sec3}
 		Gröbner basis theory was first introduced by Buchberger in his thesis \cite{Buc} and he gave an algorithm to compute the Gröbner basis of an ideal.
 		Gröbner basis algorithms like Buchberger's Algorithm \cite{Buc}, are used to find solutions for polynomial systems using algebraic geometry tools. For a gentle introduction to this subject \cite{CLS}.
 		
@@ -454,7 +486,7 @@
 		
 		This algorithm have shown it's effectiveness in practice with good implementations like Bouillaguet and Sauvage's implementation \cite {BS23} that broke records for solving boolean systems on the Fukuaka MQ challenge \cite{MQFUK}. Despite that, there are no proven complexity analysis for this algorithm due to it's huge number of possible parameters but we can do some estimations with admissible parameters as we will see in the next section.
 
-	\section{Contributions}
+	\section{Contributions}\label{sec4}
 		
 		\subsection{System Modeling}
 		One of the known attacks given by the authors is through algebraic cryptanalysis.
@@ -702,7 +734,7 @@
 			\label{tab_attacks}
 		\end{center}
 		\end{table}
-		
+
 \printbibliography
 
 \appendix
@@ -715,8 +747,8 @@
 	
 	The function Expand is a generic function, that expands the hash to extract different psuedo-random values from it.
 		
-		\begin{tcolorbox}[title=Protocol 15: Signing Algorithm, breakable, enhanced, colback=white, colframe=black]\label{Protocol_sig}
-			\textbf{Inputs:} A public key $x = (\vec{u}, \vec{v})$, a private key $w = (\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ and a message $m \in \{0,1\}^*$.
+		\begin{tcolorbox}[title=Protocol 1: Signature scheme - Signing Algorithm, breakable, enhanced, colback=white, colframe=black]\label{Protocol_sig}
+			\textbf{Inputs:} A public key $(\vec{u}, \vec{v})$, a private key $(\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ and a message $m \in \{0,1\}^*$.
 			
 			\vspace{0.5em}
 			\textbf{Phase 0: Initialization.}
@@ -796,8 +828,8 @@
 			\vspace{0.5em}
 			\textbf{Phase 4: Second challenge (parties to be opened).}
 			\begin{enumerate}[label=\arabic*.]
-				\item Compute $h_2 := \text{Hash}(m, \texttt{salt}, \texttt{comm}^{[1]}, \dots, \texttt{comm}^{[\tau]})$.
-				\item Expand $h_2$ as $(I^{[e]})_{e \in [1:\tau]} \leftarrow \text{Expand}(h_2)$ where, for every $e, I^{[e]} \in [1:N]$ the party that will not be opened.
+				\item Compute $h := \text{Hash}(m, \texttt{salt}, \texttt{comm}^{[1]}, \dots, \texttt{comm}^{[\tau]})$.
+				\item Expand $h$ as $(I^{[e]})_{e \in [1:\tau]} \leftarrow \text{Expand}(h)$ where, for every $e, I^{[e]} \in [1:N]$ the party that will not be opened.
 			\end{enumerate}
 			
 			\vspace{0.5em}
@@ -805,7 +837,7 @@
 			
 			$$
 			\sigma := \texttt{salt} \parallel
-			h_1 \parallel
+			h \parallel
 			punctured\_keys \parallel
 			[\delta_A^{[e]}]_{e\in[1,\tau]} \parallel
 			[\delta_B^{[e]}]_{e\in[1,\tau]} \parallel
@@ -820,6 +852,32 @@
 			[(Y_2 + t_0(\vec{u} \cdot \vec{y}))^{[e]}]_{e\in[1,\tau]}
 			$$
 		\end{tcolorbox}
+		
+		\begin{tcolorbox}[title=Protocol 2: Signature scheme - Verification Algorithm, breakable, enhanced, colback=white, colframe=black]\label{Protocol_verif}
+			\textbf{Inputs:} A public key $(\vec{u}, \vec{v})$, a message $m \in \{0,1\}^*$ and a signature $\sigma$.
+			
+			\begin{enumerate} 
+			\item Parse the signature $\sigma$ as
+			$$
+			\texttt{salt} \parallel
+			h \parallel
+			punctured\_keys \parallel
+			[\delta_A^{[e]}]_{e\in[1,\tau]} \parallel
+			[\delta_B^{[e]}]_{e\in[1,\tau]} \parallel
+			$$
+			$$
+			[\vec{\delta}_x^{[e]}]_{e\in[1,\tau]} \parallel [\vec{\delta}_y^{[e]}]_{e\in[1,\tau]} \parallel
+			[(X_1 + t_0(\vec{u} \cdot \vec{x}))^{[e]}]_{e\in[1,\tau]} \parallel
+			[(X_2 + t_0(\vec{v} \cdot \vec{x}))^{[e]}]_{e\in[1,\tau]} \parallel
+			$$
+			$$
+			[(Y_1 + t_0(\vec{v} \cdot \vec{y}))^{[e]}]_{e\in[1,\tau]} \parallel
+			[(Y_2 + t_0(\vec{u} \cdot \vec{y}))^{[e]}]_{e\in[1,\tau]}
+			$$
+			
+			\item Expand $h$ as $(I^{[e]})_{e \in [1:\tau]} \leftarrow \text{Expand}(h)$ where, for every $e, I^{[e]} \in [1:N]$ the party that we do not have.
+			\end{enumerate}
+		\end{tcolorbox}
 	
 
 \section{Security proof}\label{appendix:proof}
@@ -830,6 +888,8 @@
 	\end{proof}
 	
 	We rely on the following theorem from Thibault Feneuil's PhD thesis \cite{feneu2023}, which states that any 5-round signing protocol instantiated within the MPC-in-the-Head (MPCitH) framework is \textbf{EUF-CMA} secure, under certain assumptions specified in the theorem.
+	
+	This type of proof typically proceeds by simulating a game in which an adversary interacts with a signing oracle that responds to arbitrary signing queries. The adversary's goal is to produce a valid signature on a message that was not previously queried to the oracle. A signature scheme is said to be \textbf{EUF-CMA} (Existential Unforgeability under Chosen Message Attack) if the probability that the adversary succeeds in forging such a signature is at most $2^{-\lambda}$, where $\lambda$ denotes the security parameter. This probability is referred to as the adversary's advantage.
 	
 	\begin{theorem}[\cite{feneu2023}]\label{theorem_feneu}
 		Let $\text{Hash}_0, \text{Hash}_1, \text{Hash}_m$ and $\text{Expand}$ be modeled as random oracles, and let $(N, \tau, \lambda, p)$ be parameters of the signature scheme. Let $\mathcal{A}$ be an adversary against the \textbf{EUF-CMA} security of the scheme running in time $t_{\mathcal{A}}$ and making a total of $Q_{RO}$ random oracle queries and $Q_{Sig}$ signing queries. Assuming that $F$ is a $(t_{\mathcal{A}}, \epsilon_{OWF})$-hard one-way function and that PRG is a $(t_{\mathcal{A}}, \epsilon_{PRG})$-secure psuedorandom generator then $\mathcal{A}$'s advantage in the \textbf{EUF-CMA} game is
