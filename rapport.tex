@@ -60,13 +60,13 @@
 	\thanks{\texttt{sorina.ionica@u-picardie.fr}}}
 \affil{Laboratoire MIS, Université de Picardie Jules Verne, Amiens, France}
 
-\title{Cryptanalysis of SBC based post-quantum signature scheme}
+\title{Cryptanalysis of SBC based post-quantum signature scheme \\\textit{Graduation internship report}}
 
 \begin{document}
 	\maketitle
 	
 	\section{Introduction}
-		Since the emergence of quantum computing in the late 1990s, several breakthroughs have been achieved in the field of quantum algorithms. Some of these advancements have found applications in areas such as medicine and physics, while others have demonstrated the ability to break cryptographic problems that are currently assumed to be hard for classical computers, such as RSA and ECDH.
+		Since the emergence of quantum computing in the late 1990s, several breakthroughs have been achieved in the field of quantum algorithms. Some of these advancements have found applications in areas such as medicine and physics, while others have demonstrated the ability to break cryptographic problems that are currently assumed to be hard for classical computers, such as RSA \cite{RSA78} and ECDH.
 		
 		In particular, quantum algorithms like Grover's \cite{Grover} and Shor's \cite{Shor} have shown that existing public-key cryptosystems are vulnerable in a post-quantum setting. This has led to an urgent need for new hard problems on which to base quantum-resistant public-key cryptography.
 		
@@ -442,6 +442,8 @@
 			LM(I_{m-1} : f_m) = \langle Monomials_{m - n_y - 2}^x(n_y + 1) \rangle + \langle Monomials_{m - n_x - 2}^y(n_x + 1) + LM(I_{m-1})\rangle.
 			$$
 		\end{definition}
+		
+		We can notice that the output of algorithm \ref{alg:reduc} is polynomials of degree $q$. Here $q$ is always $n_x + 1$ or $n_y + 1$. We deduce that the only non trivial syzygies are of degree $n_x + 1$ or $n_y + 1$. \textbf{c'est pas $n_x + 2$ ou $n_y + 2$ du coup ?}
 		
 		The following theorem, ensures that there are no reductions to 0 with extended the F5 criterion. \textbf{Ce théorème est en suspens pour utiliser une autre formulation sans utiliser la topologie de Zariski}
 		
