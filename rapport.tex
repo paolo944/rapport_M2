@@ -136,7 +136,6 @@
 			\item $\delta_x$ is the offset for the additive sharing of $x$ s.t. $x = \delta_x + \sum_i x^{\lir}$
 		\end{itemize}
 		
-		
 		Finally, we discuss several optimizations that have been proposed in the literature since and are now considered standard and widely used.
 		
 		\subsubsection{GGM tree}
@@ -192,7 +191,7 @@
 		\end{center}
 		\end{figure}
 		
-		In practice, the PRF used is AES specially because of it's hardware implementation which enables much faster tree generation than other PRF like SHA256 or other hash functions. The security of AES as a cryptographic PRF in a GGM tree generation has been studied in \cite{BCCG+24}.
+		In practice, most MPCitH schemes use hash functions with a salt value but the size of the entry must be $2\lambda$ to achieve $2^{\lambda}$ security bits. A recent work by Bui et al. studied the security of using the AES as the PRF. specially because of it's hardware implementation which enables much faster tree generation than other PRF like SHA256 or other hash functions. The security of AES as a cryptographic PRF in a GGM tree generation has been studied in \cite{BCCG+24}. Thanks to AES hardware implementation like Intel's AES-NI instruction set, schemes can be up to 50x times faster than versions using hash functions like SHA256.
 		
 		\subsubsection{HyperCube technique}
  		This optimization technique was introduced in \cite{AGHH+22} and is commonly used in MPCitH schemes. This geometric approach models the $N$ shares as forming a $d$-dimensional hypercube of side length $k$. The often used parameters are $k = 2$ and $N = 2^d$, so the number party counts reduces to $log(N) + 1$. This technique often leads to MPC computations less expensive, smaller proof sizes and larger party sizes. However, these benefits come at the cost of increased reliance on GGM tree generation, which can become computationally expensive.
