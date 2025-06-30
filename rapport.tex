@@ -207,10 +207,17 @@
 		The authors also introduce a particular version of this problem called normalized SBC (NSBC) where $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ and
 		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$ to ensure that they are not colinear without needing to regenerate each time they are not. We also denote $(\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ if $(\vec{x}, \vec{y})$ are solutions to the NSBC problem on $(\vec{u}, \vec{v})$.
 		
+		\textbf{Key generation}. The private key $(\vec{x}, \vec{y})$ is constructed as such: uniformly at random choose $\vec{x'}, \vec{y'} \in (\mathbb{F}_q)^{n-2}$ and set $\vec{x} = (\vec{x'}, 1, 0)$ and $\vec{y} = (\vec{y'}, 0, 1)$.
+		For the public key, randomly choose $\vec{u} \in (\mathbb{F}_{q^k})^{n}$ and $v_1,\dots,v_{n-1} \in \mathbb{F}_{q^k}$.
+		Finally, set $v_n$ as:
+		$$
+			v_n = \frac{(\vec{u} \cdot \vec{y})(\sum_{i=1}^{n-1}v_ix_i) - (\vec{u} \cdot \vec{x})(\sum_{i=1}^{n-1}v_iy_i)}{y_n(\vec{u} \cdot \vec{x})}.
+		$$
+		
 		\subsection{Keys and parameters estimations}
 		The public key of this signature scheme is $(\vec{u},\vec{v})$ and the private key is $(\vec{x}, \vec{y})$.
 		The signature and verification protocol use the MPCitH paradigm, they are described in detail in \cite{HJ23} with proof of soundness, correctness and zero-knowledge.
-		The authors estimate that a good parameter for NSBC problem to be computationally secure are $q = 2, n = 130, k = 257$ using complexity analysis of what they think is the best known cryptanalysis of such problem in \cite{FSS11}.
+		The authors estimate that a good parameter for NSBC problem to be computationally secure are $q = 2, n = 130, k = 257$ using complexity analysis of what they think is the best known cryptanalysis of such problem on a classical computer in \cite{FSS11} with $\mathcal{O}(2^{354})$ operations. For the quantum cryptanalysis the estimate that the best attack would be using Grover's algorithm \cite{Grover} with $\mathcal{O}(n^{128})$ operations. 
 		
 		\subsection{Multiparty protocol for the SBC problem}
 		
@@ -219,7 +226,21 @@
 		\subsection{Identification Protocol}
 		We present the identification protocol, which serves as a basis for constructing the signature scheme using the Fiat-Shamir transformation.
 		
+		\subsection{Keys and signature sizes}
+		The size of the private key is just the size of the seed that is used to generate it which is derived from a PRF. So we only need to store the seed which is of size $\lambda$. So the size of the private key is $16$ bytes in practice. For the public key, we saw that all of it is generated randomly using a PRF and $v_n$ is computed. The size of $v_n$ is $2\lambda$ so the is size of public key is $3\lambda$ which in practice is $48$ bytes.
 		
+		The signature is composed of the following:
+		\begin{itemize}
+			\item One hash value $h$ corresponding to a global commitment to the $\tau$ round protocol of size $2\lambda$ and one salt of size $\lambda$.
+			\item One punctured PRF key for each round.
+			\item The valued $X_1+t_0(\vec{u}\dot\vec{x}), X_2+t_0(\vec{y}\dot\vec{x}) Y_1+t_0(\vec{v}\dot\vec{y}), Y_2+t_0(\vec{u}\dot\vec{y}) \in \mathbb{F}_{q^k}$ for each round.
+		\end{itemize}
+		The total size of the signature in bits is therefore
+		$$
+			\tau \dot (\lambda log_2(N)) + 10\tau \lambda + 3\lambda = \lambda^2 + 10 \tau \lambda + 3 \lambda \text{ bits},
+		$$
+		where we use the fact that $\lambda = \tau log_2(N)$ in the equation.
+		We remind that we do not need to communicate the auxiliary values $\delta_A, \delta_B, \vec{\delta}_x$ and $\vec{\delta}_y$ if we use a correlated GGM tree.
 		
 	\section{Polynomial system solving}\label{sec3}
 		Gröbner basis theory was first introduced by Buchberger in his thesis \cite{Buc} and he gave an algorithm to compute the Gröbner basis of an ideal.
