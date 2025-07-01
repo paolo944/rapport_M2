@@ -132,7 +132,7 @@
 		\begin{itemize}
 			\item $[w]$, $w$ is a shared value.
 			\item $w^{\lir}$ is the $i$-th share of w.
-			\item $w^[e]$ is a value used in the $e$-th round of the protocol.
+			\item $w^{[e]}$ is a value used in the $e$-th round of the protocol.
 			\item $\delta_x$ is the offset for the additive sharing of $x$ s.t. $x = \delta_x + \sum_i x^{\lir}$
 		\end{itemize}
 		
@@ -169,7 +169,7 @@
 			\end{center}
 		\end{figure}
 		
-		One challenge in this approach is the need to communicate the offset to the verifier so that they can verify the computations. However, a recent technique called \emph{Correlated GGM} (cGGM) has been introduced in \cite{GYWZ+22}, which allows the prover to generate random values $x^{\lir}$ using a modified GGM tree, such that $\sum_{i=1}^{N} x^{\lir} = x$, with no computational.
+		One challenge in this approach is the need to communicate the offset to the verifier so that they can verify the computations. However, a recent technique called \emph{Correlated GGM} (cGGM) has been introduced in \cite{GYWZ+22}, which allows the prover to generate random values $x^{\lir}$ using a modified GGM tree, such that $\sum_{i=1}^{N} x^{\lir} = x$, with no computational overload.
 		This is achieved by enforcing an invariant over the cGGM tree: at each level, the sum of the nodes remains constant. More precisely, given a parent node $x$, the left child is defined as $F(x)$ and the right child as $x - F(x)$, where $F$ is a cryptographic psuedorandom function. As a result, only approximately half of the tree nodes require PRF evaluations, compared to all nodes in the classical GGM construction.
 		This technique not only reduces the computational cost but also eliminates the need to transmit the offset to the verifier, thereby improving the overall communication efficiency.
 		
@@ -219,9 +219,82 @@
 		The signature and verification protocol use the MPCitH paradigm, they are described in detail in \cite{HJ23} with proof of soundness, correctness and zero-knowledge.
 		The authors estimate that a good parameter for NSBC problem to be computationally secure are $q = 2, n = 130, k = 257$ using complexity analysis of what they think is the best known cryptanalysis of such problem on a classical computer in \cite{FSS11} with $\mathcal{O}(2^{354})$ operations. For the quantum cryptanalysis the estimate that the best attack would be using Grover's algorithm \cite{Grover} with $\mathcal{O}(n^{128})$ operations. 
 		
-		\subsection{Multiparty protocol for the SBC problem}
+		\subsection{Multiparty computation protocol for the SBC problem}
+		A Multi-Party Computation (MPC) protocol is an interactive protocol between $N$ parties $\mathcal{P}_1, \dots, \mathcal{P}_N$, who wish to jointly compute a function $f$ over their private inputs $x^{\lir}$. At the end of the protocol, each party outputs its own computed value, denoted $f_i(x) = f(x^{\lir})$.
 		
+		Several adversarial models exist for MPC protocols. In the \emph{semi-honest} (or passive) model, parties are assumed to follow the protocol honestly but may attempt to infer secret information from the messages they receive. In contrast, the \emph{malicious} (or active) model allows adversaries to arbitrarily deviate from the protocol, including corrupting other parties, in order to compromise security.
 		
+		In the context of the MPC-in-the-Head (MPCitH) paradigm, we consider only the semi-honest model. This is because the parties are simulated \emph{in the head} of the prover, and the only external entity is the verifier, who may attempt to extract the witness from the simulated communications between the parties.
+		
+		We recall here the definition of a secure MPC protocol in the semi-host threat model.
+		
+		\begin{definition}[def 2.4.5 \cite{feneu2023}]
+			Let $N$ and $t$ be integers such that $1 \leq t \leq N$. Let $\Pi_f$ be an MPC protocol with $N$ parties $\mathcal{P}_1,\dots,\mathcal{P}_N$, computing a function $f$. The protocol $\Pi_f$ is $t$-private in the semi-honest model if for all $I \subset [N]$ such that $|I| \leq t$, there exists a $PPT$ algorithm $\mathcal{S}$ such that $\mathcal{S}(I, \llbracket x \rrbracket_I, f_I(x))$ is perfectly indistinguishable from the joint distribution of the views of the parties in $I$, where $f_I(x) := {f_i(x), \forall x \in I}$.	
+		\end{definition}
+		
+		Thanks to the linear sharing, we can easily apply the following operations on the shares:
+		
+		\begin{itemize}
+			\item \textbf{Addition}: each party $\mathcal{P}_i$ can locally compute $\llbracket x + y \rrbracket$ by adding their shares:
+			$$
+				(x + y)^{\lir} = x^{\lir} + y^{\lir} \text{ } \forall i \in [N].
+			$$
+			We denote this by $\llbracket x + y \rrbracket = \llbracket x \rrbracket + \llbracket y \rrbracket$.
+			\item \textbf{Adding a constant}: we can easily share the constant $\alpha$ among the parties as $\llbracket \alpha \rrbracket = (\alpha, 0, \dots, 0)$.
+			The parties can then compute $\llbracket x + \alpha \rrbracket = \llbracket x \rrbracket + \llbracket \alpha \rrbracket$. We denote this by $\llbracket x \rrbracket + \alpha$.
+			\item \textbf{Multiplication by a constant}: each party $\mathcal{P}_i$ can locally compute $\llbracket \alpha x \rrbracket$ by multiplying their respective share by $\alpha$:
+			$$
+				(\alpha x)^{\lir} = \alpha x^{\lir} \text{ } \forall i \in [N]. 
+			$$
+			We denote this by $\llbracket \alpha x \rrbracket = \alpha \llbracket x \rrbracket$.
+		\end{itemize}
+		
+		Finally, we need a function that we will compute using a MPC protocol to prove that the witness $(\vec{x}, \vec{y}) \in \text{NSBC}(\vec{u}, \vec{v})$.
+		
+		Let $X_1, X_2, Y_1, Y_2 \in \mathbb{F}_{q^k}$ be random values. Consider the following polynomial in $t$:
+		\begin{align}
+			F(t) &= (X_1 + t(\vec{u} \cdot \vec{x})) (X_2 + t(\vec{v} \cdot \vec{x})) - (Y_1 	+ t(\vec{v} \cdot \vec{y})) (Y_2 + t(\vec{u} \cdot \vec{y})) \notag \\
+			&= X_1Y_1 - X_2Y_2 \notag \\
+			&+[X_1 (\vec{v} \cdot \vec{y}) + Y_1 (\vec{u} \cdot \vec{x}) - X_2 (\vec{u} \cdot \vec{y}) - Y_2 (\vec{v} \cdot \vec{x})]t \notag \\
+			&+[(\vec{u} \cdot \vec{x}) (\vec{v} \cdot \vec{y}) - (\vec{u} \cdot \vec{y}) (\vec{v} \cdot \vec{x})]t^2. \notag
+		\end{align}
+		
+		We notice here that the component of degree $2$ is equal to zero and that $deg(F(t)) < 2$ if and only if $(\vec{x}, \vec{y}) \in \text{NSBC}(\vec{u}, \vec{v})$. In that case, we rewrite $F(t)$ as:
+		$$
+			F(t) = A + Bt
+		$$
+		with $A = X_1Y_1 - X_2Y_2$ and $B = [X_1 (\vec{v} \cdot \vec{y}) + Y_1 (\vec{u} \cdot \vec{x}) - X_2 (\vec{u} \cdot \vec{y}) - Y_2 (\vec{v} \cdot \vec{x})]t$.
+		
+		Then we compute the values of $A$ and $B$ and share them among the parties and prove that $F(t) = A + Bt$ which means that $(\vec{x}, \vec{y}) \in \text{NSBC}(\vec{u}, \vec{v})$.
+		
+		To do so we apply the following protocol:
+		\begin{enumerate}
+			\item The parties runs an auxiliary protocol to compute a random value $t_0 \in \mathbb{F}_{q^k}$.
+			\item The parties evaluate $F(t_0)$.
+			\item The parties evaluate $A + Bt_0$.
+			\item The parties output \textit{accept} if and only if $F(t_0) = A + Bt_0$ and \textit{reject} otherwise.
+		\end{enumerate}
+		
+		The evaluations can be efficiently performed by the parties, thanks to the linear sharing of the coefficients $A$, $B$, and the secret $(\vec{x}, \vec{y})$. For a detailed description of the underlying computations, we refer the reader to~\cite{HJ23}.
+		
+		One can notice that the evaluations may also coincide if $t_0$ is a root of the polynomial
+		$$
+			(A + Bt) - F(t).
+		$$
+		
+		A malicious party $\mathcal{P}_i$ could exploit this by waiting to receive all the shares of $\llbracket t_0 \rrbracket$ from the other parties, and then choosing their own share $t_0^{\lir}$ such that
+		$$
+			t_0 = \sum_{j \neq i} t_0^{\llbracket j \rrbracket} + t_0^{\lir}
+		$$
+		is a root of the polynomial. This would allow $\mathcal{P}_i$ to bias the evaluation towards a value that satisfies the equation, which could compromise the protocol by causing it to output \textit{accept} even though $(\vec{x}, \vec{y}) \notin \text{NSBC}(\vec{u}, \vec{v})$.
+		
+		To mitigate this issue, parties will not be allowed to choose their share of $\llbracket t_0 \rrbracket$ arbitrarily. Instead, each share $t_0^{\lir}$ will be deterministically generated as the output of a hash function applied to a fixed, party-specific string concatenated with a common seed. Specifically, the share is computed as:
+		$$
+		t_0^{\lir} = \mathcal{H}(\text{"}t_0\text{ value for party }i\text{"} \, \| \, \text{seed}),
+		$$
+		where $\mathcal{H}$ is a cryptographic hash function and $\|$ denotes concatenation. This ensures that the shares are unpredictable yet deterministic, thereby preventing any party from biasing the outcome.
+		
+		However, since the value of $t_0$ is truly random, there remains a non-zero probability that it is a root of the polynomial. This probability is upper-bounded by $\frac{2}{q^k}$, which is negligible for appropriately chosen parameters.
 		
 		\subsection{Identification Protocol}
 		We present the identification protocol, which serves as a basis for constructing the signature scheme using the Fiat-Shamir transformation.
@@ -233,14 +306,16 @@
 		\begin{itemize}
 			\item One hash value $h$ corresponding to a global commitment to the $\tau$ round protocol of size $2\lambda$ and one salt of size $\lambda$.
 			\item One punctured PRF key for each round.
-			\item The valued $X_1+t_0(\vec{u}\dot\vec{x}), X_2+t_0(\vec{y}\dot\vec{x}) Y_1+t_0(\vec{v}\dot\vec{y}), Y_2+t_0(\vec{u}\dot\vec{y}) \in \mathbb{F}_{q^k}$ for each round.
+			\item The valued $X_1+t_0(\vec{u}\cdot\vec{x}), X_2+t_0(\vec{y}\cdot\vec{x}) Y_1+t_0(\vec{v}\cdot\vec{y}), Y_2+t_0(\vec{u}\cdot\vec{y}) \in \mathbb{F}_{q^k}$ for each round.
 		\end{itemize}
 		The total size of the signature in bits is therefore
 		$$
-			\tau \dot (\lambda log_2(N)) + 10\tau \lambda + 3\lambda = \lambda^2 + 10 \tau \lambda + 3 \lambda \text{ bits},
+			\tau \lambda log_2(N) + 10\tau \lambda + 3\lambda = \lambda^2 + 10 \tau \lambda + 3 \lambda \text{ bits},
 		$$
 		where we use the fact that $\lambda = \tau log_2(N)$ in the equation.
 		We remind that we do not need to communicate the auxiliary values $\delta_A, \delta_B, \vec{\delta}_x$ and $\vec{\delta}_y$ if we use a correlated GGM tree.
+		
+		\textbf{Remark:} the actual sizes depend heavily on the machine architecture. For instance, on 64-bit architectures, the machine word size is 64 bits, meaning that data structures are typically aligned to multiples of 64 bits. As a result, for the parameters $k = 257$, $q = 2$, and $n = 130$, the signature size becomes $4023$ bytes instead of the theoretical $3376$ bytes due to alignment and padding overhead.
 		
 	\section{Polynomial system solving}\label{sec3}
 		Gröbner basis theory was first introduced by Buchberger in his thesis \cite{Buc} and he gave an algorithm to compute the Gröbner basis of an ideal.
