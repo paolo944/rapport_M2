@@ -351,6 +351,42 @@
 		
 		\textbf{Remark:} the actual sizes depend heavily on the machine architecture. For instance, on 64-bit architectures, the machine word size is 64 bits, meaning that data structures are typically aligned to multiples of 64 bits. As a result, for the parameters $k = 257$, $q = 2$, and $n = 130$, the signature size becomes $4023$ bytes instead of the theoretical $3376$ bytes due to alignment and padding overhead.
 		
+		The authors also provide some practical benchmarks to evaluate the performance of their scheme in realistic settings:
+		
+		\begin{table}[h!]
+			\begin{center}
+				\begin{tabular}{|c|c|c||c|c||c|c||c|c|}
+					\hline
+					\multicolumn{3}{|c||}{} &  \multicolumn{2}{c||}{SBC $\text{cGGM}_{\text{SHA}}$} & \multicolumn{2}{c||}{SBC $\text{cGGM}_{\text{AES}}$} & \multicolumn{2}{c|}{$\text{SBC}_{\text{FF}}$ $\text{cGGM}_{\text{AES}}$} \\
+					\hline
+					D & $\tau$ & |sign| & Sign & Verify & Sign & Verify & Sign & Verify \\
+					\hline
+					8 & 16 & 5950 B & 9.34 ms & 9.23 ms & 0.95 ms & 0.85 ms & 0.91 ms & 0.81 ms\\
+					\hline
+					9 & 15 & 5822 B & 16.88 ms & 16.75 ms & 1.15 ms & 1.04 ms & 1.06 ms & 0.96 ms \\
+					\hline
+					10 & 13 & 5260 B & 28.62 ms & 28.58 ms & 1.38 ms & 1.29 ms & 1.22 ms & 1.13 ms\\
+					\hline
+					11 & 12 & 5051 B & 52.33 ms & 52.25 ms & 1.95 ms & 1.86 ms & 1.61 ms & 1.51 ms\\
+					\hline
+					12 & 11 & 4810 B & 95.44 ms & 95.15 ms & 3.03 ms & 2.94 ms & 2.31 ms & 2.22 ms\\
+					\hline
+					13 & 10 & 4537 B & 173.44 ms & 173.51 ms & 5.27 ms & 5.18 ms & 3.64 ms & 3.52 ms\\
+					\hline
+					15 & 9 & 4376 B & 628.41 ms & 627.91 ms & 22.77 ms & 22.54 ms & 11.71 ms & 11.46 ms\\
+					\hline
+					16 & 8 & 4023 B & 1116.88 ms & 1117.77 ms & 40.39 ms & 40.09 ms & 20.94 ms & 20.59 ms\\
+					\hline
+				\end{tabular}
+				\caption{Running times for $\lambda = 128$ using $N = 2^D$ parties and $\tau$ rounds with the parameters $q = 2, k= 257$ and $n = 130$ for basic SBC comparing different version of the cGGM tree using an AMD EPYC 8374F processor running at 3.85 GHz. $\text{cGGM}_{\text{AES}}$ denotes the usage of AES as a PRF for the cGGM and $\text{cGGM}_{\text{SHA}}$ denotes the usage of the hash function SHA.}
+				\label{SBC_sig_times}
+			\end{center}
+		\end{table}
+		
+		We also ran these benchmarks on a consumer grade processor and the results were approximately the double of the ones by the authors of \cite{HJ23}.
+		
+		The \texttt{FF} notation refers to an optimization introduced by the authors in~\cite{HJ23}, known as \emph{Fast Fold}, which is applied during the GGM tree generation. While we do not describe this optimization in detail here, we refer the interested reader to~\cite{HJ23} for a comprehensive explanation.
+		
 	\section{Polynomial system solving}\label{sec3}
 		Gröbner basis theory was first introduced by Buchberger in his thesis \cite{Buc} and he gave an algorithm to compute the Gröbner basis of an ideal.
 		Gröbner basis algorithms like Buchberger's Algorithm \cite{Buc}, are used to find solutions for polynomial systems using algebraic geometry tools. For a gentle introduction to this subject \cite{CLS}.
