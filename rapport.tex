@@ -220,7 +220,7 @@
 		The authors estimate that a good parameter for NSBC problem to be computationally secure are $q = 2, n = 130, k = 257$ using complexity analysis of what they think is the best known cryptanalysis of such problem on a classical computer in \cite{FSS11} with $\mathcal{O}(2^{354})$ operations. For the quantum cryptanalysis the estimate that the best attack would be using Grover's algorithm \cite{Grover} with $\mathcal{O}(n^{128})$ operations. 
 		
 		\subsection{Multiparty computation protocol for the SBC problem}
-		A Multi-Party Computation (MPC) protocol is an interactive protocol between $N$ parties $\mathcal{P}_1, \dots, \mathcal{P}_N$, who wish to jointly compute a function $f$ over their private inputs $x^{\lir}$. At the end of the protocol, each party outputs its own computed value, denoted $f_i(x) = f(x^{\lir})$.
+		A Multi-Party Computation (MPC) protocol is an interactive protocol between $N$ parties $P_1, \dots, P_N$, who wish to jointly compute a function $f$ over their private inputs $x^{\lir}$. At the end of the protocol, each party outputs its own computed value, denoted $f_i(x) = f(x^{\lir})$.
 		
 		Several adversarial models exist for MPC protocols. In the \emph{semi-honest} (or passive) model, parties are assumed to follow the protocol honestly but may attempt to infer secret information from the messages they receive. In contrast, the \emph{malicious} (or active) model allows adversaries to arbitrarily deviate from the protocol, including corrupting other parties, in order to compromise security.
 		
@@ -229,22 +229,22 @@
 		We recall here the definition of a secure MPC protocol in the semi-host threat model.
 		
 		\begin{definition}[def 2.4.5 \cite{feneu2023}]
-			Let $N$ and $t$ be integers such that $1 \leq t \leq N$. Let $\Pi_f$ be an MPC protocol with $N$ parties $\mathcal{P}_1,\dots,\mathcal{P}_N$, computing a function $f$. The protocol $\Pi_f$ is $t$-private in the semi-honest model if for all $I \subset [N]$ such that $|I| \leq t$, there exists a $PPT$ algorithm $\mathcal{S}$ such that $\mathcal{S}(I, \llbracket x \rrbracket_I, f_I(x))$ is perfectly indistinguishable from the joint distribution of the views of the parties in $I$, where $f_I(x) := {f_i(x), \forall x \in I}$.	
+			Let $N$ and $t$ be integers such that $1 \leq t \leq N$. Let $\Pi_f$ be an MPC protocol with $N$ parties $P_1,\dots,P_N$, computing a function $f$. The protocol $\Pi_f$ is $t$-private in the semi-honest model if for all $I \subset [1, N]$ such that $|I| \leq t$, there exists a $PPT$ algorithm $\mathcal{S}$ such that $\mathcal{S}(I, \llbracket x \rrbracket_I, f_I(x))$ is perfectly indistinguishable from the joint distribution of the views of the parties in $I$, where $f_I(x) := {f_i(x), \forall x \in I}$.	
 		\end{definition}
 		
 		Thanks to the linear sharing, we can easily apply the following operations on the shares:
 		
 		\begin{itemize}
-			\item \textbf{Addition}: each party $\mathcal{P}_i$ can locally compute $\llbracket x + y \rrbracket$ by adding their shares:
+			\item \textbf{Addition}: each party $P_i$ can locally compute $\llbracket x + y \rrbracket$ by adding their shares:
 			$$
-				(x + y)^{\lir} = x^{\lir} + y^{\lir} \text{ } \forall i \in [N].
+				(x + y)^{\lir} = x^{\lir} + y^{\lir} \text{ } \forall i \in [1, N].
 			$$
 			We denote this by $\llbracket x + y \rrbracket = \llbracket x \rrbracket + \llbracket y \rrbracket$.
 			\item \textbf{Adding a constant}: we can easily share the constant $\alpha$ among the parties as $\llbracket \alpha \rrbracket = (\alpha, 0, \dots, 0)$.
 			The parties can then compute $\llbracket x + \alpha \rrbracket = \llbracket x \rrbracket + \llbracket \alpha \rrbracket$. We denote this by $\llbracket x \rrbracket + \alpha$.
-			\item \textbf{Multiplication by a constant}: each party $\mathcal{P}_i$ can locally compute $\llbracket \alpha x \rrbracket$ by multiplying their respective share by $\alpha$:
+			\item \textbf{Multiplication by a constant}: each party $P_i$ can locally compute $\llbracket \alpha x \rrbracket$ by multiplying their respective share by $\alpha$:
 			$$
-				(\alpha x)^{\lir} = \alpha x^{\lir} \text{ } \forall i \in [N]. 
+				(\alpha x)^{\lir} = \alpha x^{\lir} \text{ } \forall i \in [1, N]. 
 			$$
 			We denote this by $\llbracket \alpha x \rrbracket = \alpha \llbracket x \rrbracket$.
 		\end{itemize}
@@ -282,25 +282,59 @@
 			(A + Bt) - F(t).
 		$$
 		
-		A malicious party $\mathcal{P}_i$ could exploit this by waiting to receive all the shares of $\llbracket t_0 \rrbracket$ from the other parties, and then choosing their own share $t_0^{\lir}$ such that
+		A malicious party $P_i$ could exploit this by waiting to receive all the shares of $\llbracket t_0 \rrbracket$ from the other parties, and then choosing their own share $t_0^{\lir}$ such that
 		$$
 			t_0 = \sum_{j \neq i} t_0^{\llbracket j \rrbracket} + t_0^{\lir}
 		$$
-		is a root of the polynomial. This would allow $\mathcal{P}_i$ to bias the evaluation towards a value that satisfies the equation, which could compromise the protocol by causing it to output \textit{accept} even though $(\vec{x}, \vec{y}) \notin \text{NSBC}(\vec{u}, \vec{v})$.
+		is a root of the polynomial. This would allow $P_i$ to bias the evaluation towards a value that satisfies the equation, which could compromise the protocol by causing it to output \textit{accept} even though $(\vec{x}, \vec{y}) \notin \text{NSBC}(\vec{u}, \vec{v})$.
 		
-		To mitigate this issue, parties will not be allowed to choose their share of $\llbracket t_0 \rrbracket$ arbitrarily. Instead, each share $t_0^{\lir}$ will be deterministically generated as the output of a hash function applied to a fixed, party-specific string concatenated with a common seed. Specifically, the share is computed as:
+		To mitigate this issue, parties will not be allowed to choose their share of $\llbracket t_0 \rrbracket$ arbitrarily. Instead, each share $t_0^{\lir}$ will be deterministically generated as the output of a hash function applied to a fixed, party-specific string concatenated with a common seed and something inherit to the party like their shares. Specifically, the share is computed as:
 		$$
-		t_0^{\lir} = \mathcal{H}(\text{"}t_0\text{ value for party }i\text{"} \, \| \, \text{seed}),
+		t_0^{\lir} = \mathcal{H}(\text{"}t_0\text{ value for party }i\text{"} \, \| \, \text{seed} | x^{\lir}, y^{\lir}, X_1^{\lir}, X_2^{\lir}, Y_1^{\lir}, Y_2^{\lir}, A^{\lir}, B^{\lir}),
 		$$
 		where $\mathcal{H}$ is a cryptographic hash function and $\|$ denotes concatenation. This ensures that the shares are unpredictable yet deterministic, thereby preventing any party from biasing the outcome.
 		
 		However, since the value of $t_0$ is truly random, there remains a non-zero probability that it is a root of the polynomial. This probability is upper-bounded by $\frac{2}{q^k}$, which is negligible for appropriately chosen parameters.
 		
 		\subsection{Identification Protocol}
-		We present the identification protocol, which serves as a basis for constructing the signature scheme using the Fiat-Shamir transformation.
+		We present the identification protocol, which serves as the foundation for constructing the signature scheme via the Fiat–Shamir transformation.
+		
+		To do so, we transform the MPC protocol into an interactive ZKP of knowledge of the witness $(\vec{x}, \vec{y})$ such that it is a solution of $\text{NSBC}[\vec{u}, \vec{v}]$.
+		
+		The prover $\mathcal{P}$ simulates the MPC protocol \emph{in their head} and commits to the views of each party $h = \mathcal{H}_V(View_1, \dots, View_N).$ The view of each party consists of all the messages they send and receive during the protocol. In addition, $\mathcal{P}$ commits to the following values:
+		\[
+		X_1 + t_0(\vec{u} \cdot \vec{x}), \quad X_1 + t_0(\vec{v} \cdot \vec{x}), \quad Y_1 + t_0(\vec{v} \cdot \vec{y}), \quad Y_2 + t_0(\vec{u} \cdot \vec{y}), \quad A + Bt_0.
+		\]
+		
+		Then, the verifier $\mathcal{V}$ selects a random index $i^* \in [1, N]$. The prover $\mathcal{P}$ opens all the shares of the following values for all $i \in [1, N]$ such that $i \neq i^*$:
+		\[
+		x^{\lir}, \quad y^{\lir}, \quad X_1^{\lir}, \quad X_2^{\lir}, \quad Y_1^{\lir}, \quad Y_2^{\lir}, \quad A^{\lir}, \quad B^{\lir}.
+		\]
+		
+		Using this information, $\mathcal{V}$ can reconstruct the shares of $t_0^{\lir}$ as previously described. Moreover, they can compute the corresponding shares of the committed values:
+		\[
+		(X_1 + t_0(\vec{u} \cdot \vec{x}))^{\lir}, \quad (X_1 + t_0(\vec{v} \cdot \vec{x}))^{\lir}, \quad (Y_1 + t_0(\vec{v} \cdot \vec{y}))^{\lir}, \quad (Y_2 + t_0(\vec{u} \cdot \vec{y}))^{\lir}, \quad (A + Bt_0)^{\lir}, \quad \forall i \neq i^*.
+		\]
+		
+		Since the sharing is linear, the verifier can efficiently recover the missing shares corresponding to $i^*$. For the detailed description of these computations, we refer the reader to~\cite{HJ23}.
+		
+		Finally, the verifier $\mathcal{V}$ can compute $h' = \mathcal{H}_V(View_1, \dots, View_N)$ and compare with $h$. If they match, they \textit{accept} and \textit{reject} otherwise.
+		
+		We recall that, to reduce the communication cost, we use correlated GGM (cGGM) trees and transmit only the co-paths of the tree instead of all values. Additionally, the HyperCube technique is employed to reduce the computational overhead.
+		
+		To convert the identification scheme into a signature scheme, we apply the Fiat-Shamir transformation by replacing the verifier's random choice of $i*$ with the output of a hash function.
+		
+		The soundness of the protocol is given by $\frac{1}{N} + \frac{1}{q^k}$. This is because the underlying MPC protocol is $(N-1)$-private, so the prover $\mathcal{P}$ can potentially cheat on only one view, and the verifier catches them with probability $\frac{1}{N}$. Furthermore, we have shown that a false positive may occur when $t_0$ happens to be a root of a certain polynomial, which occurs with probability $\frac{1}{q^k}$.
+		
+		Rather than increasing the number of parties $N$, which would increase computational cost, we repeat the protocol $\tau$ times such that:
+		
+		$$
+		\left( \frac{1}{N} + \frac{1}{q^k} \right)^{\tau} < 2^{-\lambda},
+		$$
+		where $\lambda$ is the targeted security level.
 		
 		\subsection{Keys and signature sizes}
-		The size of the private key is just the size of the seed that is used to generate it which is derived from a PRF. So we only need to store the seed which is of size $\lambda$. So the size of the private key is $16$ bytes in practice. For the public key, we saw that all of it is generated randomly using a PRF and $v_n$ is computed. The size of $v_n$ is $2\lambda$ so the is size of public key is $3\lambda$ which in practice is $48$ bytes.
+		The size of the private key is just the size of the seed that is used to generate it which is derived from a PRF. So we only need to store the seed which is of size $\lambda$. So the size of the private key is $16$ bytes in practice with the proposed parameters. For the public key, we saw that all of it is generated randomly using a PRF and $v_n$ is computed. The size of $v_n$ is $2\lambda$ so the is size of public key is $3\lambda$ which in practice with the proposed parameters is $48$ bytes.
 		
 		The signature is composed of the following:
 		\begin{itemize}
@@ -761,7 +795,7 @@
 		\begin{lemma}\label{UB-KOA}
 			Let $(q,n,k)$ be a set of parameters for the NSBC problem. Assume that the NSBC function $\text{NSBC} :\mathbb{F}_{q^k}^{2n} \rightarrow \mathbb{F}_{q}^{2n}$ is $(\tau, \epsilon_{OWF})$-hard, meaning that no probabilistic polynomial-time ($\mathcal{PPT}$) adversary $mathbb{A}$ running in time at most $\tau$ can solve the NSBC problem with probability greater than $\epsilon_{OWF}$.
 			\begin{align*}
-				\text{Succ}(\mathcal{A}) = \mathcal{P}\left[
+				\text{Succ}(\mathcal{A}) = \mathbb{P}\left[
 				\begin{array}{l}
 					(u, v) \leftarrow \mathbb{F}_{q^k}^{2n}, \\
 					(x, y) \leftarrow \mathcal{A}(u, v), \\
@@ -776,7 +810,7 @@
 		\begin{theorem}\label{EUF-CMA}
 			Assume that no adversary can distinguish the output of the pseudorandom function (PRF) used in the protocol from truly random bits. The adversary outputs a bit $b$, where $b=0$ indicates that they believe the bits originate from the PRF, and $b=1$ indicates they believe the bits are uniformly random
 			$$
-				| \mathcal{P}_{seed \in \{0,1\}^n}[b=0 \mid p \leftarrow PRF(seed)] - \mathcal{P}[b=1 \mid p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
+				| \mathbb{P}_{seed \in \{0,1\}^n}[b=0 \mid p \leftarrow PRF(seed)] - \mathbb{P}[b=1 \mid p \overset{{\scriptscriptstyle\$}}{\leftarrow} \{0,1\}^{2n}] | \leq \frac{1}{2}.
 			$$
 			Suppose also that the protocol uses a cryptographic hash function which is one-way and does not have collision attacks with better complexity than $2^{\lambda}$ using a $\mathcal{PPT}$, where $\lambda$ is the number security bits needed for the signature scheme.
 			
