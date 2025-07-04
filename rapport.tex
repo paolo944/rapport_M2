@@ -948,7 +948,7 @@
 				\hline
 				Dinur Second & / & 221 & 172 \\
 				\hline
-				Crossbred & D=12, d=10, k=130 & 159 & 90 \\
+				Crossbred & D=12, d=10, k=130 & 159 & 78 \\
 				\hline
 				Naive & / & 150 & 15 \\
 				\hline
@@ -1130,7 +1130,7 @@
 	
 	Proof of theorem \ref{EUF-CMA}:
 	\begin{proof}
-		We model the $SBC$ signature scheme \cite{HJ23} as a 5-round protocol (see Protocol~\ref{Protocol_sig}). By applying Theorem~\ref{theorem_feneu} from \cite{feneu2023}, and under the assumption that the underlying PRG is a $(t_{\mathcal{A}}, \epsilon_{\mathrm{PRG}})$-secure pseudorandom generator, and as established in Lemma~\ref{UB-KOA} that the $SBC$ function is a $(t_{\mathcal{A}}, \epsilon_{\mathrm{OWF}})$-secure one-way function, we conclude that the $SBC$ signature scheme achieves $EUF$-$CMA$ security.
+		We model the SBC signature scheme \cite{HJ23} as a 5-round protocol (see Protocol~\ref{Protocol_sig}). By applying Theorem~\ref{theorem_feneu} from \cite{feneu2023}, and under the assumption that the underlying PRG is a $(t_{\mathcal{A}}, \epsilon_{\mathrm{PRG}})$-secure pseudorandom generator, and as established in Lemma~\ref{UB-KOA} that the SBC function is a $(t_{\mathcal{A}}, \epsilon_{\mathrm{OWF}})$-secure one-way function, we conclude that the SBC signature scheme achieves $EUF$-$CMA$ security.
 	\end{proof}
 
 
