@@ -767,6 +767,8 @@
 			has cardinality $\mathcal{O}(2^{-\gamma n})$.
 		\end{definition}
 		
+		In our setting, we consider bilinear systems that are slightly overdetermined. We argue that when using hybrid methods such as \emph{Crossbred}, which avoid the need to construct Macaulay matrices up to high degrees—as required by algorithms like F5—the only reductions to zero that are likely to occur are those explained by the F5 and Frobenius criteria. Indeed, other types of reductions to zero typically appear at degrees $n_x + 1$ and $n_y + 1$ for bilinear systems, which are not reached in our practical use cases. Consequently, we consider these systems to behave in a semi-regular manner, although we believe they are, in practice, easier to solve.
+		
 	\subsection{Admissible parameters for Crossbred}
 		We tested if small instances of our problem are semi-regular or not using Proposition \ref{PropSemi} and they were not semi-regular. We also remarked that the bilinear criterion \ref{algo:crit} detected reductions to 0 using the original F5 criterion \ref{F5Crit} and Frobenius criterion for systems over $\mathbb{F}_2$ but also detected reductions to 0 on polynomials of degree $n_x$ or $n_y$ according to the algorithms \ref{alg:crit_calc} and \ref{alg:reduc}. In our case, we will use the Crossbred algorithm and we do not think that we will get to these degrees in the Macaulay matrices, so no need to use the bilinear criterion.
 		
