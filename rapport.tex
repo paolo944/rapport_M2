@@ -106,20 +106,26 @@
 	\newpage
 	\tableofcontents
 	\newpage
-	\section{MPCitH and SBC signature scheme}\label{sec2}
+	\section{MPC-in-the-Head and SBC signature scheme}\label{sec2}
 		
 		\subsection{MPCitH}
 		
-		The \emph{MPC-in-the-Head} (MPCitH) framework, introduced by \cite{IKOS07}, is a technique for constructing zero-knowledge proofs. It enables a prover to convince a verifier that they possess a secret witness $w$ for a given public input $x$, without revealing any information about the witness itself.
+		The \emph{MPC-in-the-Head} (MPCitH) framework, introduced by \cite{IKOS07}, is a technique for constructing zero-knowledge proofs. It enables a prover $\mathcal{P}$ to convince a verifier that they possess a secret witness $w$ for a given public input $x$, without revealing any information about the witness itself.
 		
-		Given $\mathcal{L}$ a language in NP (i.e. $x \in \mathcal{L} \Longleftrightarrow \exists w, \mathcal{R}(x, w) = 1$). Given a public $x$, $\mathcal{P}$ wants to prove that he knows $w$ such that: $\mathcal{R}(x, w)$.
+		Let $\mathcal{L}$ be a language in NP (i.e. $x \in \mathcal{L} \Longleftrightarrow \exists w, \mathcal{R}(x, w) = 1$). $\mathcal{R}$ is a NP-relation. Given a public $x$, $\mathcal{P}$ wants to prove that he knows $w$ such that: $\mathcal{R}(x, w)$.
 		
 		The main idea is to simulate a secure multiparty computation (MPC) protocol internally \textit{in the head} of the prover $\mathcal{P}$. This simulation involves a set of fictitious parties who jointly evaluate a circuit that depends on the witness $w$. The verifier $\mathcal{V}$ is then allowed to inspect a subset of the simulated views to ensure the prover is behaving honestly, while maintaining the zero-knowledge property.
 		
-		To represent the secret witness $w$, a linear secret sharing scheme is used among $N$ simulated parties. Each party $i$ receives a random share denoted by $[w]^{\lir}$, and the prover computes an additional correction term defined as:
-		$$
-		\delta_w = w - \sum_{i=1}^{N} [w]^{\lir}.
-		$$
+		We introduce some standard notations in MPCitH protocols. 
+		\begin{itemize}
+			\item $[w]$, $w$ is a shared value.
+			\item $w^{\lir}$ is the $i$-th share of $w$.
+			\item $w^{[e]}$ is a value used in the $e$-th round of the protocol.
+			\item $\delta_w$ is the offset for the additive sharing of $w$ s.t. $w = \delta_w + \sum_i w^{\lir}$
+		\end{itemize}
+		
+		To represent the secret witness $w$, a linear secret sharing scheme is used among $N$ simulated parties. Each party $i$ receives a random share denoted by $w^{\lir}$, and the prover computes an additional correction term $\delta_w$.
+
 		This ensures that the full witness can be correctly reconstructed from the shares and the correction term during the simulated execution.
 		
 		Next, the prover $\mathcal{P}$ commits to the views of the $N$ fictitious parties, denoted as $View_i$, and sends these commitments to the verifier $\mathcal{V}$. Each view contains all messages sent and received by the corresponding party during the simulated execution of the MPC protocol.
@@ -127,14 +133,6 @@
 		The verifier $\mathcal{V}$ then selects a random index $i \in [1, N]$ and sends it to $\mathcal{P}$. In response, $\mathcal{P}$ opens the views of all parties except the $i$-th one, i.e., for all $i' \in [1, N]$ such that $i' \neq i$.
 		
 		In order for this protocol to satisfy the zero-knowledge property, the underlying MPC protocol must be $(N-1)$-private, meaning that the joint view of any $N-1$ parties reveals no information about the secret witness $w$.
-		
-		We introduce some standard notations in MPCitH protocols. 
-		\begin{itemize}
-			\item $[w]$, $w$ is a shared value.
-			\item $w^{\lir}$ is the $i$-th share of w.
-			\item $w^{[e]}$ is a value used in the $e$-th round of the protocol.
-			\item $\delta_x$ is the offset for the additive sharing of $x$ s.t. $x = \delta_x + \sum_i x^{\lir}$
-		\end{itemize}
 		
 		Finally, we discuss several optimizations that have been proposed in the literature since and are now considered standard and widely used.
 		
@@ -170,7 +168,7 @@
 		\end{figure}
 		
 		One challenge in this approach is the need to communicate the offset to the verifier so that they can verify the computations. However, a recent technique called \emph{Correlated GGM} (cGGM) has been introduced in \cite{GYWZ+22}, which allows the prover to generate random values $x^{\lir}$ using a modified GGM tree, such that $\sum_{i=1}^{N} x^{\lir} = x$, with no computational overload.
-		This is achieved by enforcing an invariant over the cGGM tree: at each level, the sum of the nodes remains constant. More precisely, given a parent node $x$, the left child is defined as $F(x)$ and the right child as $x - F(x)$, where $F$ is a cryptographic psuedorandom function. As a result, only approximately half of the tree nodes require PRF evaluations, compared to all nodes in the classical GGM construction.
+		This is achieved by enforcing an invariant over the cGGM tree: at each level, the sum of the nodes remains constant. More precisely, given a parent node $x$, the left child is defined as $F(x)$ and the right child as $x - F(x)$, where $F$ is a cryptographic PRF. As a result, only approximately half of the tree nodes require PRF evaluations, compared to all nodes in the classical GGM construction.
 		This technique not only reduces the computational cost but also eliminates the need to transmit the offset to the verifier, thereby improving the overall communication efficiency.
 		
 		\begin{figure}[H]
@@ -196,18 +194,22 @@
 		\subsubsection{HyperCube technique}
  		This optimization technique was introduced in \cite{AGHH+22} and is commonly used in MPCitH schemes. This geometric approach models the $N$ shares as forming a $d$-dimensional hypercube of side length $k$. The often used parameters are $k = 2$ and $N = 2^d$, so the number party counts reduces to $log(N) + 1$. This technique often leads to MPC computations less expensive, smaller proof sizes and larger party sizes. However, these benefits come at the cost of increased reliance on GGM tree generation, which can become computationally expensive.
 		
-		\subsection{SBC Problem}
+		\subsection{Subfield Bilinear Collision Problem}
 		The problem is the following: let $q$ be a prime power and two positive integers $k$, $n$.
 		\newline
-		Given two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$, which are linearly independent over $\mathbb{F}_q$, find two non-colinear vectors $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ such that $$(\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) = (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x})$$
+		Given two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$, which are linearly independent over $\mathbb{F}_q$, find two non-colinear vectors $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ such that 
+		$$(\vec{u} \cdot \vec{x})(\vec{v} \cdot \vec{y}) = (\vec{u} \cdot \vec{y})(\vec{v} \cdot \vec{x}),
+		$$
 		where $(\cdot)$ is the dot product between 2 vectors.
+		
 		We denote an instance of the SBC problem given by two vectors $\vec{u}, \vec{v} \in (\mathbb{F}_{q^k})^n$ by $\text{SBC}[\vec{u}, \vec{v}]$. If the vectors $\vec{x},\vec{y} \in (\mathbb{F}_q)^n$ are solution of $\text{SBC}[\vec{u},\vec{v}]$, we use the notation $(\vec{x}, \vec{y}) \in \text{SBC}[\vec{u}, \vec{v}]$.
 		
-		\textbf{NSBC variant}.
+		\textbf{Normalized Subfield Bilinear Collision variant}.
 		The authors also introduce a particular version of this problem called normalized SBC (NSBC) where $\vec{x}, \vec{y} \in (\mathbb{F}_q)^n$ and
-		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$ to ensure that they are not colinear without needing to regenerate each time they are not. We also denote $(\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ if $(\vec{x}, \vec{y})$ are solutions to the NSBC problem on $(\vec{u}, \vec{v})$.
+		$\vec{x} = (\vec{x'}, 1, 0), \vec{y} = (\vec{y'}, 0, 1)$ to ensure that they are not colinear without needing to regenerate each time they are not. 
 		
-		\textbf{Key generation}. The private key $(\vec{x}, \vec{y})$ is constructed as such: uniformly at random choose $\vec{x'}, \vec{y'} \in (\mathbb{F}_q)^{n-2}$ and set $\vec{x} = (\vec{x'}, 1, 0)$ and $\vec{y} = (\vec{y'}, 0, 1)$.
+		We also denote $(\vec{x}, \vec{y}) \in \text{NSBC}[\vec{u}, \vec{v}]$ if $(\vec{x}, \vec{y})$ are solutions to the NSBC problem on $(\vec{u}, \vec{v})$.
+		\textbf{Key generation}. The private key $(\vec{x}, \vec{y})$ is constructed as follows: uniformly at random choose $\vec{x'}, \vec{y'} \in (\mathbb{F}_q)^{n-2}$ and set $\vec{x} = (\vec{x'}, 1, 0)$ and $\vec{y} = (\vec{y'}, 0, 1)$.
 		For the public key, randomly choose $\vec{u} \in (\mathbb{F}_{q^k})^{n}$ and $v_1,\dots,v_{n-1} \in \mathbb{F}_{q^k}$.
 		Finally, set $v_n$ as:
 		$$
@@ -767,7 +769,7 @@
 			has cardinality $\mathcal{O}(2^{-\gamma n})$.
 		\end{definition}
 		
-		In our setting, we consider bilinear systems that are slightly overdetermined. We argue that when using hybrid methods such as \emph{Crossbred}, which avoid the need to construct Macaulay matrices up to high degrees—as required by algorithms like F5—the only reductions to zero that are likely to occur are those explained by the F5 and Frobenius criteria. Indeed, other types of reductions to zero typically appear at degrees $n_x + 1$ and $n_y + 1$ for bilinear systems, which are not reached in our practical use cases. Consequently, we consider these systems to behave in a semi-regular manner, although we believe they are, in practice, easier to solve.
+		In our setting, we consider bilinear systems that are slightly overdetermined. We argue that when using hybrid methods such as \emph{Crossbred}, which avoid the need to construct Macaulay matrices up to high degrees—as required by algorithms like F5—the only reductions to zero that are likely to occur are those explained by the F5 and Frobenius criterion. Indeed, other types of reductions to zero typically appear at degrees $n_x + 1$ and $n_y + 1$ for bilinear systems, which are not reached in our practical use cases. Consequently, we consider these systems to behave in a semi-regular manner, although we believe they are, in practice, easier to solve.
 		
 	\subsection{Admissible parameters for Crossbred}
 		We tested if small instances of our problem are semi-regular or not using Proposition \ref{PropSemi} and they were not semi-regular. We also remarked that the bilinear criterion \ref{algo:crit} detected reductions to 0 using the original F5 criterion \ref{F5Crit} and Frobenius criterion for systems over $\mathbb{F}_2$ but also detected reductions to 0 on polynomials of degree $n_x$ or $n_y$ according to the algorithms \ref{alg:crit_calc} and \ref{alg:reduc}. In our case, we will use the Crossbred algorithm and we do not think that we will get to these degrees in the Macaulay matrices, so no need to use the bilinear criterion.
