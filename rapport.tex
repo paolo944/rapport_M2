@@ -52,18 +52,60 @@
 	\end{proposition}
 }
 
-\author{Paul Mekhail
-	\thanks{\texttt{paul.mekhail4@pm.me}}}
-\affil{Laboratoire MIS, Université de Picardie Jules Verne, Amiens, France\\Sorbonne Université, Paris, France}
-
-\author{\textbf{Advisor}: Sorina Ionica
-	\thanks{\texttt{sorina.ionica@u-picardie.fr}}}
-\affil{Laboratoire MIS, Université de Picardie Jules Verne, Amiens, France}
-
-\title{Cryptanalysis of SBC based post-quantum signature scheme \\\textit{Graduation internship report}}
+\newcommand{\maketitlepage}{
+	\begin{titlepage}
+		\centering
+		% Logos
+		\includegraphics[width=0.3\textwidth]{LOGO_SU_HORIZ_SEUL_CMJN.png} \hfill
+		\includegraphics[width=0.2\textwidth]{Logo-UPJV-bleu.png} \\[1cm]
+		
+		% Noms des établissements
+		{\large \textbf{Sorbonne Université}} \\ 
+		{\large \textbf{Université de Picardie Jules Verne}} \\[0.5cm]
+		
+		% Nom du Master
+		{\Large Master of Computer Science} \\
+		{\large Cryptology, High-performance Computing, and Algorithms} \\[1.5cm]
+		
+		% Titre entouré de lignes
+		\noindent\rule{\textwidth}{1pt} \\[0.4cm]
+		{\Huge \textbf{Cryptanalysis of SBC-based Post-Quantum Signature Scheme}} \\[0.4cm]
+		\noindent\rule{\textwidth}{1pt} \\[1.5cm]
+		
+		% Sous-titre
+		{\Large Graduation Internship Report} \\
+		{\large 2025} \\[2cm]
+		
+		% En bas de page, deux colonnes : auteur à gauche, encadrants à droite
+		\vfill
+		\begin{minipage}[t]{0.45\textwidth}
+			\raggedright
+			\textbf{Author:} \\
+			Paul Mekhail \\
+			Sorbonne Université, Université de Picardie Jules Verne \\
+			\texttt{paul.mekhail4@pm.me}
+		\end{minipage}
+		\hfill
+		\begin{minipage}[t]{0.45\textwidth}
+			\raggedleft
+			\textbf{Supervisor:} \\
+			Sorina Ionica \\
+			Laboratoire MIS, Université de Picardie Jules Verne \\
+			\texttt{sorina.ionica@u-picardie.fr} \\[0.5cm]
+			\textbf{Academic Supervisor:} \\
+			Mohab Safey El Din \\
+			LIP6, Sorbonne Université \\
+			\texttt{Mohab.Safey@lip6.fr}
+		\end{minipage}
+	\end{titlepage}
+}
 
 \begin{document}
-	\maketitle
+	\maketitlepage
+	
+	\newpage
+	\tableofcontents
+	\newpage
 	
 	\section{Introduction}
 		Since the emergence of quantum computing in the late 1990s, several breakthroughs have been achieved in the field of quantum algorithms. Some of these advancements have found applications in areas such as medicine and physics, while others have demonstrated the ability to break cryptographic problems that are currently assumed to be hard for classical computers, such as RSA \cite{RSA78} and ECDH.
@@ -96,16 +138,6 @@
 		
 		Finally, in Section~\ref{sec4}, we detail our contributions, including the cryptanalysis and formal security evaluation of the SBC-based signature scheme, and summarize the most efficient known attacks against it.
 	
-		\begin{figure}[H]
-			\begin{center}
-				\includegraphics[scale=0.04]{unilasalle.jpg}
-				\caption{UniLaSalle Engineering School, where the MIS offices are located(for now). Observant readers may notice the unusual UFO-like structure situated in front of the building.}
-			\end{center}	
-		\end{figure}
-	
-	\newpage
-	\tableofcontents
-	\newpage
 	\section{MPC-in-the-Head and SBC signature scheme}\label{sec2}
 		
 		\subsection{MPCitH}
