@@ -11,7 +11,7 @@
 \usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{mathtools}
-\usepackage[backend=bibtex,style=alphabetic]{biblatex}
+\usepackage[backend=bibtex,style=alphabetic,maxbibnames=9,hyperref=true,abbreviate=false,backref=true]{biblatex}
 \usepackage{csquotes}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -393,7 +393,7 @@
 		Gröbner basis theory was first introduced by Buchberger in his thesis \cite{Buc} and he gave an algorithm to compute the Gröbner basis of an ideal.
 		Gröbner basis algorithms like Buchberger's Algorithm \cite{Buc}, are used to find solutions for polynomial systems using algebraic geometry tools. For a gentle introduction to this subject \cite{CLS}.
 		
-		In \cite{Lazard83}, Lazard introduced the connection between linear algebra and Gröbner basis theory via the usage of Macaulay matrices \cite{Mac} which is defined as follows.
+		In \cite{Lazard83}, Lazard introduced the connection between linear algebra and Gröbner basis theory via the usage of Macaulay matrices which is defined as follows.
 		
 		\begin{definition}
 			Let $\prec$ be an admissible monomial ordering on a given ring $R$. Given a sequence of homogeneous (resp. affine) polynomials $\mathcal{F} = (f_1,\dots,f_m) \in R$, we associate to it the Macaulay matrix of degree $D$ (resp. $\leq D$), denoted by $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$), and defined as follows: the columns of the matrix are indexed by the monomials of degree $D$ (resp. $\leq D$) sorted in decreasing order from the left to right using the defined monomial ordering. Each row of the matrix is labeled by a tag, also called signature, ($u, f_i$) where u is a monomial in $R$ and $f_i \in \mathcal{F}$ such that $deg(uf_i) = D$ (resp. $deg(uf_i) \leq D$), and the polynomial $uf_i$ is written as vector of coefficients of monomials on the row. We denote by $\Mact{D}{m}{F}$ (resp. $\Mact{\leq D}{m}{F}$) the row echelon form of $\Mac{D}{m}{\mathcal{F}}$ (resp. $\Mac{\leq D}{m}{\mathcal{F}}$) without swapping columns to preserve the monomial ordering.
@@ -674,7 +674,7 @@
 		We used the computer algebra system SageMath \cite{sagemath} to test numerically when using the F5 extended criterion of \cite{FSS11} becomes negligible compared to the computations of reductions to 0, we see experimentally that $Adv(10, 12) = 2498903$, i.e. the theoretical advantage becomes negligible and it would be advantageous to simply compute reductions to 0 instead of applying the F5 extended criterion. This number grows exponentially with $n$ and $m$. For those who wonder, what would be the estimated theoretical advantage computing reductions to 0 for the parameters given by \cite{HJ23} $Adv(256, 257)$ is a 514 bit number.
 		
 		\subsection{Boolean systems}
-		Sometimes, the finite field used is $\mathbb{F}_2$ because it is still supposedly hard to solve but is very easy to use and manipulate on computers. But in such small fields one can begin to use exhaustive search to obtain the solution to the system. The best algorithm known to the authors for exhaustive search for multivariate polynomial system $f_1,\dots,f_m$ over $\mathbb{F}_2[x_1,\dots,x_n]$ is \cite{BCC+10} with a complexity $\mathcal{O}(ln(n)2^n)$. What is remarkable is that the complexity does not implicate the number of polynomials in the system, $m$. There is also a software made by one of the authors, Charles Bouillaguet, that is available online and easy to use, \textit{libFES-lite} \cite{Bouilla22} and there have been implementations on FPGA that broke real world cryptography \cite{DDVY20}..
+		Sometimes, the finite field used is $\mathbb{F}_2$ because it is still supposedly hard to solve but is very easy to use and manipulate on computers. But in such small fields one can begin to use exhaustive search to obtain the solution to the system. The best algorithm known to the authors for exhaustive search for multivariate polynomial system $f_1,\dots,f_m$ over $\mathbb{F}_2[x_1,\dots,x_n]$ is \cite{BCC+10} with a complexity $\mathcal{O}(ln(n)2^n)$. What is remarkable is that the complexity does not implicate the number of polynomials in the system, $m$. There is also a software made by one of the authors, Charles Bouillaguet, that is available online and easy to use, \textit{libFES-lite} \cite{Bouilla22} and there have been implementations on FPGA that broke real world cryptography \cite{DDVY20}.
 		
 		Another type of algorithms uses exhaustive search combined with probabilistic algorithms. \cite{LPT+17} gave an algorithm that finds the solution to a polynomial system with complexity $\tilde{\mathcal{O}}(2^{0.8765n})$ which is better than exhaustive search. Even though it is asymptotically better, there are no known implementations because of the huge constant factors present in the complexity that makes it worse than exhaustive search for any systems that can be solved on modern computers. New algorithms have been proposed by Itai Dinur \cite{Itai21A, Itai21B} where the complexity is brought down to $\tilde{\mathcal{O}}(2^{0.6943n})$, but still no implementation known to the authors.
 		
@@ -736,7 +736,7 @@
 		
 		where $g_i$ are polynomials with coefficients in $\mathbb{F}_q$.
 		
-		The most straightforward cryptanalysis of this type of systems is to perform a Gröbner basis algorithm like Buchberger's algorithm \cite{Buc}, Faugère's F4 \cite{F99}, F5 \cite{F02} or their multiple variants \cite{EF19}.
+		The most straightforward cryptanalysis of this type of systems is to perform a Gröbner basis algorithm like Buchberger's algorithm \cite{Buc}, Faugère's F4 \cite{F99}, F5 \cite{F02} or their multiple variants \cite{EF17}.
 		
 		Huth and Joux cite a complexity result in \cite{FSS11} to argue their parameters choice, we will dive deeper into this article  results in a later section.
 		
